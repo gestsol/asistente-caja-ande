@@ -1,25 +1,22 @@
 {
-  "name": "template-node-ts",
+  "name": "asistente-caja-ande",
   "version": "0.0.1",
-  "description": "Basic template to start a project using nodejs with typescript",
-  "keywords": [
-    "template",
-    "node",
-    "typescript"
+  "description": "",
+  "private": true,
+  "license": "UNLICENSED",
+  "author": "WIT",
+  "contributors": [
+    {
+      "name": "Edixon Piña",
+      "email": "edixonalbertto@gmail.com"
+    }
   ],
-  "private": false,
-  "license": "MIT",
-  "author": {
-    "name": "Edixon Piña",
-    "email": "edixonalbertto@gmail.com",
-    "url": "https://edixonalberto.com"
-  },
-  "main": "dist/index.js",
   "scripts": {
+    "prepare": "husky install",
     "lint": "prettier --write ./src/**/*.ts",
-    "build": "tsc && tsc-alias",
     "dev": "cross-env NODE_ENV=development nodemon --config",
-    "start": "yarn build && node dist"
+    "build": "tsc && tsc-alias",
+    "start": "npm run build && cross-env NODE_ENV=production node dist"
   },
   "nodemonConfig": {
     "ext": ".ts,.env",
@@ -28,13 +25,14 @@
       "env"
     ],
     "verbose": false,
-    "exec": "yarn build && node dist"
+    "exec": "npm run build && node dist"
   },
-  "dependencies": {},
+  "dependencies": {
+    "cross-env": "^7.0.3",
+    "dotenv": "^16.0.0"
+  },
   "devDependencies": {
     "@types/node": "^16.11.11",
-    "cross-env": "^7.0.3",
-    "dotenv": "^8.2.0",
     "husky": "^7.0.4",
     "lint-staged": "^12.1.2",
     "nodemon": "^2.0.15",
@@ -43,15 +41,10 @@
     "typescript": "^4.5.2"
   },
   "lint-staged": {
-    "*.ts": "yarn lint"
-  },
-  "homepage": "https://github.com/EdixonAlberto/template-node-ts#readme",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/EdixonAlberto/template-node-ts/tree/main"
+    "*.ts": "npm run lint"
   },
   "engine": {
-    "node": "~16.13.0",
-    "yarn": "~1.22.5"
+    "node": "^16.13.0",
+    "npm": "^8.1.0"
   }
 }
