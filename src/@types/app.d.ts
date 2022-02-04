@@ -6,6 +6,9 @@ type TConfig = {
     token: string
     device: string
   }
+  ande: {
+    apiUrl: string
+  }
 }
 
 type TEnv = 'development' | 'production'

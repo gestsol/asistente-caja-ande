@@ -1,5 +1,5 @@
-import { Router, Request, Response, NextFunction } from 'express'
-import { WassiService } from '../services/Wassi.service'
+import { Router, Request, Response } from 'express'
+import { HomeController } from '~CONTROLLERS'
 
 const router = Router()
 
@@ -17,27 +17,34 @@ if ((strpos(strtolower($body->data->body), "hola") !== false) || (strpos(strtolo
 
 router.post(
   '/',
-  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    const {
-      fromNumber,
-      chat: {
-        contact: { displayName }
-      }
-    } = req.body.data
+  async (req: Request, res: Response): Promise<void> => {
+    // const {
+    //   fromNumber,
+    //   chat: {
+    //     contact: { displayName }
+    //   }
+    // } = req.body.data
 
-    console.log(displayName)
+    // switch (options) {
+    //   case 1:
+    //     controllerCreditCard()
+    //     break
 
-    const wassi = new WassiService()
+    //   case 2:
+    //     controller2()
+    //     break
 
-    const message = `
-Hola 🤗 ${displayName}, soy el Asistente Virtual de Caja Ande.
-Selecciona una opción para poder ayudarte:
+    //   case 3:
+    //     controller3()
+    //     break
 
-(1) Acceso para afiliados de la CAJA
-(2) No afiliados
-`
+    //   default:
+    //     controllerDefault()
+    //     break
+    // }
 
-    await wassi.sendMessage(fromNumber, message)
+    const homeController = new HomeController()
+    homeController.startDecisionTree(req.body.data)
 
     res.end()
   }

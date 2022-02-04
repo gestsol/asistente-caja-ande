@@ -17,6 +17,9 @@ export async function loadConfig(): Promise<void> {
       apiUrl: (ENV.WASSI_API_URL as string) || '',
       token: (ENV.WASSI_TOKEN as string) || '',
       device: (ENV.WASSI_DEVICE as string) || ''
+    },
+    ande: {
+      apiUrl: (ENV.ANDE_API_URL as string) || ''
     }
   }
 

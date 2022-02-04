@@ -1,28 +1,14 @@
-import axios, { AxiosInstance } from 'axios'
+import { HttpClientService } from '~SERVICES/HttpClient.service'
 
-export class WassiService /* extends HttpClient */ {
-  private http: AxiosInstance
-  private device: string
-
+export class WassiService extends HttpClientService {
   constructor() {
-    const { apiUrl, token, device } = global.config.wassi
-
-    this.http = axios.create({
-      maxRedirects: 10,
-      timeout: 1000 * 30,
-      headers: {
-        'content-type': 'application/json',
-        token
-      },
-      baseURL: apiUrl
-    })
-    this.device = device
+    const { apiUrl } = global.config.wassi
+    super(apiUrl, '/v1/messages')
   }
 
-  public async sendMessage(phone: string, message: string): Promise<void> {
+  public async sendMessage(phone: string, message: string): Promise<any> {
     /*
-
-       $curl = curl_init();
+    $curl = curl_init();
 
     curl_setopt_array($curl, array(
         CURLOPT_URL => "https://api.wassi.chat/v1/messages",
@@ -49,17 +35,20 @@ export class WassiService /* extends HttpClient */ {
     } else {
         echo $response;
     }
-
     */
+    //  console.log(this.device);
 
     const body = { phone, message, device: this.device }
 
     try {
-      const { data } = await this.http.post('/v1/messages', body)
+      const { status, data } = await this.http.post('/', body)
 
-      console.log('Mensaje enviado a:', data?.phone)
+      console.log('Mensaje enviado a:', (data as TWassiResponse)?.phone)
+      console.log('STATUS', status)
+
+      return data
     } catch (error) {
-      throw error
+      return null
     }
   }
 }
