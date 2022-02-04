@@ -1,5 +1,5 @@
 import express from 'express'
-// import { notFound, errorHandler, requestHandler, corsHandler } from '~MIDDLEWARES'
+import { requestHandler } from '~MIDDLEWARES'
 import { routes } from '../routes'
 
 export class ServerService {
@@ -12,8 +12,7 @@ export class ServerService {
   }
 
   private middlewares(): void {
-    // this.app.use('/', requestHandler)
-    // this.app.use(corsHandler())
+    this.app.use('*', requestHandler)
     this.app.use(express.json())
   }
 

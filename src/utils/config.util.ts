@@ -11,7 +11,8 @@ export async function loadConfig(): Promise<void> {
   const ENV: NodeJS.ProcessEnv = process.env
 
   const _config: TConfig = {
-    port: Number(ENV.PORT) || 3000
+    port: Number(ENV.PORT) || 3000,
+    debug: ((ENV.DEBUG as unknown) as boolean) || false
   }
 
   global.config = _config
