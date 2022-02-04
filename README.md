@@ -1,18 +1,39 @@
-# Template Node TS
+# Asistente Caja Ande
 
-[![](https://img.shields.io/badge/author-Edixon_Piña-green?style=for-the-badge)](https://edixonalberto.com)
+[![](https://img.shields.io/badge/types-TypeScript-blue?style=for-the-badge)](https://www.typescriptlang.org)
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=for-the-badge)](https://prettier.io)
 
-[![](https://img.shields.io/badge/types-TypeScript-blue?style=for-the-badge)]()
-[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=for-the-badge)](https://github.com/prettier/prettier)
+Asistente virtual tipo chatbot para asistir a clientes de Caja Ande.
 
-Basic template to start a project using nodejs with typescript
+## Antes de Iniciar
 
-### Comands
+- Activar husky
+
+Se debe ejecutar el siguiente comando para activar `husky`.
 
 ```sh
-yarn install
+npm run prepare
+```
 
-yarn run dev # run app in mode developer
-yarn run build # build app
-yarn start # run app in mode production
+Esto se usa para formatear el codigo automaticamente usando prettier antes de cada commit. De esta manera el código se mantendrá siempre organizado.
+
+- Crear variables de entorno
+
+Se debe crear un archivo `development.env` en la carpeta `/env`, para esto
+puede ejecutar el siguiente comando y copiar la plantilla de variables proporcionada
+
+```sh
+cp env/.env.template env/production.env
+```
+
+Nota: crear `production.env` para usar en producción.
+
+## Comandos
+
+```sh
+npm install
+
+npm run dev # run app in mode developer
+
+npm start # run app in mode production
 ```

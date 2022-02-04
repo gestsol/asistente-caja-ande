@@ -1,7 +1,7 @@
 {
   "name": "asistente-caja-ande",
   "version": "0.0.1",
-  "description": "",
+  "description": "Asistente virtual tipo chatbot para asistir a clientes de Caja Ande",
   "private": true,
   "license": "UNLICENSED",
   "author": "WIT",
