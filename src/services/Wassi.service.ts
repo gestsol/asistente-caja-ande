@@ -1,14 +1,25 @@
-const device = '61e5bb67625a563809c2fca8'
-const token = '9db5765ad945eb5b106ecc549ec63f47c91a35a9d440fc45aa8d0cab5f1bd083871c53931c3feaa1'
+import axios, { AxiosInstance } from 'axios'
 
 export class WassiService /* extends HttpClient */ {
-  http: any
+  private http: AxiosInstance
+  private device: string
 
-  // constructor() {
+  constructor() {
+    const { apiUrl, token, device } = global.config.wassi
 
-  // }
+    this.http = axios.create({
+      maxRedirects: 10,
+      timeout: 1000 * 30,
+      headers: {
+        'content-type': 'application/json',
+        token
+      },
+      baseURL: apiUrl
+    })
+    this.device = device
+  }
 
-  public async sendMessage(phone, message): Promise<void> {
+  public async sendMessage(phone: string, message: string): Promise<void> {
     /*
 
        $curl = curl_init();
@@ -41,15 +52,12 @@ export class WassiService /* extends HttpClient */ {
 
     */
 
-    const body = { phone, message, device }
+    const body = { phone, message, device: this.device }
 
     try {
-      const { data } = await this.http.post('https://api.wassi.chat/v1/messages', body, {
-        header: {
-          'content-type': 'application/json',
-          token
-        }
-      })
+      const { data } = await this.http.post('/v1/messages', body)
+
+      console.log('Mensaje enviado a:', data?.phone)
     } catch (error) {
       throw error
     }

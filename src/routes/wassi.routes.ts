@@ -1,5 +1,5 @@
 import { Router, Request, Response, NextFunction } from 'express'
-// import { WassiService } from '../services/Wassi.service'
+import { WassiService } from '../services/Wassi.service'
 
 const router = Router()
 
@@ -15,28 +15,32 @@ if ((strpos(strtolower($body->data->body), "hola") !== false) || (strpos(strtolo
 }
 */
 
-router.post('/', (req: Request, res: Response, next: NextFunction): void => {
-  const {
-    chat: {
-      contact: { displayName }
-    }
-  } = req.body.data
+router.post(
+  '/',
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const {
+      fromNumber,
+      chat: {
+        contact: { displayName }
+      }
+    } = req.body.data
 
-  console.log(displayName)
+    console.log(displayName)
 
-  res.json(displayName)
+    const wassi = new WassiService()
 
-  //   const wassi = new WassiService()
+    const message = `
+Hola 🤗 ${displayName}, soy el Asistente Virtual de Caja Ande.
+Selecciona una opción para poder ayudarte:
 
-  //   const message = `Hola 🤗 ".$name.", soy el Asistente Virtual de Caja Ande 🤓".
-  //         "\\n*Nuestra Caja, tu futuro!*".
-  //         "\\n Selecciona una opción para poder ayudarte:" .
-  //         "\\n*1.* Jubilados y pensionados" .
-  //         "\\n*2.* Proveedores".
-  //         "\\n*99.* Obtener Motivos Créditos (API TEST)";
-  // `
+(1) Acceso para afiliados de la CAJA
+(2) No afiliados
+`
 
-  // wassi.sendMessage('', message)
-})
+    await wassi.sendMessage(fromNumber, message)
+
+    res.end()
+  }
+)
 
 export { router as wassiRoutes }

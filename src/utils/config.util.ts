@@ -12,7 +12,12 @@ export async function loadConfig(): Promise<void> {
 
   const _config: TConfig = {
     port: Number(ENV.PORT) || 3000,
-    debug: ((ENV.DEBUG as unknown) as boolean) || false
+    debug: ((ENV.DEBUG as unknown) as boolean) || false,
+    wassi: {
+      apiUrl: (ENV.WASSI_API_URL as string) || '',
+      token: (ENV.WASSI_TOKEN as string) || '',
+      device: (ENV.WASSI_DEVICE as string) || ''
+    }
   }
 
   global.config = _config
