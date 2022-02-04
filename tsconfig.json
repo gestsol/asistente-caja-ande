@@ -45,7 +45,7 @@
     "baseUrl": "src"                          /* Base directory to resolve non-absolute module names. */,
     "paths": {
       "~MIDDLEWARES": ["middlewares/index.ts"],
-      "~CONTROLLERS": ["controllers/index.ts"],
+      "~CONTROLLERS/*": ["controllers/*"],
       "~SERVICES/*": ["services/*"],
       "~ROUTES": ["routes/index.ts"],
       "~UTILS/*": ["utils/*"],

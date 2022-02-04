@@ -6,12 +6,23 @@ export class AndeService extends HttpClientService {
     super(apiUrl, '/cjppa/rest/chatbot')
   }
 
-  public async getUser(phone: string): Promise<any> {
+  public async getAffiliateByPhone(phone: string): Promise<any> {
     try {
-      const { status, data } = await this.http.get(`/afiliado/celular/${phone}`)
+      const { data } = await this.http.get(`/afiliado/celular/${phone}`)
+      return data
+    } catch (error) {}
+  }
 
-      console.log(status)
+  public async getAffiliateByCI(ci: string): Promise<any> {
+    try {
+      const { data } = await this.http.get(`afiliado/cedula/${ci}`)
+      return data
+    } catch (error) {}
+  }
 
+  public async getAffiliateByNro(affiliate: string): Promise<any> {
+    try {
+      const { data } = await this.http.get(`/opcionesmenu/${affiliate}`)
       return data
     } catch (error) {}
   }

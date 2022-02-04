@@ -16,3 +16,4 @@ type TEnv = 'development' | 'production'
 // DECLARATIONS ________________________________________________________________________________________________________
 
 declare var config: TConfig
+declare var FLOW_STATE: string

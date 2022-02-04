@@ -1,4 +1,5 @@
 import axios, { AxiosRequestConfig, AxiosResponse, AxiosError, AxiosInstance } from 'axios'
+import { botDebug } from '~UTILS/debug.util'
 
 export class HttpClientService {
   protected http: AxiosInstance
@@ -29,7 +30,7 @@ export class HttpClientService {
     this.http.interceptors.request.use(
       async (config: AxiosRequestConfig) => {
         config.url = this.defaultPath + config.url
-        console.log('>> ' + config.method?.toUpperCase() + ': ' + config.baseURL + config.url)
+        botDebug(`HTTP-OUT: ${config.method?.toUpperCase() || '<METHOD UNDEFINED>'} ${config.baseURL + config.url}`)
         return config
       },
       (error: AxiosError) => {
@@ -41,6 +42,7 @@ export class HttpClientService {
     // RESPONSE
     this.http.interceptors.response.use(
       async (response: AxiosResponse) => {
+        if (response.status !== 200) throw new Error('Error in status response')
         return response
       },
       (error: AxiosError) => {
