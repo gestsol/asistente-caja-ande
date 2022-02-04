@@ -28,10 +28,13 @@
     "exec": "npm run build && node dist"
   },
   "dependencies": {
+    "axios": "^0.25.0",
     "cross-env": "^7.0.3",
-    "dotenv": "^16.0.0"
+    "dotenv": "^16.0.0",
+    "express": "^4.17.2"
   },
   "devDependencies": {
+    "@types/express": "^4.17.13",
     "@types/node": "^16.11.11",
     "husky": "^7.0.4",
     "lint-staged": "^12.1.2",
