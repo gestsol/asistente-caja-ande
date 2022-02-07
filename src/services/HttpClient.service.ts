@@ -3,23 +3,18 @@ import { botDebug } from '~UTILS/debug.util'
 
 export class HttpClientService {
   protected http: AxiosInstance
-  protected device: string
   private defaultPath: string
 
-  constructor(baseURL: string, defaultPath: string) {
-    const { token, device } = global.config.wassi
-
+  constructor({ baseURL, defaultPath, token }: TConfigHttpClient) {
     this.http = axios.create({
       maxRedirects: 10,
       timeout: 1000 * 30,
       headers: {
         'content-type': 'application/json',
-        token
+        token: token || ''
       },
       baseURL
     })
-
-    this.device = device
     this.defaultPath = defaultPath
 
     this.startInterceptors()

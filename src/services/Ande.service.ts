@@ -3,7 +3,10 @@ import { HttpClientService } from '~SERVICES/HttpClient.service'
 export class AndeService extends HttpClientService {
   constructor() {
     const { apiUrl } = global.config.ande
-    super(apiUrl, '/cjppa/rest/chatbot')
+    super({
+      baseURL: apiUrl,
+      defaultPath: '/cjppa/rest/chatbot'
+    })
   }
 
   public async getAffiliateByPhone(phone: string): Promise<any> {

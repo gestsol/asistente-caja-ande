@@ -11,6 +11,12 @@ type TConfig = {
   }
 }
 
+type TConfigHttpClient = {
+  baseURL: string
+  defaultPath: string
+  token?: string
+}
+
 type TEnv = 'development' | 'production'
 
 // DECLARATIONS ________________________________________________________________________________________________________
