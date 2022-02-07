@@ -1,14 +1,14 @@
 import axios, { AxiosRequestConfig, AxiosResponse, AxiosError, AxiosInstance } from 'axios'
 import { botDebug } from '~UTILS/debug.util'
 
-export class HttpClientService {
+export class HttpClient {
   protected http: AxiosInstance
   private defaultPath: string
 
   constructor({ baseURL, defaultPath, token }: TConfigHttpClient) {
     this.http = axios.create({
       maxRedirects: 10,
-      timeout: 1000 * 30,
+      timeout: 1000 * 60,
       headers: {
         'content-type': 'application/json',
         token: token || ''

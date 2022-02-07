@@ -1,4 +1,4 @@
-import { Controller } from '~ENTITIES/class'
+import { Controller } from '~CLASS/Controller'
 import { HomeController } from '~CONTROLLERS/Home.controller'
 
 export class LoginController extends Controller {
@@ -18,13 +18,13 @@ export class LoginController extends Controller {
         response = `
         Bienvenido ${this.username}. En Caja Ande trabajamo para vos 🤓, revisá las opciones que tenemos desponible:
 
-        (11) Préstamos
-        (12) Tarjetas de crédito
-        (13) Consultar crédito
-        (14) Noticias e informaciones del mes
-        (15) Datos personales
-        (16) Descargas
-        (17) Link de interés
+        (11) Préstamos 💰
+        (12) Tarjetas de crédito 💳
+        (13) Consultar crédito 🧐
+        (14) Noticias e informaciones del mes 📱
+        (15) Datos personales 😊
+        (16) Descargas 🤗
+        (17) Link de interés 😄
         (18) Mesa de entrada
         `
 

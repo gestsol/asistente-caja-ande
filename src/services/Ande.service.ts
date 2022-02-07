@@ -1,6 +1,6 @@
-import { HttpClientService } from '~SERVICES/HttpClient.service'
+import { HttpClient } from 'class/HttpClient'
 
-export class AndeService extends HttpClientService {
+export class AndeService extends HttpClient {
   constructor() {
     const { apiUrl } = global.config.ande
     super({

@@ -1,4 +1,4 @@
-import { Controller } from '~ENTITIES/class'
+import { Controller } from '~CLASS/Controller'
 import { LoginController } from '~CONTROLLERS/Login.controller'
 
 export class MainController extends Controller {

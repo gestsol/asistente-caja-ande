@@ -25,6 +25,6 @@ export class Controller {
   protected async startDecisionTree(): Promise<void> {}
 
   protected async sendMessage(response: string): Promise<void> {
-    await this.wassiService.sendMessage(this.data.phone, response)
+    await this.wassiService.sendMessage(this.data.phone, response.trim())
   }
 }

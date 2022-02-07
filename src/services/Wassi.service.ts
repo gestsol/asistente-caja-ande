@@ -1,11 +1,10 @@
-import { HttpClientService } from '~SERVICES/HttpClient.service'
+import { HttpClient } from '~CLASS/HttpClient'
 
-export class WassiService extends HttpClientService {
-  private device
+export class WassiService extends HttpClient {
+  private device: string
 
   constructor() {
     const { apiUrl, token, device } = global.config.wassi
-
     super({
       baseURL: apiUrl,
       defaultPath: '/v1/messages',
