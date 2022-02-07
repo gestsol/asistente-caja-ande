@@ -15,12 +15,13 @@ Se debe ejecutar el siguiente comando para activar `husky`.
 npm run prepare
 ```
 
-Esto se usa para formatear el codigo automaticamente usando prettier antes de cada commit. De esta manera el código se mantendrá siempre organizado.
+Esto se usa para formatear el codigo automaticamente usando prettier antes de cada commit. De esta manera el código se
+mantendrá siempre organizado.
 
 - Crear variables de entorno
 
-Se debe crear un archivo `development.env` en la carpeta `/env`, para esto
-puede ejecutar el siguiente comando y copiar la plantilla de variables proporcionada
+Se debe crear un archivo `development.env` en la carpeta `/env`, para esto puede ejecutar el siguiente comando y copiar
+la plantilla de variables proporcionada
 
 ```sh
 cp env/.env.template env/production.env
@@ -37,3 +38,13 @@ npm run dev # run app in mode developer
 
 npm start # run app in mode production
 ```
+
+## Diagramas
+
+- Arbol de Decisiones
+
+![tree](docs/decisions-tree.png)
+
+- Especificacion del modelo de codigo
+
+![model](docs/model-specification.drawio.png)
