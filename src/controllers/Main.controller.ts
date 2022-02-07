@@ -1,22 +1,11 @@
-import { Controller } from 'entities/class'
+import { Controller } from '~ENTITIES/class'
 import { LoginController } from '~CONTROLLERS/Login.controller'
 
 export class MainController extends Controller {
-  constructor(private data: any) {
-    super()
-  }
-
-  public async startDecisionTree(): Promise<string> {
-    const {
-      chat: {
-        contact: { displayName }
-      },
-      body
-    } = this.data
-    const message = body
+  async startDecisionTree() {
     let response = ''
 
-    switch (message) {
+    switch (this.message) {
       case '1':
         response = `
         Hola! soy el asistente virtual de los afiliados de la CAJA 🤓
@@ -36,11 +25,10 @@ export class MainController extends Controller {
 
       default:
         if (FLOW_STATE) {
-          const loginController = new LoginController(message)
-          response = await loginController.startDecisionTree()
+          new LoginController(this.data)
         } else
           response = `
-        Hola 🤗 ${displayName}, soy el Asistente Virtual de Caja Ande.
+        Hola 🤗 ${'displayName'}, soy el Asistente Virtual de Caja Ande.
         Selecciona una opción para poder ayudarte:
 
         (1) Acceso para afiliados de la CAJA
@@ -49,6 +37,6 @@ export class MainController extends Controller {
         break
     }
 
-    return response
+    this.sendMessage(response)
   }
 }

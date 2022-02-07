@@ -1,13 +1,7 @@
-import { Controller } from 'entities/class'
+import { Controller } from '~ENTITIES/class'
 
 export class HomeController extends Controller {
-  constructor(private message: string) {
-    super()
-  }
-
-  public async startDecisionTree(): Promise<string> {
-    let response = ''
-
-    return response
+  async startDecisionTree() {
+    await this.sendMessage('')
   }
 }

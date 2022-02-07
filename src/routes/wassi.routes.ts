@@ -1,18 +1,26 @@
 import { Router, Request, Response } from 'express'
-import { MainController } from 'controllers/Main.controller'
-import { WassiService } from '~SERVICES/Wassi.service'
+import { MainController } from '~CONTROLLERS/Main.controller'
 
 const router = Router()
 
 router.post(
   '/',
   async (req: Request, res: Response): Promise<void> => {
-    const wassi = new WassiService()
-    const mainController = new MainController(req.body.data)
+    const {
+      fromNumber,
+      chat: {
+        contact: { displayName }
+      },
+      body
+    } = req.body.data
 
-    const message = await mainController.startDecisionTree()
+    const data = {
+      phone: fromNumber,
+      username: displayName,
+      message: body
+    }
 
-    await wassi.sendMessage(req.body.data.fromNumber, message)
+    new MainController(data)
 
     res.end()
   }
