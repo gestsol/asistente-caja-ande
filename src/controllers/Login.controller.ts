@@ -7,28 +7,27 @@ export class LoginController extends Controller {
 
     // TODO: crear casos de usos incorrectos (ci invalido, afiliacion no encontrada, etc)
     switch (FLOW_STATE) {
-      case 'cedula':
-        await this.andeService.getAffiliateByCI(this.message)
-        response = 'Poné tu nro de Afiliado'
-        FLOW_STATE = 'afiliado'
+      case 'login':
+        const data = await this.andeService.getAffiliateByCI(this.message)
+
+        if (data) {
+          response = 'Poné tu nro de Afiliado'
+          FLOW_STATE = 'afiliado'
+        } else response = 'CI invalido'
         break
 
       case 'afiliado':
-        await this.andeService.getAffiliateByNro(this.message)
-        response = `
-        Bienvenido ${this.username}. En Caja Ande trabajamo para vos 🤓, revisá las opciones que tenemos desponible:
+        const affiliate = await this.andeService.getAffiliateByNro(this.message)
 
-        (11) Préstamos 💰
-        (12) Tarjetas de crédito 💳
-        (13) Consultar crédito 🧐
-        (14) Noticias e informaciones del mes 📱
-        (15) Datos personales 😊
-        (16) Descargas 🤗
-        (17) Link de interés 😄
-        (18) Mesa de entrada
-        `
-
-        FLOW_STATE = 'home'
+        if (affiliate) {
+          FLOW_STATE = 'home'
+          this.data = {
+            ...this.data,
+            message: 'home',
+            username: affiliate.nombre
+          }
+          new HomeController(this.data)
+        } else response = 'Nro. de afiliado invalido'
         break
 
       case 'home':
@@ -37,12 +36,12 @@ export class LoginController extends Controller {
 
       default:
         response = `
-      Hola 🤗 ${this.username}, soy el Asistente Virtual de Caja Ande.
-      Selecciona una opción para poder ayudarte:
+        Hola 🤗 ${this.username}, soy el Asistente Virtual de Caja Ande.
+        Selecciona una opción para poder ayudarte:
 
-      (1) Acceso para afiliados de la CAJA
-      (2) No afiliados
-      `
+        (1) Acceso para afiliados de la CAJA
+        (2) No afiliados
+        `
         break
     }
 

@@ -17,6 +17,12 @@ type TConfigHttpClient = {
   token?: string
 }
 
+type TDataController = {
+  phone: string
+  username: string
+  message: string
+}
+
 type TEnv = 'development' | 'production'
 
 // DECLARATIONS ________________________________________________________________________________________________________

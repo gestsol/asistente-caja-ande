@@ -13,20 +13,26 @@ export class AndeService extends HttpClient {
     try {
       const { data } = await this.http.get(`/afiliado/celular/${phone}`)
       return data
-    } catch (error) {}
+    } catch (error) {
+      return null
+    }
   }
 
   public async getAffiliateByCI(ci: string): Promise<any> {
     try {
-      const { data } = await this.http.get(`afiliado/cedula/${ci}`)
+      const { data } = await this.http.get(`/afiliado/cedula/${ci}`)
       return data
-    } catch (error) {}
+    } catch (error) {
+      return null
+    }
   }
 
-  public async getAffiliateByNro(affiliate: string): Promise<any> {
+  public async getAffiliateByNro(affiliate: string): Promise<TAffiliate | null> {
     try {
-      const { data } = await this.http.get(`/opcionesmenu/${affiliate}`)
+      const { data } = await this.http.get<TAffiliate>(`/opcionesmenu/${affiliate}`)
       return data
-    } catch (error) {}
+    } catch (error) {
+      return null
+    }
   }
 }

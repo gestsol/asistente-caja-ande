@@ -5,17 +5,15 @@ export class Controller {
   protected andeService: AndeService
   private wassiService: WassiService
 
-  protected data: any
-
+  protected data: TDataController
   protected username: string
   protected message: string
 
-  constructor(data) {
+  constructor(data: TDataController) {
     this.andeService = new AndeService()
     this.wassiService = new WassiService()
 
     this.data = data
-
     this.username = data.username
     this.message = data.message
 
@@ -25,6 +23,8 @@ export class Controller {
   protected async startDecisionTree(): Promise<void> {}
 
   protected async sendMessage(response: string): Promise<void> {
-    await this.wassiService.sendMessage(this.data.phone, response.trim())
+    if (response) {
+      await this.wassiService.sendMessage(this.data.phone, response.trim())
+    }
   }
 }

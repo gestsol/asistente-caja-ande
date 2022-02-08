@@ -13,7 +13,7 @@ export class MainController extends Controller {
 
         Por favor enviános tu número de CI para ayudarte
         `
-        FLOW_STATE = 'cedula'
+        FLOW_STATE = 'login'
         break
 
       case '2':
@@ -24,16 +24,16 @@ export class MainController extends Controller {
         break
 
       default:
-        if (FLOW_STATE) {
+        if (FLOW_STATE === 'login') {
           new LoginController(this.data)
         } else
           response = `
-        Hola 🤗 ${'displayName'}, soy el Asistente Virtual de Caja Ande.
-        Selecciona una opción para poder ayudarte:
+          Hola 🤗 soy el Asistente Virtual de Caja Ande.
+          Selecciona una opción para poder ayudarte:
 
-        (1) Acceso para afiliados de la CAJA
-        (2) No afiliados
-        `
+          (1) Acceso para afiliados de la CAJA
+          (2) No afiliados
+          `
         break
     }
 
