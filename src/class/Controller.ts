@@ -1,5 +1,6 @@
 import { AndeService } from '~SERVICES/Ande.service'
 import { WassiService } from '~SERVICES/Wassi.service'
+import { botDebug } from '~UTILS/debug.util'
 
 export class Controller {
   protected andeService: AndeService
@@ -24,7 +25,12 @@ export class Controller {
 
   protected async sendMessage(response: string): Promise<void> {
     if (response) {
-      await this.wassiService.sendMessage(this.data.phone, response.trim())
+      const wassiResponse = await this.wassiService.sendMessage(this.data.phone, response.trim())
+
+      if (wassiResponse) {
+        const message = wassiResponse.message.substring(0, 40) + '...'
+        botDebug(`WASSI: Message sent successfully - STATUS: ${wassiResponse.status}, MESSAGE: ${message}`)
+      }
     }
   }
 }

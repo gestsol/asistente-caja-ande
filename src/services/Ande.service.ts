@@ -9,20 +9,24 @@ export class AndeService extends HttpClient {
     })
   }
 
-  public async getAffiliateByPhone(phone: string): Promise<any> {
+  public async getAffiliateByPhone(phone: string): Promise<any | null> {
     try {
       const { data } = await this.http.get(`/afiliado/celular/${phone}`)
+      console.log('CELULAR', data)
+
       return data
-    } catch (error) {
+    } catch (_) {
       return null
     }
   }
 
-  public async getAffiliateByCI(ci: string): Promise<any> {
+  public async getAffiliateByCI(ci: string): Promise<any | null> {
     try {
       const { data } = await this.http.get(`/afiliado/cedula/${ci}`)
+      console.log('CEDULA', data)
+
       return data
-    } catch (error) {
+    } catch (_) {
       return null
     }
   }
@@ -30,8 +34,10 @@ export class AndeService extends HttpClient {
   public async getAffiliateByNro(affiliate: string): Promise<TAffiliate | null> {
     try {
       const { data } = await this.http.get<TAffiliate>(`/opcionesmenu/${affiliate}`)
+      console.log('opcionesmenu', data)
+
       return data
-    } catch (error) {
+    } catch (_) {
       return null
     }
   }

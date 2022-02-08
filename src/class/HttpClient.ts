@@ -37,12 +37,14 @@ export class HttpClient {
     // RESPONSE
     this.http.interceptors.response.use(
       async (response: AxiosResponse) => {
-        if (response.status !== 200) throw new Error('Error in status response')
-        return response
+        const { status } = response
+        if (status !== 200 && status !== 201) throw new Error(`Request failed with status code ${status}`)
+        else return response
       },
       (error: AxiosError) => {
         console.error('ERROR-RESPONSE:', error.message)
-        throw error.message
+        if (!error.response || error.response?.status === 500) throw error
+        else return { data: null }
       }
     )
   }
