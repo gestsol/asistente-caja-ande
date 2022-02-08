@@ -5,7 +5,7 @@ async function main() {
   try {
     await loadConfig()
     const server = new ServerService()
-    global.FLOW_STATE = ''
+    global.FLOW_STATE = 'MAIN_1'
 
     server.start()
   } catch (error) {

@@ -1,6 +1,6 @@
 import { Controller } from '~CLASS/Controller'
 import { CreditCardController } from '~CONTROLLERS/CreditCard.controller'
-import { MainController } from '~CONTROLLERS/Main.controller'
+import { MENU_RETURN } from '~ENTITIES/consts'
 
 export class HomeController extends Controller {
   async startDecisionTree() {
@@ -8,8 +8,10 @@ export class HomeController extends Controller {
 
     switch (this.message) {
       case 'home':
+        FLOW_STATE = 'HOME'
+
         response = `
-        Bienvenido ${this.username}. En Caja Ande trabajamo para vos 🤓, revisá las opciones que tenemos desponible:
+        Bienvenido ${'NAME'}. En Caja Ande trabajamo para vos 🤓, revisá las opciones que tenemos desponible:
 
         (11) Préstamos 💰
         (12) Tarjetas de crédito 💳
@@ -19,18 +21,15 @@ export class HomeController extends Controller {
         (16) Descargas 🤗
         (17) Link de interés 😄
         (18) Mesa de entrada
-        (0)  Menu principal 🏠
-        (00) Regresar ↩️
+        ${MENU_RETURN}
         `
         break
 
       case '12':
-        this.data = {
+        new CreditCardController({
           ...this.data,
           message: 'CreditCard'
-        }
-        new CreditCardController(this.data)
-        FLOW_STATE = 'CreditCard'
+        })
         break
 
       case '0':
@@ -38,12 +37,7 @@ export class HomeController extends Controller {
         break
 
       case '00':
-        FLOW_STATE = 'afiliado'
-        this.data = {
-          ...this.data,
-          message: '1'
-        }
-        new MainController(this.data)
+        response = 'Opción no disponible'
         break
 
       default:
@@ -51,6 +45,6 @@ export class HomeController extends Controller {
         break
     }
 
-    await this.sendMessage(response)
+    this.sendMessage(response)
   }
 }

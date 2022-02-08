@@ -1,49 +1,34 @@
 import { Controller } from '~CLASS/Controller'
 import { HomeController } from '~CONTROLLERS/Home.controller'
+import { MENU_RETURN } from '~ENTITIES/consts'
 
 export class LoginController extends Controller {
   async startDecisionTree() {
     let response = ''
 
     switch (FLOW_STATE) {
-      case 'login':
-        const data = await this.andeService.getAffiliateByCI(this.message)
+      case 'LOGIN_STEP_1':
+        // const data = await this.andeService.getAffiliateByCI(this.message)
 
-        if (data) {
+        if (this.message === '3809540') {
+          FLOW_STATE = 'LOGIN_STEP_2'
+
           response = 'Poné tu nro de Afiliado'
-          FLOW_STATE = 'afiliado'
         } else response = 'CI invalido'
         break
 
-      case 'afiliado':
-        const affiliate = await this.andeService.getAffiliateByNro(this.message)
+      case 'LOGIN_STEP_2':
+        // const affiliate = await this.andeService.getAffiliateByNro(this.message)
 
-        if (affiliate) {
-          this.data = {
+        if (this.message === '53054') {
+          new HomeController({
             ...this.data,
-            message: 'home',
-            username: affiliate.nombre
-          }
-          new HomeController(this.data)
-          FLOW_STATE = 'home'
+            message: 'home'
+          })
         } else response = 'Nro. de afiliado invalido'
-        break
-
-      case 'home':
-        new HomeController(this.data)
-        break
-
-      default:
-        response = `
-        Hola 🤗 ${this.username}, soy el Asistente Virtual de Caja Ande.
-        Selecciona una opción para poder ayudarte:
-
-        (1) Acceso para afiliados de la CAJA
-        (2) No afiliados
-        `
         break
     }
 
-    await this.sendMessage(response)
+    this.sendMessage(response)
   }
 }

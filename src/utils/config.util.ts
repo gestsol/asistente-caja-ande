@@ -20,7 +20,8 @@ export async function loadConfig(): Promise<void> {
     },
     ande: {
       apiUrl: (ENV.ANDE_API_URL as string) || ''
-    }
+    },
+    modeAPP: (ENV.MODE_APP as any) || 'BOT'
   }
 
   global.config = _config

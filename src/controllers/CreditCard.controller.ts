@@ -1,4 +1,5 @@
 import { Controller } from '~CLASS/Controller'
+import { MENU_RETURN } from '~ENTITIES/consts'
 
 export class CreditCardController extends Controller {
   protected async startDecisionTree(): Promise<void> {
@@ -6,6 +7,8 @@ export class CreditCardController extends Controller {
 
     switch (this.message) {
       case 'CreditCard':
+        FLOW_STATE = 'CREDIT_CARD'
+
         response = `
         Elige una de las siguiente opciones:
 
@@ -14,6 +17,7 @@ export class CreditCardController extends Controller {
         (123) Monto y vencimiento de tu tarjeta
         (124) Tarjeta adicional
         (125) Situación actual de tu tarjeta de crédito
+        ${MENU_RETURN}
         `
         break
 

@@ -9,6 +9,7 @@ type TConfig = {
   ande: {
     apiUrl: string
   }
+  modeAPP: 'API' | 'BOT'
 }
 
 type TConfigHttpClient = {
@@ -21,6 +22,7 @@ type TDataController = {
   phone: string
   username: string
   message: string
+  res: import('express').Response
 }
 
 type TEnv = 'development' | 'production'
@@ -28,4 +30,4 @@ type TEnv = 'development' | 'production'
 // DECLARATIONS ________________________________________________________________________________________________________
 
 declare var config: TConfig
-declare var FLOW_STATE: string
+declare var FLOW_STATE: 'MAIN_1' | 'MAIN_2' | 'LOGIN_STEP_1' | 'LOGIN_STEP_2' | 'HOME' | 'CREDIT_CARD'
