@@ -5,7 +5,6 @@ export class LoginController extends Controller {
   async startDecisionTree() {
     let response = ''
 
-    // TODO: crear casos de usos incorrectos (ci invalido, afiliacion no encontrada, etc)
     switch (FLOW_STATE) {
       case 'login':
         const data = await this.andeService.getAffiliateByCI(this.message)
@@ -20,13 +19,13 @@ export class LoginController extends Controller {
         const affiliate = await this.andeService.getAffiliateByNro(this.message)
 
         if (affiliate) {
-          FLOW_STATE = 'home'
           this.data = {
             ...this.data,
             message: 'home',
             username: affiliate.nombre
           }
           new HomeController(this.data)
+          FLOW_STATE = 'home'
         } else response = 'Nro. de afiliado invalido'
         break
 

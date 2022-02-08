@@ -25,7 +25,12 @@ export class HomeController extends Controller {
         break
 
       case '12':
+        this.data = {
+          ...this.data,
+          message: 'CreditCard'
+        }
         new CreditCardController(this.data)
+        FLOW_STATE = 'CreditCard'
         break
 
       case '0':
