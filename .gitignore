@@ -8,3 +8,4 @@ dist/
 *.log
 Procfile
 docs/todo.md
+response.json
