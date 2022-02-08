@@ -5,7 +5,10 @@ async function main() {
   try {
     await loadConfig()
     const server = new ServerService()
+
+    // Iniciar variables super globales
     global.FLOW_STATE = 'MAIN_1'
+    global.FLOW_STATE_STEP = 'STEP_1'
 
     server.start()
   } catch (error) {
