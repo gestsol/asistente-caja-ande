@@ -1,7 +1,7 @@
 import { Controller } from '~CLASS/Controller'
-import { CreditCardController } from '~CONTROLLERS/CreditCard.controller'
-import { HomeController } from '~CONTROLLERS/Home.controller'
 import { LoginController } from '~CONTROLLERS/Login.controller'
+import { HomeController } from '~CONTROLLERS/Home.controller'
+import { CreditCardController } from '~CONTROLLERS/CreditCard.controller'
 import { messageOptionInvalid } from '~UTILS/message.util'
 
 export class MainController extends Controller {
@@ -26,13 +26,14 @@ export class MainController extends Controller {
       case 'MAIN_2':
         switch (this.message) {
           case '1':
-            FLOW_STATE = 'LOGIN_STEP_1'
+            FLOW_STATE = 'LOGIN'
+            FLOW_STATE_STEP = 'STEP_1'
 
             response = `
             Hola! soy el asistente virtual de los afiliados de la CAJA 🤓
             Nuestra caja, tu futuro!
 
-            Por favor enviános tu número de CI para ayudarte
+            Por favor envíanos tu número de CI para ayudarte
             `
             break
 
@@ -49,7 +50,7 @@ export class MainController extends Controller {
         }
         break
 
-      case 'LOGIN_STEP_1':
+      case 'LOGIN':
         new LoginController(this.data)
         break
 
@@ -59,12 +60,6 @@ export class MainController extends Controller {
 
       case 'CREDIT_CARD':
         new CreditCardController(this.data)
-        break
-
-      default:
-        if (FLOW_STATE === 'LOGIN_STEP_2') {
-          new LoginController(this.data)
-        }
         break
     }
 

@@ -1,23 +1,29 @@
 import { Controller } from '~CLASS/Controller'
 import { HomeController } from '~CONTROLLERS/Home.controller'
-import { MENU_RETURN } from '~ENTITIES/consts'
+import { MENU_RETURN, MENU_HOME } from '~ENTITIES/consts'
 
 export class LoginController extends Controller {
   async startDecisionTree() {
     let response = ''
 
-    switch (FLOW_STATE) {
-      case 'LOGIN_STEP_1':
+    switch (FLOW_STATE_STEP) {
+      case 'STEP_1':
         // const data = await this.andeService.getAffiliateByCI(this.message)
 
         if (this.message === '3809540') {
-          FLOW_STATE = 'LOGIN_STEP_2'
+          FLOW_STATE_STEP = 'STEP_2'
 
           response = 'Poné tu nro de Afiliado'
-        } else response = 'CI invalido'
+        } else {
+          response = `
+          Nro de CI invalido ❌
+
+          ${MENU_HOME}
+          `
+        }
         break
 
-      case 'LOGIN_STEP_2':
+      case 'STEP_2':
         // const affiliate = await this.andeService.getAffiliateByNro(this.message)
 
         if (this.message === '53054') {
@@ -25,7 +31,13 @@ export class LoginController extends Controller {
             ...this.data,
             message: 'home'
           })
-        } else response = 'Nro. de afiliado invalido'
+        } else {
+          response = `
+          Nro. de afiliado invalido ❌
+
+          ${MENU_RETURN}
+          `
+        }
         break
     }
 

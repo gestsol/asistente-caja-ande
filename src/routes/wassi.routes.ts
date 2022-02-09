@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express'
 import { MainController } from '~CONTROLLERS/Main.controller'
+import { messageSanitize } from '~UTILS/message.util'
 
 const router = Router()
 
@@ -18,7 +19,7 @@ router.post(
       new MainController({
         phone: fromNumber,
         username: displayName,
-        message: body,
+        message: messageSanitize(body),
         res
       })
     } catch (error) {

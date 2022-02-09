@@ -1,22 +1,26 @@
 import { Controller } from '~CLASS/Controller'
-import { MENU_RETURN } from '~ENTITIES/consts'
+import { MENU_RETURN, MENU_HOME } from '~ENTITIES/consts'
+import { messageOptionInvalid } from '~UTILS/message.util'
 
 export class CreditCardController extends Controller {
   protected async startDecisionTree(): Promise<void> {
     let response = ''
+    const options = `
+    (121) Nueva tarjeta de crédito 💳
+    (122) Deuda total y disponibilidad de tarjeta de crédito
+    (123) Monto y vencimiento de tu tarjeta
+    (124) Tarjeta adicional
+    (125) Situación actual de tu tarjeta de crédito
+    `
 
     switch (this.message) {
       case 'CreditCard':
         FLOW_STATE = 'CREDIT_CARD'
+        FLOW_STATE_STEP = ''
 
         response = `
         Elige una de las siguiente opciones:
-
-        (121) Nueva tarjeta de crédito 💳
-        (122) Deduda total y disponibilidad de tarjeta de crédito
-        (123) Monto y vencimiento de tu tarjeta
-        (124) Tarjeta adicional
-        (125) Situación actual de tu tarjeta de crédito
+        ${options}
         ${MENU_RETURN}
         `
         break
@@ -50,6 +54,8 @@ export class CreditCardController extends Controller {
         Nunca fue tan sencillo tener esta información en la comodidad de tu celular 😎
 
         ( INFORMACIÓN )
+
+        ${MENU_RETURN}
         `
         break
 
@@ -57,9 +63,11 @@ export class CreditCardController extends Controller {
         response = `
         Revisa aquí la fecha de vencimiento de tu tarjeta de crédito
 
-        - Pago Minimo: ( INFORMACIÓN )
-        - Fecha Vto: ( INFORMACIÓN )
+        - Pago Mínimo:  ( INFORMACIÓN )
+        - Fecha Vencimiento:    ( INFORMACIÓN )
         - Fecha Cierre: ( INFORMACIÓN )
+
+        ${MENU_RETURN}
         `
         break
 
@@ -69,18 +77,23 @@ export class CreditCardController extends Controller {
         ¿Para quién es la tarjeta?
 
         (H) Hijo
-        (C) Conyugé
+        (Y) Cónyuge
         `
         break
 
       case 'H':
-        FLOW_STATE_STEP === 'STEP_1'
+        FLOW_STATE_STEP = 'STEP_1'
+        response = '¿Cuál es el apellido?'
+        break
+
+      case 'Y':
+        FLOW_STATE_STEP = 'STEP_1'
         response = '¿Cuál es el apellido?'
         break
 
       case 'S':
         response = `
-        Se ha ingresado una solicitud para tarjeta de crédito adicional con un monto máximo de xx guaraníes.
+        Se ha ingresado una solicitud para tarjeta de crédito adicional con un monto máximo de xxx guaraníes.
 
         (C) Confirmo
         (R) Rechazo
@@ -88,22 +101,37 @@ export class CreditCardController extends Controller {
         break
 
       case 'N':
-        FLOW_STATE_STEP = 'STEP_1'
+        FLOW_STATE_STEP = 'STEP_3'
         response = 'Ingrese monto (debe ser menor a su monto disponible)'
         break
 
       case '125':
         response = `
         ( INFORMACIÓN )
+
+        ${MENU_RETURN}
         `
         break
 
       case 'C':
-        response = 'Solicitud enviada ✅'
+        response = `
+        Solicitud enviada ✅
+
+        ${MENU_HOME}
+        `
         break
 
       case 'R':
-        response = 'Solicitud cancelada ❌'
+        response = `
+        Solicitud cancelada ❌
+
+        ${MENU_HOME}
+        `
+        break
+
+      case '0':
+        this.message = 'CreditCard'
+        this.startDecisionTree()
         break
 
       default:
@@ -115,7 +143,7 @@ export class CreditCardController extends Controller {
 
           case 'STEP_2':
             response = `
-              Actualmente línea posee xxxx guaraníes disponible
+              Actualmente la línea posee xxxx guaraníes disponible
               ¿Desea asignar ese monto a la nueva tarjeta?
 
               (S) SI
@@ -129,6 +157,7 @@ export class CreditCardController extends Controller {
             break
 
           default:
+            response = messageOptionInvalid(options)
             break
         }
         break

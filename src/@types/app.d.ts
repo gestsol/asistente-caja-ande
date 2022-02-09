@@ -30,5 +30,5 @@ type TEnv = 'development' | 'production'
 // DECLARATIONS ________________________________________________________________________________________________________
 
 declare var config: TConfig
-declare var FLOW_STATE: 'MAIN_1' | 'MAIN_2' | 'LOGIN_STEP_1' | 'LOGIN_STEP_2' | 'HOME' | 'CREDIT_CARD'
-declare var FLOW_STATE_STEP: 'STEP_1' | 'STEP_2' | 'STEP_3'
+declare var FLOW_STATE: 'MAIN_1' | 'MAIN_2' | 'LOGIN' | 'HOME' | 'CREDIT_CARD'
+declare var FLOW_STATE_STEP: '' | 'STEP_1' | 'STEP_2' | 'STEP_3'

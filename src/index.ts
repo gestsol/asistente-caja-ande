@@ -8,7 +8,7 @@ async function main() {
 
     // Iniciar variables super globales
     global.FLOW_STATE = 'MAIN_1'
-    global.FLOW_STATE_STEP = 'STEP_1'
+    global.FLOW_STATE_STEP = ''
 
     server.start()
   } catch (error) {
