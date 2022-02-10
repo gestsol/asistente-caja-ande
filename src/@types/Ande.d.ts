@@ -13,3 +13,18 @@ type TAffiliate = {
   emailLaboral: string
   celulares: string | null
 }
+
+type TMenuOption = {
+  id: number
+  orden: number
+  titulo: string
+  tituloCorto: string
+  descripcion: string
+  permitido: number
+  moduloAfil: number
+  moduloAdmin: number
+  moduloBot: number
+  activos: number
+  pasivos: number
+  caja: number
+}

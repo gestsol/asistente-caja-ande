@@ -6,9 +6,8 @@ async function main() {
     await loadConfig()
     const server = new ServerService()
 
-    // Iniciar variables super globales
-    global.FLOW_STATE = 'MAIN_1'
-    global.FLOW_STATE_STEP = ''
+    // Iniciar variable super global
+    global.SESSIONS = []
 
     server.start()
   } catch (error) {

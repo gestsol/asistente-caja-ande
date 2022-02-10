@@ -19,11 +19,11 @@ export class HomeController extends Controller {
     `
 
     switch (this.message) {
-      case 'home':
-        FLOW_STATE = 'HOME'
+      case 'menu':
+        TREE_LEVEL = 'HOME'
 
         response = `
-        Bienvenido ${'NAME'}. En Caja Ande trabajamo para vos 🤓, revisa las opciones que tenemos desponible:
+        Bienvenido ${AFFILIATE!.nombre}. En Caja Ande trabajamo para vos 🤓, revisa las opciones que tenemos desponible:
         ${options}
         ${MENU_RETURN}
         `
@@ -32,17 +32,19 @@ export class HomeController extends Controller {
       case '12':
         new CreditCardController({
           ...this.data,
-          message: 'CreditCard'
+          message: 'menu'
         })
         break
 
       case '0':
-        FLOW_STATE = 'MAIN_1'
+        TREE_LEVEL = 'MAIN'
         new MainController(this.data)
         break
 
       case '00':
-        FLOW_STATE = 'MAIN_2'
+        TREE_LEVEL = 'MAIN'
+        TREE_STEP = 'STEP_1'
+
         new MainController({
           ...this.data,
           message: '1'

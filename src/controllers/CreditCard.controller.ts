@@ -14,9 +14,9 @@ export class CreditCardController extends Controller {
     `
 
     switch (this.message) {
-      case 'CreditCard':
-        FLOW_STATE = 'CREDIT_CARD'
-        FLOW_STATE_STEP = ''
+      case 'menu':
+        TREE_LEVEL = 'CREDIT_CARD'
+        TREE_STEP = ''
 
         response = `
         Elige una de las siguiente opciones:
@@ -45,7 +45,7 @@ export class CreditCardController extends Controller {
         break
 
       case 'O':
-        FLOW_STATE_STEP = 'STEP_3'
+        TREE_STEP = 'STEP_3'
         response = 'Por favor, indicar el monto para la tarjeta.'
         break
 
@@ -82,12 +82,12 @@ export class CreditCardController extends Controller {
         break
 
       case 'H':
-        FLOW_STATE_STEP = 'STEP_1'
+        TREE_STEP = 'STEP_1'
         response = '¿Cuál es el apellido?'
         break
 
       case 'Y':
-        FLOW_STATE_STEP = 'STEP_1'
+        TREE_STEP = 'STEP_1'
         response = '¿Cuál es el apellido?'
         break
 
@@ -101,7 +101,7 @@ export class CreditCardController extends Controller {
         break
 
       case 'N':
-        FLOW_STATE_STEP = 'STEP_3'
+        TREE_STEP = 'STEP_3'
         response = 'Ingrese monto (debe ser menor a su monto disponible)'
         break
 
@@ -130,14 +130,14 @@ export class CreditCardController extends Controller {
         break
 
       case '0':
-        this.message = 'CreditCard'
+        this.message = 'menu'
         this.startDecisionTree()
         break
 
       default:
-        switch (FLOW_STATE_STEP) {
+        switch (TREE_STEP) {
           case 'STEP_1':
-            FLOW_STATE_STEP = 'STEP_2'
+            TREE_STEP = 'STEP_2'
             response = '¿Cuál es el nombre?'
             break
 

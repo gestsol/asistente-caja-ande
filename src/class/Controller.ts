@@ -6,17 +6,13 @@ import { messageFormatter } from '~UTILS/message.util'
 export class Controller {
   protected andeService: AndeService
   private wassiService: WassiService
-
   protected data: TDataController
-  protected username: string
   protected message: string
 
   constructor(data: TDataController) {
     this.andeService = new AndeService()
     this.wassiService = new WassiService()
-
     this.data = data
-    this.username = data.username
     this.message = data.message
 
     this.startDecisionTree()
@@ -48,6 +44,20 @@ export class Controller {
             })
           }
           break
+      }
+
+      // Update session
+      for (let i = 0; i < global.SESSIONS.length; i++) {
+        const session = global.SESSIONS[i]
+
+        if (session.phone === this.data.phone) {
+          session.treeLevel = TREE_LEVEL
+          session.treeStep = TREE_STEP
+          session.affiliate = AFFILIATE
+
+          botDebug('SESSION :', session)
+          break
+        }
       }
     }
   }

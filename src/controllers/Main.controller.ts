@@ -3,6 +3,7 @@ import { LoginController } from '~CONTROLLERS/Login.controller'
 import { HomeController } from '~CONTROLLERS/Home.controller'
 import { CreditCardController } from '~CONTROLLERS/CreditCard.controller'
 import { messageOptionInvalid } from '~UTILS/message.util'
+import { MENU_HOME } from '~ENTITIES/consts'
 
 export class MainController extends Controller {
   async startDecisionTree() {
@@ -12,41 +13,47 @@ export class MainController extends Controller {
     (2) No afiliados
     `
 
-    switch (FLOW_STATE) {
-      case 'MAIN_1':
-        FLOW_STATE = 'MAIN_2'
+    switch (TREE_LEVEL) {
+      case 'MAIN':
+        if (TREE_STEP === 'STEP_1') {
+          switch (this.message) {
+            case '1':
+              TREE_LEVEL = 'LOGIN'
 
-        response = `
-        Hola 🤗 soy el Asistente Virtual de Caja Ande.
-        Selecciona una opción para poder ayudarte:
-        ${options}
-        `
-        break
+              response = `
+              Hola! soy el asistente virtual de los afiliados de la CAJA 🤓
+              Nuestra caja, tu futuro!
 
-      case 'MAIN_2':
-        switch (this.message) {
-          case '1':
-            FLOW_STATE = 'LOGIN'
-            FLOW_STATE_STEP = 'STEP_1'
+              Por favor envíanos tu número de CI para ayudarte
+              `
+              break
 
-            response = `
-            Hola! soy el asistente virtual de los afiliados de la CAJA 🤓
-            Nuestra caja, tu futuro!
+            case '2':
+              TREE_LEVEL = 'MESA'
 
-            Por favor envíanos tu número de CI para ayudarte
-            `
-            break
+              response = `
+              Mesa de Entrada
+              ( Opciones no disponible )
 
-          case '2':
-            response = `
-            Mesa de Entrada
-            ( Opciones no disponible )
-            `
-            break
+              ${MENU_HOME}
+              `
+              break
 
-          default:
-            response = messageOptionInvalid(options)
-            break
+            default:
+              response = messageOptionInvalid(options)
+              break
+          }
+          break
+        }
+
+        if (TREE_STEP === '') {
+          TREE_STEP = 'STEP_1'
+
+          response = `
+          Hola 🤗 soy el Asistente Virtual de Caja Ande.
+          Selecciona una opción para poder ayudarte:
+          ${options}
+          `
         }
         break
 
@@ -63,6 +70,6 @@ export class MainController extends Controller {
         break
     }
 
-    this.sendMessage(response)
+    return this.sendMessage(response)
   }
 }
