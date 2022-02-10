@@ -1,5 +1,6 @@
 import { Controller } from '~CLASS/Controller'
-import { MENU_RETURN, MENU_HOME } from '~ENTITIES/consts'
+import { HomeController } from '~CONTROLLERS/Home.controller'
+import { MENU_BACK, MENU_RETURN } from '~ENTITIES/consts'
 import { messageOptionInvalid } from '~UTILS/message.util'
 
 export class CreditCardController extends Controller {
@@ -21,7 +22,7 @@ export class CreditCardController extends Controller {
         response = `
         Elige una de las siguiente opciones:
         ${options}
-        ${MENU_RETURN}
+        ${MENU_BACK}
         `
         break
 
@@ -117,7 +118,7 @@ export class CreditCardController extends Controller {
         response = `
         Solicitud enviada ✅
 
-        ${MENU_HOME}
+        ${MENU_RETURN}
         `
         break
 
@@ -125,11 +126,19 @@ export class CreditCardController extends Controller {
         response = `
         Solicitud cancelada ❌
 
-        ${MENU_HOME}
+        ${MENU_RETURN}
         `
         break
 
       case '0':
+        TREE_LEVEL = 'HOME'
+        new HomeController({
+          ...this.data,
+          message: 'menu'
+        })
+        break
+
+      case '00':
         this.message = 'menu'
         this.startDecisionTree()
         break

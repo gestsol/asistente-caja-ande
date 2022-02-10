@@ -1,5 +1,6 @@
 import { Controller } from '~CLASS/Controller'
 import { HomeController } from '~CONTROLLERS/Home.controller'
+import { MainController } from '~CONTROLLERS/Main.controller'
 import { MENU_RETURN, MENU_HOME } from '~ENTITIES/consts'
 
 export class LoginController extends Controller {
@@ -8,6 +9,12 @@ export class LoginController extends Controller {
 
     switch (TREE_STEP) {
       case 'STEP_1':
+        if (this.message === '0') {
+          TREE_STEP = 'STEP_3'
+          this.startDecisionTree()
+          break
+        }
+
         // const data = await this.andeService.getAffiliateByCI(this.message)
 
         if (this.message === '3809540') {
@@ -24,12 +31,16 @@ export class LoginController extends Controller {
         break
 
       case 'STEP_2':
+        if (this.message === '0') {
+          TREE_STEP = 'STEP_3'
+          this.startDecisionTree()
+          break
+        }
+
         // const affiliate = await this.andeService.getAffiliateByNro(this.message)
+
         // Guardar los datos del afiliado
         // AFFILIATE = affiliate
-        AFFILIATE = {
-          nombre: 'NAME'
-        } as TAffiliate
 
         if (this.message === '53054') {
           new HomeController({
@@ -43,6 +54,12 @@ export class LoginController extends Controller {
           ${MENU_RETURN}
           `
         }
+        break
+
+      case 'STEP_3':
+        TREE_LEVEL = 'MAIN'
+        TREE_STEP = ''
+        new MainController(this.data)
         break
     }
 

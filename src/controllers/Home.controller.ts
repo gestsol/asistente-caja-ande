@@ -1,6 +1,9 @@
 import { Controller } from '~CLASS/Controller'
 import { CreditCardController } from '~CONTROLLERS/CreditCard.controller'
+import { LendingQuery } from '~CONTROLLERS/LendingQuery.controller'
 import { MainController } from '~CONTROLLERS/Main.controller'
+import { NewsController } from '~CONTROLLERS/News.controller'
+import { PersonalDataController } from '~CONTROLLERS/PersonalData.controller'
 import { MENU_RETURN } from '~ENTITIES/consts'
 import { messageOptionInvalid } from '~UTILS/message.util'
 
@@ -21,9 +24,11 @@ export class HomeController extends Controller {
     switch (this.message) {
       case 'menu':
         TREE_LEVEL = 'HOME'
+        TREE_STEP = ''
 
         response = `
-        Bienvenido ${AFFILIATE!.nombre}. En Caja Ande trabajamo para vos 🤓, revisa las opciones que tenemos desponible:
+        Bienvenido ${AFFILIATE?.nombre ||
+          'NAME'}. En Caja Ande trabajamo para vos 🤓, revisa las opciones que tenemos desponible:
         ${options}
         ${MENU_RETURN}
         `
@@ -31,6 +36,27 @@ export class HomeController extends Controller {
 
       case '12':
         new CreditCardController({
+          ...this.data,
+          message: 'menu'
+        })
+        break
+
+      case '13':
+        new LendingQuery({
+          ...this.data,
+          message: 'menu'
+        })
+        break
+
+      case '14':
+        new NewsController({
+          ...this.data,
+          message: 'menu'
+        })
+        break
+
+      case '15':
+        new PersonalDataController({
           ...this.data,
           message: 'menu'
         })

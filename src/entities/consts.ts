@@ -3,3 +3,5 @@ export const MENU_RETURN = `(0)  Menu principal 🏠
 `
 
 export const MENU_HOME = '(0)  Menu principal 🏠'
+
+export const MENU_BACK = '(00) Regresar ↩️'

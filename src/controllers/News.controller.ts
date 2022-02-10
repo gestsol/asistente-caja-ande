@@ -1,5 +1,6 @@
 import { Controller } from '~CLASS/Controller'
-import { MENU_HOME, MENU_RETURN } from '~ENTITIES/consts'
+import { HomeController } from '~CONTROLLERS/Home.controller'
+import { MENU_BACK, MENU_RETURN } from '~ENTITIES/consts'
 import { messageOptionInvalid } from '~UTILS/message.util'
 
 export class NewsController extends Controller {
@@ -14,11 +15,14 @@ export class NewsController extends Controller {
 
     switch (this.message) {
       case 'menu':
+        TREE_LEVEL = 'NEWS'
+        TREE_STEP = ''
+
         response = `
           Elige una de las siguientes opciones:
           ${options}
 
-          ${MENU_HOME}
+          ${MENU_BACK}
           `
         break
 
@@ -60,6 +64,19 @@ export class NewsController extends Controller {
 
         ${MENU_RETURN}
         `
+        break
+
+      case '0':
+        TREE_LEVEL = 'HOME'
+        new HomeController({
+          ...this.data,
+          message: 'menu'
+        })
+        break
+
+      case '00':
+        this.message = 'menu'
+        this.startDecisionTree()
         break
 
       default:

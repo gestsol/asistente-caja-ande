@@ -1,5 +1,6 @@
 import { Controller } from '~CLASS/Controller'
-import { MENU_HOME } from '~ENTITIES/consts'
+import { HomeController } from '~CONTROLLERS/Home.controller'
+import { MENU_BACK, MENU_RETURN } from '~ENTITIES/consts'
 import { messageOptionInvalid } from '~UTILS/message.util'
 
 export class PersonalDataController extends Controller {
@@ -10,17 +11,16 @@ export class PersonalDataController extends Controller {
     (152) Cargar domicilio (envío de ubicación)
     `
 
-    let TREE_OPTION = this.message
-
-    switch (TREE_OPTION) {
+    switch (this.message) {
       case 'menu':
+        TREE_LEVEL = 'PERSONAL_DATA'
         TREE_STEP = ''
 
         response = `
         Elige una de las siguiente opciones:
         ${options}
 
-        ${MENU_HOME}
+        ${MENU_BACK}
         `
         break
 
@@ -36,13 +36,26 @@ export class PersonalDataController extends Controller {
           'Necesitamos saber tu domicilio, por favor envia tu dirección en un único mensaje. No olvides incluir el nombre de la calle y número de casa 🏡'
         break
 
+      case '0':
+        TREE_LEVEL = 'HOME'
+        new HomeController({
+          ...this.data,
+          message: 'menu'
+        })
+        break
+
+      case '00':
+        this.message = 'menu'
+        this.startDecisionTree()
+        break
+
       default:
         switch (TREE_STEP) {
           case 'STEP_1':
             response = `
             Su fotografía ha sido guardada correctamente ✅
 
-            ${MENU_HOME}
+            ${MENU_RETURN}
             `
             break
 
@@ -50,7 +63,7 @@ export class PersonalDataController extends Controller {
             response = `
             Su fotografía ha sido guardada correctamente ✅
 
-            ${MENU_HOME}
+            ${MENU_RETURN}
             `
             break
 

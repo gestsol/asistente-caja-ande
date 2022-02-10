@@ -2,8 +2,11 @@ import { Controller } from '~CLASS/Controller'
 import { LoginController } from '~CONTROLLERS/Login.controller'
 import { HomeController } from '~CONTROLLERS/Home.controller'
 import { CreditCardController } from '~CONTROLLERS/CreditCard.controller'
-import { messageOptionInvalid } from '~UTILS/message.util'
+import { LendingQuery } from '~CONTROLLERS/LendingQuery.controller'
+import { NewsController } from '~CONTROLLERS/News.controller'
+import { PersonalDataController } from '~CONTROLLERS/PersonalData.controller'
 import { MENU_HOME } from '~ENTITIES/consts'
+import { messageOptionInvalid } from '~UTILS/message.util'
 
 export class MainController extends Controller {
   async startDecisionTree() {
@@ -67,6 +70,18 @@ export class MainController extends Controller {
 
       case 'CREDIT_CARD':
         new CreditCardController(this.data)
+        break
+
+      case 'LENDING_QUERY':
+        new LendingQuery(this.data)
+        break
+
+      case 'NEWS':
+        new NewsController(this.data)
+        break
+
+      case 'PERSONAL_DATA':
+        new PersonalDataController(this.data)
         break
     }
 

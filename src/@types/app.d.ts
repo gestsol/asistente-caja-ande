@@ -33,7 +33,7 @@ type TSession = {
   treeStep: TStep
 }
 
-type TLevel = 'MAIN' | 'MESA' | 'LOGIN' | 'HOME' | 'CREDIT_CARD'
+type TLevel = 'MAIN' | 'MESA' | 'LOGIN' | 'HOME' | 'CREDIT_CARD' | 'LENDING_QUERY' | 'NEWS' | 'PERSONAL_DATA'
 type TStep = '' | 'STEP_1' | 'STEP_2' | 'STEP_3'
 
 // DECLARATIONS ________________________________________________________________________________________________________
