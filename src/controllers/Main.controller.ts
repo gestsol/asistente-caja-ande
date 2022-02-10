@@ -21,14 +21,8 @@ export class MainController extends Controller {
         if (TREE_STEP === 'STEP_1') {
           switch (this.message) {
             case '1':
-              TREE_LEVEL = 'LOGIN'
-
-              response = `
-              Hola! soy el asistente virtual de los afiliados de la CAJA 🤓
-              Nuestra caja, tu futuro!
-
-              Por favor envíanos tu número de CI para ayudarte
-              `
+              TREE_STEP = ''
+              new LoginController(this.data)
               break
 
             case '2':

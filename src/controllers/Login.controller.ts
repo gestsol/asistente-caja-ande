@@ -8,6 +8,20 @@ export class LoginController extends Controller {
     let response = ''
 
     switch (TREE_STEP) {
+      case '':
+        TREE_LEVEL = 'LOGIN'
+        TREE_STEP = 'STEP_1'
+
+        response = `
+        Hola! soy el asistente virtual de los afiliados de la CAJA 🤓
+        Nuestra caja, tu futuro!
+
+        Por favor envíanos tu número de CI para ayudarte
+
+        ${MENU_HOME}
+        `
+        break
+
       case 'STEP_1':
         if (this.message === '0') {
           TREE_STEP = 'STEP_3'
@@ -33,6 +47,12 @@ export class LoginController extends Controller {
       case 'STEP_2':
         if (this.message === '0') {
           TREE_STEP = 'STEP_3'
+          this.startDecisionTree()
+          break
+        }
+
+        if (this.message === '00') {
+          TREE_STEP = ''
           this.startDecisionTree()
           break
         }
