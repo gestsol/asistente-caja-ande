@@ -4,22 +4,18 @@ import { LendingQuery } from '~CONTROLLERS/LendingQuery.controller'
 import { MainController } from '~CONTROLLERS/Main.controller'
 import { NewsController } from '~CONTROLLERS/News.controller'
 import { PersonalDataController } from '~CONTROLLERS/PersonalData.controller'
+import { DownloadController } from '~CONTROLLERS/Download.controller'
+import { LendingsController } from '~CONTROLLERS/Lendings.controller'
+import { LinksController } from '~CONTROLLERS/Links.controller'
+import { EntryTable } from '~CONTROLLERS/EntryTable.controller'
+
 import { MENU_RETURN } from '~ENTITIES/consts'
 import { messageOptionInvalid } from '~UTILS/message.util'
 
 export class HomeController extends Controller {
   async startDecisionTree() {
     let response = ''
-    const options = `
-    (11) Préstamos 💰
-    (12) Tarjetas de crédito 💳
-    (13) Consultar crédito vigente 🧐
-    (14) Noticias e informaciones del mes 📱
-    (15) Datos personales 😊
-    (16) Descargas 🤗
-    (17) Link de interés 😄
-    (18) Mesa de entrada
-    `
+    const options = this.menuHome
 
     switch (this.message) {
       case 'menu':
@@ -32,6 +28,13 @@ export class HomeController extends Controller {
         ${options}
         ${MENU_RETURN}
         `
+        break
+
+      case '11':
+        new LendingsController({
+          ...this.data,
+          message: 'menu'
+        })
         break
 
       case '12':
@@ -57,6 +60,27 @@ export class HomeController extends Controller {
 
       case '15':
         new PersonalDataController({
+          ...this.data,
+          message: 'menu'
+        })
+        break
+
+      case '16':
+        new DownloadController({
+          ...this.data,
+          message: 'menu'
+        })
+        break
+
+      case '17':
+        new LinksController({
+          ...this.data,
+          message: 'menu'
+        })
+        break
+
+      case '18':
+        new EntryTable({
           ...this.data,
           message: 'menu'
         })

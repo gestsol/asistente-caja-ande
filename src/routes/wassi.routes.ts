@@ -15,7 +15,16 @@ router.post(
       new MainController({
         phone: fromNumber,
         message: messageSanitize(body),
-        res
+        res,
+        menuHome: `
+        (11) Préstamos 💰
+        (12) Tarjetas de crédito 💳
+        (13) Consultar crédito vigente 🧐
+        (14) Noticias e informaciones del mes 📱
+        (15) Datos personales 😊
+        (16) Descargas 🤗
+        (17) Link de interés 😄
+        (18) Mesa de entrada`
       })
     } catch (error) {
       res.status(400).json({

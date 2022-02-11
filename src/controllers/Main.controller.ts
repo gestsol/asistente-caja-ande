@@ -5,7 +5,11 @@ import { CreditCardController } from '~CONTROLLERS/CreditCard.controller'
 import { LendingQuery } from '~CONTROLLERS/LendingQuery.controller'
 import { NewsController } from '~CONTROLLERS/News.controller'
 import { PersonalDataController } from '~CONTROLLERS/PersonalData.controller'
-import { MENU_HOME } from '~ENTITIES/consts'
+import { DownloadController } from '~CONTROLLERS/Download.controller'
+import { LinksController } from '~CONTROLLERS/Links.controller'
+import { EntryTable } from '~CONTROLLERS/EntryTable.controller'
+import { LendingsController } from '~CONTROLLERS/Lendings.controller'
+
 import { messageOptionInvalid } from '~UTILS/message.util'
 
 export class MainController extends Controller {
@@ -13,8 +17,7 @@ export class MainController extends Controller {
     let response = ''
     const options = `
     (1) Acceso para afiliados de la CAJA
-    (2) No afiliados
-    `
+    (2) No afiliados`
 
     switch (TREE_LEVEL) {
       case 'MAIN':
@@ -26,14 +29,7 @@ export class MainController extends Controller {
               break
 
             case '2':
-              TREE_LEVEL = 'MESA'
-
-              response = `
-              Mesa de Entrada
-              ( Opciones no disponible )
-
-              ${MENU_HOME}
-              `
+              response = 'Mesa de Entrada'
               break
 
             default:
@@ -43,7 +39,7 @@ export class MainController extends Controller {
           break
         }
 
-        if (TREE_STEP === '') {
+        if (TREE_STEP === '' || this.message === 'menu') {
           TREE_STEP = 'STEP_1'
 
           response = `
@@ -76,6 +72,22 @@ export class MainController extends Controller {
 
       case 'PERSONAL_DATA':
         new PersonalDataController(this.data)
+        break
+
+      case 'DOWNLOAD':
+        new DownloadController(this.data)
+        break
+
+      case 'LINKS':
+        new LinksController(this.data)
+        break
+
+      case 'ENTRY_TABLE':
+        new EntryTable(this.data)
+        break
+
+      case 'LENDINGS':
+        new LendingsController(this.data)
         break
     }
 

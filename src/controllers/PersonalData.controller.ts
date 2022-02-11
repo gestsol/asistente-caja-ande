@@ -1,6 +1,6 @@
 import { Controller } from '~CLASS/Controller'
 import { HomeController } from '~CONTROLLERS/Home.controller'
-import { MENU_BACK, MENU_RETURN } from '~ENTITIES/consts'
+import { MENU_HOME } from '~ENTITIES/consts'
 import { messageOptionInvalid } from '~UTILS/message.util'
 
 export class PersonalDataController extends Controller {
@@ -8,8 +8,7 @@ export class PersonalDataController extends Controller {
     let response = ''
     const options = `
     (151) Cargar una foto (Reconocimiento facial)
-    (152) Cargar domicilio (envío de ubicación)
-    `
+    (152) Cargar domicilio (envío de ubicación)`
 
     switch (this.message) {
       case 'menu':
@@ -19,8 +18,7 @@ export class PersonalDataController extends Controller {
         response = `
         Elige una de las siguiente opciones:
         ${options}
-
-        ${MENU_BACK}
+        ${MENU_HOME}
         `
         break
 
@@ -44,18 +42,13 @@ export class PersonalDataController extends Controller {
         })
         break
 
-      case '00':
-        this.message = 'menu'
-        this.startDecisionTree()
-        break
-
       default:
         switch (TREE_STEP) {
           case 'STEP_1':
             response = `
             Su fotografía ha sido guardada correctamente ✅
 
-            ${MENU_RETURN}
+            ${MENU_HOME}
             `
             break
 
@@ -63,7 +56,7 @@ export class PersonalDataController extends Controller {
             response = `
             Su fotografía ha sido guardada correctamente ✅
 
-            ${MENU_RETURN}
+            ${MENU_HOME}
             `
             break
 

@@ -1,6 +1,6 @@
 import { Controller } from '~CLASS/Controller'
 import { HomeController } from '~CONTROLLERS/Home.controller'
-import { MENU_BACK, MENU_RETURN } from '~ENTITIES/consts'
+import { MENU_HOME } from '~ENTITIES/consts'
 import { messageOptionInvalid } from '~UTILS/message.util'
 
 export class CreditCardController extends Controller {
@@ -11,8 +11,7 @@ export class CreditCardController extends Controller {
     (122) Deuda total y disponibilidad de tarjeta de crédito
     (123) Monto y vencimiento de tu tarjeta
     (124) Tarjeta adicional
-    (125) Situación actual de tu tarjeta de crédito
-    `
+    (125) Situación actual de tu tarjeta de crédito`
 
     switch (this.message) {
       case 'menu':
@@ -22,7 +21,7 @@ export class CreditCardController extends Controller {
         response = `
         Elige una de las siguiente opciones:
         ${options}
-        ${MENU_BACK}
+        ${MENU_HOME}
         `
         break
 
@@ -56,7 +55,7 @@ export class CreditCardController extends Controller {
 
         ( INFORMACIÓN )
 
-        ${MENU_RETURN}
+        ${MENU_HOME}
         `
         break
 
@@ -68,7 +67,7 @@ export class CreditCardController extends Controller {
         - Fecha Vencimiento:    ( INFORMACIÓN )
         - Fecha Cierre: ( INFORMACIÓN )
 
-        ${MENU_RETURN}
+        ${MENU_HOME}
         `
         break
 
@@ -110,7 +109,7 @@ export class CreditCardController extends Controller {
         response = `
         ( INFORMACIÓN )
 
-        ${MENU_RETURN}
+        ${MENU_HOME}
         `
         break
 
@@ -118,7 +117,7 @@ export class CreditCardController extends Controller {
         response = `
         Solicitud enviada ✅
 
-        ${MENU_RETURN}
+        ${MENU_HOME}
         `
         break
 
@@ -126,7 +125,7 @@ export class CreditCardController extends Controller {
         response = `
         Solicitud cancelada ❌
 
-        ${MENU_RETURN}
+        ${MENU_HOME}
         `
         break
 
@@ -136,11 +135,6 @@ export class CreditCardController extends Controller {
           ...this.data,
           message: 'menu'
         })
-        break
-
-      case '00':
-        this.message = 'menu'
-        this.startDecisionTree()
         break
 
       default:

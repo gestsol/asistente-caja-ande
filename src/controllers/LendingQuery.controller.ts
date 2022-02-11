@@ -1,6 +1,6 @@
 import { Controller } from '~CLASS/Controller'
 import { HomeController } from '~CONTROLLERS/Home.controller'
-import { MENU_BACK, MENU_RETURN } from '~ENTITIES/consts'
+import { MENU_HOME } from '~ENTITIES/consts'
 import { messageOptionInvalid } from '~UTILS/message.util'
 
 export class LendingQuery extends Controller {
@@ -12,8 +12,7 @@ export class LendingQuery extends Controller {
     (133) Fecha de cierre mensual de préstamos
     (134) Descuento del mes
     (135) Diferimiento de cuotas por reposo
-    (136) Último pago de tesorería
-    `
+    (136) Último pago de tesorería`
 
     switch (this.message) {
       case 'menu':
@@ -23,8 +22,7 @@ export class LendingQuery extends Controller {
         response = `
         Elige una de las siguientes opciones:
         ${options}
-
-        ${MENU_BACK}
+        ${MENU_HOME}
         `
         break
 
@@ -34,7 +32,7 @@ export class LendingQuery extends Controller {
 
         ( INFORMACIÓN )
 
-        ${MENU_RETURN}
+        ${MENU_HOME}
         `
         break
 
@@ -44,7 +42,7 @@ export class LendingQuery extends Controller {
 
         ( INFORMACIÓN )
 
-        ${MENU_RETURN}
+        ${MENU_HOME}
         `
         break
 
@@ -54,7 +52,7 @@ export class LendingQuery extends Controller {
 
         ( INFORMACIÓN )
 
-        ${MENU_RETURN}
+        ${MENU_HOME}
         `
         break
 
@@ -64,7 +62,7 @@ export class LendingQuery extends Controller {
 
         ( INFORMACIÓN )
 
-        ${MENU_RETURN}
+        ${MENU_HOME}
         `
         break
 
@@ -74,7 +72,7 @@ export class LendingQuery extends Controller {
 
         ( INFORMACIÓN )
 
-        ${MENU_RETURN}
+        ${MENU_HOME}
         `
         break
 
@@ -84,7 +82,7 @@ export class LendingQuery extends Controller {
 
         ( INFORMACIÓN )
 
-        ${MENU_RETURN}
+        ${MENU_HOME}
         `
         break
 
@@ -94,11 +92,6 @@ export class LendingQuery extends Controller {
           ...this.data,
           message: 'menu'
         })
-        break
-
-      case '00':
-        this.message = 'menu'
-        this.startDecisionTree()
         break
 
       default:

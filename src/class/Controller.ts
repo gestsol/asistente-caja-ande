@@ -1,7 +1,7 @@
 import { AndeService } from '~SERVICES/Ande.service'
 import { WassiService } from '~SERVICES/Wassi.service'
 import { botDebug } from '~UTILS/debug.util'
-import { messageFormatter } from '~UTILS/message.util'
+import { messageFormatter, messageOptionInvalid } from '~UTILS/message.util'
 
 export class Controller {
   protected andeService: AndeService
@@ -9,28 +9,44 @@ export class Controller {
   protected data: TDataController
   protected message: string
 
+  protected response: string = ''
+  protected options: string = ''
+  protected menuHome: string = ''
+
   constructor(data: TDataController) {
     this.andeService = new AndeService()
     this.wassiService = new WassiService()
     this.data = data
     this.message = data.message
-
+    this.menuHome = data.menuHome
     this.startDecisionTree()
   }
 
   protected async startDecisionTree(): Promise<void> {}
 
-  protected async sendMessage(_response: string): Promise<void> {
-    if (_response) {
-      const response = messageFormatter(_response)
+  protected async executeOptions(func: Function): Promise<void> {
+    await func()
+    // TODO: Manejar los menu de retorno aqui mismo
+    // if (this.message === '00') {
+    //   this.message = 'menu'
+    //   await this.startDecisionTree()
+    // }
+    await this.sendMessage(this.response || messageOptionInvalid(this.options))
+  }
+
+  protected async sendMessage(response: string): Promise<void> {
+    if (response) {
+      const _response = messageFormatter(response)
 
       switch (global.config.modeAPP) {
         case 'BOT':
-          const wassiResponse = await this.wassiService.sendMessage(this.data.phone, response)
+          const wassiResponse = await this.wassiService.sendMessage(this.data.phone, _response)
 
           if (wassiResponse) {
-            const message = wassiResponse.message.substring(0, 40) + '...'
-            botDebug(`WASSI: Message sent successfully - STATUS: ${wassiResponse.status} MESSAGE: ${message}`)
+            let { message, status } = wassiResponse
+            message = message.length < 40 ? message : message.substring(0, 40) + '...'
+
+            botDebug(`WASSI: Message in ${status} | MESSAGE: ${message}`)
           }
 
           this.data.res.end()
@@ -40,7 +56,7 @@ export class Controller {
           if (!this.data.res.headersSent) {
             this.data.res.status(200).json({
               status: 'OK',
-              message: response
+              message: _response
             })
           }
           break

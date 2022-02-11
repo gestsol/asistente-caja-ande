@@ -3,64 +3,52 @@ import { HomeController } from '~CONTROLLERS/Home.controller'
 import { MENU_HOME } from '~ENTITIES/consts'
 import { messageOptionInvalid } from '~UTILS/message.util'
 
-export class NewsController extends Controller {
+export class DownloadController extends Controller {
   async startDecisionTree() {
     let response = ''
     const options = `
-    (141) Fecha de pago de haberes
-    (142) Noticias destacadas de la CAJA
-    (143) Horario de atención al público
-    (144) Contactos telefónicos`
+    (161) Facturas
+    (162) Exatractos de préstamos
+    (163) Liquidación mensual de haberes`
 
     switch (this.message) {
       case 'menu':
-        TREE_LEVEL = 'NEWS'
+        TREE_LEVEL = 'DOWNLOAD'
         TREE_STEP = ''
 
         response = `
-          Elige una de las siguientes opciones:
-          ${options}
-          ${MENU_HOME}
-          `
-        break
-
-      case '141':
-        response = `
-        No te olvides de tus fechas de cobro! 😇
-
-        ( INFORMACIÓN )
-
+        Elige una de las siguientes opciones:
+        ${options}
         ${MENU_HOME}
         `
         break
 
-      case '142':
+      case '161':
         response = `
-        Las mejores promociones en un solo lugar 😔
+        Revisa tus facturas de los últimos 12 meses 📊
 
-        ( INFORMACIÓN )
+        ¿Qué querés revisar?
 
-        ${MENU_HOME}
+        () Los últimos 12 meses
+        () Otra fecha
         `
         break
 
-      case '143':
+      case '162':
         response = `
-        Horario de atención al público:
+        ¿Qué querés revisar?
 
-        ( INFORMACIÓN )
-
-        ${MENU_HOME}
+        () Los últimos 12 meses
+        () Otra fecha
         `
         break
 
-      case '144':
+      case '163':
         response = `
-        Contactos telefónicos:
+        ¿Qué querés revisar?
 
-        ( INFORMACIÓN )
-
-        ${MENU_HOME}
+        () Los últimos 12 meses
+        () Otra fecha
         `
         break
 

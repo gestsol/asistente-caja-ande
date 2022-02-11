@@ -3,62 +3,41 @@ import { HomeController } from '~CONTROLLERS/Home.controller'
 import { MENU_HOME } from '~ENTITIES/consts'
 import { messageOptionInvalid } from '~UTILS/message.util'
 
-export class NewsController extends Controller {
+export class LinksController extends Controller {
   async startDecisionTree() {
     let response = ''
     const options = `
-    (141) Fecha de pago de haberes
-    (142) Noticias destacadas de la CAJA
-    (143) Horario de atención al público
-    (144) Contactos telefónicos`
+    (171) Página de la CAJA
+    (172) Facebook de la CAJA`
 
     switch (this.message) {
       case 'menu':
-        TREE_LEVEL = 'NEWS'
+        TREE_LEVEL = 'LINKS'
         TREE_STEP = ''
 
         response = `
-          Elige una de las siguientes opciones:
-          ${options}
-          ${MENU_HOME}
-          `
+        Elige una de las siguientes opciones:
+        ${options}
+        ${MENU_HOME}
+        `
         break
 
-      case '141':
+      case '171':
         response = `
-        No te olvides de tus fechas de cobro! 😇
+        Las últimas noticias y actualizaciones de la Caja tenés en la página web, animate y revisala 😎
 
-        ( INFORMACIÓN )
+        https://www.cajaande.gov.py
 
         ${MENU_HOME}
         `
         break
 
-      case '142':
+      case '172':
         response = `
-        Las mejores promociones en un solo lugar 😔
+        ¿Creías que no teníamos Facebook? 🥺
+        Pues no! en la Caja nos encanta mantenernos en contacto contigo, revisa nuestras últimas publicaciones! 🤓
 
-        ( INFORMACIÓN )
-
-        ${MENU_HOME}
-        `
-        break
-
-      case '143':
-        response = `
-        Horario de atención al público:
-
-        ( INFORMACIÓN )
-
-        ${MENU_HOME}
-        `
-        break
-
-      case '144':
-        response = `
-        Contactos telefónicos:
-
-        ( INFORMACIÓN )
+        https://www.facebook.com/CajaAnde
 
         ${MENU_HOME}
         `
