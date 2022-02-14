@@ -25,7 +25,7 @@ export class HttpClient {
     this.http.interceptors.request.use(
       async (config: AxiosRequestConfig) => {
         config.url = this.defaultPath + config.url
-        botDebug(`HTTP-OUT: ${config.method?.toUpperCase() || '<METHOD UNDEFINED>'} ${config.baseURL + config.url}`)
+        botDebug('HTTP-OUT', `${config.method?.toUpperCase() || '<METHOD UNDEFINED>'} ${config.baseURL + config.url}`)
         return config
       },
       (error: AxiosError) => {

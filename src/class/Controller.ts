@@ -46,7 +46,7 @@ export class Controller {
             let { message, status } = wassiResponse
             message = message.length < 40 ? message : message.substring(0, 40) + '...'
 
-            botDebug(`WASSI: Message in ${status} | MESSAGE: ${message}`)
+            botDebug('WASSI', `Message in ${status}, ${message}`)
           }
 
           this.data.res.end()
@@ -71,7 +71,7 @@ export class Controller {
           session.treeStep = TREE_STEP
           session.affiliate = AFFILIATE
 
-          botDebug('SESSION :', session)
+          botDebug('SESSION', session)
           break
         }
       }
