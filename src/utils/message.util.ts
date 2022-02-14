@@ -1,9 +1,9 @@
-import { MENU_RETURN } from '~ENTITIES/consts'
+import { MENU_HOME } from '~ENTITIES/consts'
 
 export const messageOptionInvalid = (opciones: string): string => `
 Opción invalida, las opciones disponibles son:
 ${opciones}
-${MENU_RETURN}
+${MENU_HOME}
 `
 
 export const messageFormatter = (message: string): string => {

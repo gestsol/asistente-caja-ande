@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express'
 import { MainController } from '~CONTROLLERS/Main.controller'
 import { messageSanitize } from '~UTILS/message.util'
+import { OPTIONS_HOME } from '~ENTITIES/consts'
 
 const router = Router()
 
@@ -16,15 +17,7 @@ router.post(
         phone: fromNumber,
         message: messageSanitize(body),
         res,
-        menuHome: `
-        (11) Préstamos 💰
-        (12) Tarjetas de crédito 💳
-        (13) Consultar crédito vigente 🧐
-        (14) Noticias e informaciones del mes 📱
-        (15) Datos personales 😊
-        (16) Descargas 🤗
-        (17) Link de interés 😄
-        (18) Mesa de entrada`
+        menuHome: OPTIONS_HOME
       })
     } catch (error) {
       res.status(400).json({
