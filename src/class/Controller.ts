@@ -1,5 +1,6 @@
 import { AndeService } from '~SERVICES/Ande.service'
 import { WassiService } from '~SERVICES/Wassi.service'
+import { SessionService } from '~SERVICES/Session.service'
 import { botDebug } from '~UTILS/debug.util'
 import { messageFormatter, messageOptionInvalid } from '~UTILS/message.util'
 import { getConfig } from '~UTILS/config.util'
@@ -64,18 +65,7 @@ export class Controller {
       }
 
       // Update session
-      for (let i = 0; i < global.SESSIONS.length; i++) {
-        const session = global.SESSIONS[i]
-
-        if (session.phone === this.data.phone) {
-          session.treeLevel = TREE_LEVEL
-          session.treeStep = TREE_STEP
-          session.affiliate = AFFILIATE
-
-          botDebug('SESSION', session)
-          break
-        }
-      }
+      SessionService.update(this.data.phone)
     }
   }
 }

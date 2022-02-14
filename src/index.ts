@@ -5,10 +5,6 @@ async function main() {
   try {
     await loadConfig()
     const server = new ServerService()
-
-    // Iniciar variable super global
-    global.SESSIONS = []
-
     server.start()
   } catch (error) {
     console.error((error as Error).message)

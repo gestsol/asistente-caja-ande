@@ -10,6 +10,8 @@ type TConfig = {
     apiUrl: string
   }
   modeAPP: 'API' | 'BOT'
+  timerSessionMin: number
+  messageSession: boolean
 }
 
 type TConfigHttpClient = {

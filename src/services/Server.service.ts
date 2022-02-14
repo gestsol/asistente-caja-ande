@@ -1,5 +1,5 @@
 import express from 'express'
-import { requestHandler } from '~MIDDLEWARES'
+import { requestHandler, sessionHandler } from '~MIDDLEWARES'
 import { routes } from '~ROUTES'
 import { getConfig } from '~UTILS/config.util'
 
@@ -15,6 +15,7 @@ export class ServerService {
   private middlewares(): void {
     this.app.use('*', requestHandler)
     this.app.use(express.json())
+    this.app.use(sessionHandler())
   }
 
   private routes(): void {
