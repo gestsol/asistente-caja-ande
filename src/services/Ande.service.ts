@@ -1,8 +1,9 @@
 import { HttpClient } from 'class/HttpClient'
+import { getConfig } from '~UTILS/config.util'
 
 export class AndeService extends HttpClient {
   constructor() {
-    const { apiUrl } = global.config.ande
+    const { apiUrl } = getConfig().ande
     super({
       baseURL: apiUrl,
       defaultPath: '/cjppa/rest/chatbot'

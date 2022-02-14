@@ -7,10 +7,12 @@ export async function loadConfig(): Promise<void> {
 
   if (result.error) throw new Error(`ERROR-ENV: ${result.error.message}`)
   else console.log(`ENV: environment "${NODE_ENV}" loaded successfully`)
+}
 
+export const getConfig = (): TConfig => {
   const ENV: NodeJS.ProcessEnv = process.env
 
-  const _config: TConfig = {
+  return {
     port: Number(ENV.PORT) || 3000,
     debug: ((ENV.DEBUG as unknown) as boolean) || false,
     wassi: {
@@ -23,6 +25,4 @@ export async function loadConfig(): Promise<void> {
     },
     modeAPP: (ENV.MODE_APP as any) || 'BOT'
   }
-
-  global.config = _config
 }

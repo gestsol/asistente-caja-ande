@@ -52,8 +52,6 @@ type TStep = '' | 'STEP_1' | 'STEP_2' | 'STEP_3'
 
 // DECLARATIONS ________________________________________________________________________________________________________
 
-declare var config: TConfig
-
 // Base de datos temporal
 declare var SESSIONS: TSession[]
 declare var AFFILIATE: TAffiliate | null

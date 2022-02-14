@@ -1,5 +1,7 @@
+import { getConfig } from '~UTILS/config.util'
+
 export function botDebug(title: string, message: string | object): void {
-  if (global.config.debug) {
+  if (getConfig().debug) {
     const time = new Date().toISOString().split('T')[1] as string
     const hour = time.split('.')[0]
     const isPayload = typeof message === 'object'

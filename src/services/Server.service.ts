@@ -1,9 +1,10 @@
 import express from 'express'
 import { requestHandler } from '~MIDDLEWARES'
-import { routes } from '../routes'
+import { routes } from '~ROUTES'
+import { getConfig } from '~UTILS/config.util'
 
 export class ServerService {
-  private readonly PORT_HTTP = global.config.port || 3000
+  private readonly PORT_HTTP = getConfig().port || 3000
   private app = express()
 
   constructor() {

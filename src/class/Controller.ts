@@ -2,6 +2,7 @@ import { AndeService } from '~SERVICES/Ande.service'
 import { WassiService } from '~SERVICES/Wassi.service'
 import { botDebug } from '~UTILS/debug.util'
 import { messageFormatter, messageOptionInvalid } from '~UTILS/message.util'
+import { getConfig } from '~UTILS/config.util'
 
 export class Controller {
   protected andeService: AndeService
@@ -38,7 +39,7 @@ export class Controller {
     if (response) {
       const _response = messageFormatter(response)
 
-      switch (global.config.modeAPP) {
+      switch (getConfig().modeAPP) {
         case 'BOT':
           const wassiResponse = await this.wassiService.sendMessage(this.data.phone, _response)
 
