@@ -14,7 +14,7 @@ export const getConfig = (): TConfig => {
 
   return {
     port: Number(ENV.PORT) || 3000,
-    debug: ((ENV.DEBUG as unknown) as boolean) || false,
+    debug: ENV.DEBUG === 'true' ? true : false,
     wassi: {
       apiUrl: (ENV.WASSI_API_URL as string) || '',
       token: (ENV.WASSI_TOKEN as string) || '',
