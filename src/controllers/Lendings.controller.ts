@@ -24,14 +24,33 @@ export class LendingsController extends Controller {
       const creditAproved = AFFILIATE?.nroCedula === 4627572
 
       if (creditAproved) {
-        response = `
-        ${AFFILIATE?.nombre || 'NAME'} felicidades 🎉
+        switch (this.message) {
+          case '0':
+            TREE_LEVEL = 'HOME'
+            new HomeController({
+              ...this.data,
+              message: 'menu'
+            })
+            break
 
-        Tenés un crédito Pre-Aprobado.
+          case '3':
+            response = `
+              ( INFORMACIÓN )
 
-        (3) Más información del crédito pre aprobado
-        ${MENU_HOME}
-        `
+              ${MENU_HOME}
+              `
+            break
+
+          default:
+            response = `
+            ${AFFILIATE?.nombre || 'NAME'} felicidades 🎉
+            Tenés un crédito Pre-Aprobado.
+
+            (3) Más información del crédito pre aprobado
+            ${MENU_HOME}
+            `
+            break
+        }
       } else {
         TREE_STEP = 'STEP_1'
 

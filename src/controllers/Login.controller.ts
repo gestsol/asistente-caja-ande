@@ -34,7 +34,7 @@ export class LoginController extends Controller {
         if (this.message === '3809540' || this.message === '4627572') {
           // TODO: Guardar los datos del afiliado
           AFFILIATE = {
-            nombre: 'MARCOS',
+            nombre: this.message === '3809540' ? 'MARCOS' : 'JOSÉ',
             nroCedula: Number(this.message)
           } as TAffiliate
 
