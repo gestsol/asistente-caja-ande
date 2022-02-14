@@ -4,7 +4,6 @@ dist/
 .vscode/
 
 # FILES
-*.env
 *.log
 Procfile
 docs/todo.md
