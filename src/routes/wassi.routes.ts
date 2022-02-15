@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express'
 import { MainController } from '~CONTROLLERS/Main.controller'
+import { sessionHandler } from '~MIDDLEWARES'
 import { messageSanitize } from '~UTILS/message.util'
 import { OPTIONS_HOME } from '~ENTITIES/consts'
 
@@ -7,10 +8,11 @@ const router = Router()
 
 router.post(
   '/',
+  sessionHandler(),
   async (req: Request, res: Response): Promise<void> => {
-    try {
-      const { fromNumber, body } = req.body.data
+    const { fromNumber, body } = req.body.data as TWassiData
 
+    try {
       new MainController({
         phone: fromNumber,
         message: messageSanitize(body),

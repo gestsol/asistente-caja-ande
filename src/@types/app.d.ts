@@ -52,6 +52,8 @@ type TLevel =
 
 type TStep = '' | 'STEP_1' | 'STEP_2' | 'STEP_3'
 
+type TWassiData = TWassiBody['data']
+
 // DECLARATIONS ________________________________________________________________________________________________________
 
 // Base de datos temporal
