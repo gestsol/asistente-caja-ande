@@ -3,15 +3,16 @@ import { botDebug } from '~UTILS/debug.util'
 import { getConfig } from '~UTILS/config.util'
 
 export class SessionService {
-  private wassi: WassiService
+  private wassi?: WassiService
   private timer?: NodeJS.Timeout
 
   constructor() {
-    this.wassi = new WassiService()
     this.startDatabase()
   }
 
   public async login(phone: string): Promise<void> {
+    if (!this.wassi) this.wassi = new WassiService()
+
     const session = SessionService.getSession(phone)
 
     if (session) {
@@ -76,7 +77,7 @@ export class SessionService {
 
   private async notifySession(phone: string, message: string): Promise<void> {
     if (getConfig().messageSession) {
-      await this.wassi.sendMessage(phone, message)
+      await this.wassi!.sendMessage(phone, message)
     }
   }
 }
