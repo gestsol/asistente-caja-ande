@@ -20,23 +20,23 @@ mantendrá siempre organizado.
 
 - Crear variables de entorno
 
-Se debe crear un archivo `development.env` en la carpeta `/env`, para esto puede ejecutar el siguiente comando y copiar
+Se debe crear un archivo `production.env` en la carpeta `/env`, para esto puede ejecutar el siguiente comando y copiar
 la plantilla de variables proporcionada
 
 ```sh
-cp env/.env.template env/production.env
+cp template.env env/production.env
 ```
 
-Nota: crear `production.env` para usar en producción.
+> Nota: crear `development.env` para usar en modo desarrollo.
 
 ## Comandos
 
 ```sh
 npm install
 
-npm run dev # run app in mode developer
+npm run dev # Arranca la app en modo desarrollo
 
-npm start # run app in mode production
+npm start # Arrancar la app en modo producción
 ```
 
 ## Diagramas
