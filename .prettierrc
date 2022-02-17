@@ -5,7 +5,7 @@
   "semi": false,
   "singleQuote": true,
   "proseWrap": "always",
-  "arrowParens": "always",
+  "arrowParens": "avoid",
   "bracketSpacing": true,
   "endOfLine": "lf",
   "trailingComma": "none"

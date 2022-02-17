@@ -10,7 +10,7 @@ export const messageFormatter = (message: string): string => {
   // Eliminar los espacios que hay en cada salto de linea debido a la identación del código.
   const messageFormated = message
     .split('\n')
-    .map((m) => m.trim())
+    .map(m => m.trim())
     .join('\n')
 
   return messageFormated.trim()

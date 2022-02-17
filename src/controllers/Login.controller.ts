@@ -1,7 +1,7 @@
 import { Controller } from '~CLASS/Controller'
 import { HomeController } from '~CONTROLLERS/Home.controller'
 import { MainController } from '~CONTROLLERS/Main.controller'
-import { MENU_RETURN, MENU_HOME } from '~ENTITIES/consts'
+import { MENU_HOME } from '~ENTITIES/consts'
 
 export class LoginController extends Controller {
   async startDecisionTree() {
@@ -12,11 +12,21 @@ export class LoginController extends Controller {
         TREE_LEVEL = 'LOGIN'
         TREE_STEP = 'STEP_1'
 
+        // response = `
+        // Hola! soy el asistente virtual de los afiliados de la CAJA 🤓
+        // Nuestra caja, tu futuro!
+
+        // Por favor envíanos tu número de CI para ayudarte
+
+        // ${MENU_HOME}
+        // `
+
         response = `
         Hola! soy el asistente virtual de los afiliados de la CAJA 🤓
         Nuestra caja, tu futuro!
 
-        Por favor envíanos tu número de CI para ayudarte
+        Por favor envíanos tu número de CI, número de afiliado y número de celular separados por comas
+        Ejemplo: 1234567,12345,1234567890
 
         ${MENU_HOME}
         `
@@ -29,55 +39,59 @@ export class LoginController extends Controller {
           break
         }
 
-        // const data = await this.andeService.getAffiliateByCI(this.message)
-
-        if (this.message === '3809540' || this.message === '4627572') {
-          // TODO: Guardar los datos del afiliado
-          AFFILIATE = {
-            nombre: this.message === '3809540' ? 'MARCOS' : 'JOSÉ',
-            nroCedula: Number(this.message)
-          } as TAffiliate
-
-          TREE_STEP = 'STEP_2'
-
-          response = 'Poné tu nro de Afiliado'
-        } else {
-          response = `
-          Nro. de CI invalido ❌
-
-          ${MENU_HOME}
-          `
-        }
-        break
-
-      case 'STEP_2':
-        if (this.message === '0') {
-          TREE_STEP = 'STEP_3'
-          this.startDecisionTree()
-          break
-        }
-
         if (this.message === '00') {
           TREE_STEP = ''
           this.startDecisionTree()
           break
         }
 
-        // const affiliate = await this.andeService.getAffiliateByNro(this.message)
+        const [nroCedula, nroAfiliado, nroCelular] = this.message.split(',')
 
-        if (this.message === '53054' || this.message === '10893') {
+        const data = await this.andeService.login({
+          nroCedula,
+          nroAfiliado,
+          nroCelular
+        })
+
+        if (data) {
+          // TODO: Guardar los datos del afiliado
+          ANDE = {
+            affiliate: ({
+              nic: data.nic,
+              nroCedula,
+              nroAfiliado,
+              nroCelular
+            } as unknown) as TAffiliate,
+            token: data.token
+          } as TAnde
+
           new HomeController({
             ...this.data,
             message: 'menu'
           })
         } else {
           response = `
-          Nro. de afiliado invalido ❌
+          ❌ Datos invalidos, verifique que los datos sean correctos y envíelos de nuevo
 
-          ${MENU_RETURN}
+          ${MENU_HOME}
           `
         }
         break
+
+      // case 'STEP_2':
+      // if (this.message === '53054' || this.message === '10893') {
+      //   new HomeController({
+      //     ...this.data,
+      //     message: 'menu'
+      //   })
+      // } else {
+      //   response = `
+      //   Nro. de afiliado invalido ❌
+
+      //   ${MENU_RETURN}
+      //   `
+      // }
+      // break
 
       case 'STEP_3':
         TREE_LEVEL = 'MAIN'

@@ -17,7 +17,8 @@ type TConfig = {
 type TConfigHttpClient = {
   baseURL: string
   defaultPath: string
-  token?: string
+  timeoutSecond?: number
+  headers?: import('axios').AxiosRequestHeaders
 }
 
 type TDataController = {
@@ -30,11 +31,16 @@ type TDataController = {
 type TEnv = 'development' | 'production'
 
 type TSession = {
-  phone: ExecOptionsWithStringEncoding
-  affiliate: TAffiliate | null
+  phone: string
   treeLevel: TLevel
   treeStep: TStep
+  ande: TAnde
 }
+
+type TAnde = {
+  affiliate: TAffiliate
+  token: string
+} | null
 
 type TLevel =
   | 'MAIN'
@@ -58,6 +64,7 @@ type TWassiData = TWassiBody['data']
 
 // Base de datos temporal
 declare var SESSIONS: TSession[]
-declare var AFFILIATE: TAffiliate | null
+declare var ANDE: TAnde
+
 declare var TREE_LEVEL: TLevel
 declare var TREE_STEP: TStep

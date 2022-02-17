@@ -23,7 +23,7 @@ export class HomeController extends Controller {
         TREE_STEP = ''
 
         response = `
-        Bienvenido ${AFFILIATE?.nombre ||
+        Bienvenido ${ANDE?.affiliate.nombre ||
           'NAME'}. En Caja Ande trabajamo para vos 🤓, revisa las opciones que tenemos desponible:
         ${options}
         ${MENU_RETURN}

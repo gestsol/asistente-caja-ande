@@ -5,13 +5,13 @@ export class HttpClient {
   protected http: AxiosInstance
   private defaultPath: string
 
-  constructor({ baseURL, defaultPath, token }: TConfigHttpClient) {
+  constructor({ baseURL, defaultPath, timeoutSecond, headers }: TConfigHttpClient) {
     this.http = axios.create({
       maxRedirects: 10,
-      timeout: 1000 * 60,
+      timeout: 1000 * (timeoutSecond || 60),
       headers: {
-        'content-type': 'application/json',
-        token: token || ''
+        'Content-Type': 'application/json',
+        ...headers
       },
       baseURL
     })

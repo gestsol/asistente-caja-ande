@@ -9,7 +9,7 @@ export class WassiService extends HttpClient {
     super({
       baseURL: apiUrl,
       defaultPath: '/v1/messages',
-      token
+      headers: { token }
     })
     this.device = device
   }

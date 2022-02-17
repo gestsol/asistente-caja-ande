@@ -1,3 +1,18 @@
+type TAndeBody = {
+  autenticar: {
+    nroCedula: string
+    nroAfiliado: string
+    nroCelular: string
+  }
+}
+
+type TAndeResponse = {
+  autenticar: {
+    nic: number
+    token: string
+  }
+}
+
 type TAffiliate = {
   nic: number
   nroCedula: number

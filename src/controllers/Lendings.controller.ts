@@ -21,7 +21,7 @@ export class LendingsController extends Controller {
       TREE_LEVEL = 'LENDINGS'
 
       // TODO: analizar CI y verificar si posee credito asociado
-      const creditAproved = AFFILIATE?.nroCedula === 4627572
+      const creditAproved = ANDE?.affiliate.nroCedula === 4627572
 
       if (creditAproved) {
         switch (this.message) {
@@ -43,7 +43,7 @@ export class LendingsController extends Controller {
 
           default:
             response = `
-            ${AFFILIATE?.nombre || 'NAME'} felicidades 🎉
+            ${ANDE?.affiliate.nombre || 'NAME'} felicidades 🎉
             Tenés un crédito Pre-Aprobado.
 
             (3) Más información del crédito pre aprobado
