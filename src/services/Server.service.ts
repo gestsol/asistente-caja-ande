@@ -1,5 +1,5 @@
 import express from 'express'
-import { requestHandler, errorCatch } from '~MIDDLEWARES'
+import { requestHandler, errorCatch, notFound } from '~MIDDLEWARES'
 import { routes } from '~ROUTES'
 import { getConfig } from '~UTILS/config.util'
 
@@ -18,7 +18,9 @@ export class ServerService {
   }
 
   private routes(): void {
-    this.app.use('*', routes)
+    this.app.use('/api', routes.mainRoutes)
+    this.app.use(routes.wassiRoutes)
+    this.app.use(notFound)
     this.app.use(errorCatch)
   }
 
