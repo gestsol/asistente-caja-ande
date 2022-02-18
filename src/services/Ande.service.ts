@@ -3,6 +3,8 @@ import { getConfig } from '~UTILS/config.util'
 import { stringify } from 'qs'
 
 export class AndeService extends HttpClient {
+  private nroAffiliate: number
+
   constructor() {
     const { apiUrl } = getConfig().ande
     super({
@@ -13,6 +15,7 @@ export class AndeService extends HttpClient {
         'X-token': ANDE?.token || ''
       }
     })
+    this.nroAffiliate = ANDE!.affiliate.codPersonalAnde
   }
 
   // public async getAffiliateByPhone(phone: string): Promise<any | null> {
@@ -51,6 +54,30 @@ export class AndeService extends HttpClient {
           'Content-Type': 'application/x-www-form-urlencoded'
         }
       })
+
+      return data
+    } catch (error) {
+      return null
+    }
+  }
+
+  public async getDeadline(deadline: number = 0): Promise<TAndeResponse['lineacredito'] | null> {
+    try {
+      const { data } = await this.http.get<TAndeResponse['lineacredito']>(
+        `/lineacredito/${this.nroAffiliate}/plazo/${deadline}`
+      )
+
+      return data
+    } catch (error) {
+      return null
+    }
+  }
+
+  public async getDeadlineCancellation(deadline: number = 0): Promise<TAndeResponse['lineacredito'] | null> {
+    try {
+      const { data } = await this.http.get<TAndeResponse['lineacredito']>(
+        `lineacredito/cancelacion/${this.nroAffiliate}/plazo/${deadline}`
+      )
 
       return data
     } catch (error) {

@@ -11,6 +11,13 @@ type TAndeResponse = {
     nic: number
     token: string
   }
+  lineacredito: Array<TDeadline>
+}
+
+type TDeadline = {
+  plazo: number
+  tasaInteres: number
+  monto: number
 }
 
 type TAffiliate = {

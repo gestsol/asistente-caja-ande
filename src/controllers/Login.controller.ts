@@ -26,7 +26,8 @@ export class LoginController extends Controller {
         Nuestra caja, tu futuro!
 
         Por favor envíanos tu número de CI, número de afiliado y número de celular separados por comas
-        Ejemplo: 1234567,12345,1234567890
+
+        *Ejemplo*: 1234567,12345,1234567890
 
         ${MENU_HOME}
         `
@@ -59,8 +60,8 @@ export class LoginController extends Controller {
             affiliate: ({
               nic: data.nic,
               nroCedula,
-              nroAfiliado,
-              nroCelular
+              nroCelular,
+              codPersonalAnde: nroAfiliado
             } as unknown) as TAffiliate,
             token: data.token
           } as TAnde

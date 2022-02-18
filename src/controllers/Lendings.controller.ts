@@ -1,7 +1,7 @@
 import { Controller } from '~CLASS/Controller'
 import { HomeController } from '~CONTROLLERS/Home.controller'
 import { MENU_HOME } from '~ENTITIES/consts'
-import { messageOptionInvalid } from '~UTILS/message.util'
+import { convertArrayInOptions, messageOptionInvalid } from '~UTILS/message.util'
 
 export class LendingsController extends Controller {
   async startDecisionTree() {
@@ -112,20 +112,46 @@ export class LendingsController extends Controller {
         case 'A':
           TREE_STEP = 'STEP_2'
 
-          response = `
-          (1) Optión 1
-          (2) Optión 2
-          (3) Optión 3
-          (4) Optión 4
-          (5) Optión 5
-          (6) Optión 6
-          (7) Optión 7
-          ${MENU_HOME}
-          `
+          const deadlineList = await this.andeService.getDeadline()
+
+          if (deadlineList?.length) {
+            const lendingOptions = convertArrayInOptions(deadlineList, (item, i) => {
+              return `
+              *Opción ${i + 1}*
+              Plazo: ${item.plazo}
+              Monto: ${item.monto}
+              `
+            })
+
+            response = `
+            ${lendingOptions}
+            ${MENU_HOME}
+            `
+          } else {
+            // TODO:
+          }
           break
 
         case 'B':
-          response = subOptions
+          const deadlineCancellationList = await this.andeService.getDeadlineCancellation()
+
+          if (deadlineCancellationList?.length) {
+            const lendingOptions = convertArrayInOptions(deadlineCancellationList, (item, i) => {
+              return `
+              *Opción ${i + 1}*
+              Plazo: ${item.plazo}
+              Monto: ${item.monto}
+              `
+            })
+
+            response = `
+            ${lendingOptions}
+            ${MENU_HOME}
+            `
+          } else {
+            // TODO:
+          }
+
           break
 
         // TODO:
