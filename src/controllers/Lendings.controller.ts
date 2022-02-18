@@ -8,10 +8,8 @@ export class LendingsController extends Controller {
     let response = ''
     const options = `
     (111) Préstamo especial ✨
-    (112) Préstamo en promoción 💰
     (113) Préstamo estudiantil 📚
-    (114) Préstamo extraordinario 💰
-    (115) Préstamo hipotecario 🏡`
+    (114) Préstamo extraordinario 💰`
 
     const subOptions = `
     (L) La totalidad
@@ -68,17 +66,6 @@ export class LendingsController extends Controller {
 
           (A) Préstamos en paralelo
           (B) Prétamos con cancelación
-
-          ${MENU_HOME}
-          `
-          break
-
-        case '112':
-          response = `
-          Préstamo en promoción 💰
-
-          ( INFORMACIÓN )
-
           ${MENU_HOME}
           `
           break
@@ -97,20 +84,10 @@ export class LendingsController extends Controller {
           `
           break
 
-        case '115':
-          response = `
-          Préstamo hipotecario 🏡
-
-          ( INFORMACIÓN )
-
-          ${MENU_HOME}
-          `
-          break
-
         case 'A':
           TREE_STEP = 'STEP_2'
 
-          const deadlineList = await this.andeService.getDeadline()
+          const deadlineList = await this.andeService.getLendingsSpecial('paralelo')
 
           if (deadlineList?.length) {
             STORE.deadlineList = deadlineList
@@ -130,14 +107,18 @@ export class LendingsController extends Controller {
             ${MENU_HOME}
             `
           } else {
-            // TODO:
+            // TODO: pensar mejor esta respuesta
+            response = `
+            No hay opciones disponibles 😔
+            ${MENU_HOME}
+            `
           }
           break
 
         case 'B':
           TREE_STEP = 'STEP_2'
 
-          const deadlineCancellationList = await this.andeService.getDeadlineCancellation()
+          const deadlineCancellationList = await this.andeService.getLendingsSpecial('cancelacion')
 
           if (deadlineCancellationList?.length) {
             STORE.deadlineCancellationList = deadlineCancellationList
@@ -157,37 +138,13 @@ export class LendingsController extends Controller {
             ${MENU_HOME}
             `
           } else {
-            // TODO:
+            // TODO: pensar mejor esta respuesta
+            response = `
+            No hay opciones disponibles 😔
+            ${MENU_HOME}
+            `
           }
 
-          break
-
-        case 'L':
-          response = `
-          ¿Cómo querés realizar el pago de tu préstamo?
-
-          (C) Cheque
-          (T) Transferencia
-          `
-          break
-
-        case 'M':
-          response = `
-          ¿Cómo querés realizar el pago de tu préstamo?
-
-          (C) Cheque
-          (T) Transferencia
-          `
-          break
-
-        case 'C':
-          TREE_STEP = 'STEP_3'
-          response = 'Por favor indica tu número de cuenta del banco'
-          break
-
-        case 'T':
-          TREE_STEP = 'STEP_3'
-          response = 'Por favor indica tu número de cuenta del banco'
           break
 
         case '0':
@@ -204,23 +161,56 @@ export class LendingsController extends Controller {
               const optionSelected = Number(this.message)
 
               if (!isNaN(optionSelected)) {
+                TREE_STEP = 'STEP_3'
                 const deadline = (STORE.deadlineList as TDeadline[]).find((_, index) => index === optionSelected - 1)
 
-                console.log('PLAZO SELECCIONADO', deadline)
+                delete STORE.deadlineList
+                STORE.deadline = deadline
 
                 response = subOptions
-              } else {
-                response = messageOptionInvalid(options)
+                break
               }
-              break
 
             case 'STEP_3':
-              response = `
-              ( INFORMACIÓN )
+              if (this.message === 'L' || this.message === 'M') {
+                TREE_STEP = 'STEP_4'
 
-              ${MENU_HOME}
-              `
-              break
+                const { monto, plazo } = STORE.deadline as TDeadline
+
+                const calculation = await this.andeService.calculateLending('paralelo', monto, plazo)
+                // TODO: que se debe hacer con esta información ?, por ahora se muestra el resultado en consola
+                // para comprobar que la peticion se realiza adecuadamente
+                delete STORE.dealine
+                STORE.calculation = calculation
+                console.log(calculation)
+
+                const paymentMethods = await this.andeService.getPaymentMethods()
+
+                const paymentOptions = convertArrayInOptions(paymentMethods!, (item, i) => {
+                  return `
+                  (${i + 1}) ${item.descripcion}
+                  `
+                })
+
+                response = `
+                ¿Cómo querés realizar el pago de tu préstamo?
+
+                ${paymentOptions}
+                ${MENU_HOME}
+                `
+                break
+              }
+
+            case 'STEP_4':
+              if (this.message === 'C' || this.message === 'T') {
+                response =
+                  this.message === 'C' ? '( OPCION NO DISPONIBLE )' : 'Por favor indica tu número de cuenta del banco'
+
+                response += `
+                  ${MENU_HOME}
+                  `
+                break
+              }
 
             default:
               response = messageOptionInvalid(options)

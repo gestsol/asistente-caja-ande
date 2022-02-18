@@ -59,9 +59,11 @@ type TLevel =
   | 'ENTRY_TABLE'
   | 'LENDINGS'
 
-type TStep = '' | 'STEP_1' | 'STEP_2' | 'STEP_3'
+type TStep = '' | 'STEP_1' | 'STEP_2' | 'STEP_3' | 'STEP_4'
 
 type TWassiData = TWassiBody['data']
+
+type TTypeLendingSpecial = 'paralelo' | 'cancelacion'
 
 // DECLARATIONS ________________________________________________________________________________________________________
 

@@ -61,10 +61,13 @@ export class AndeService extends HttpClient {
     }
   }
 
-  public async getDeadline(deadline: number = 0): Promise<TAndeResponse['lineacredito'] | null> {
+  public async getLendingsSpecial(
+    type: TTypeLendingSpecial,
+    deadline: number = 0
+  ): Promise<TAndeResponse['lineacredito'] | null> {
     try {
       const { data } = await this.http.get<TAndeResponse['lineacredito']>(
-        `/lineacredito/${this.nroAffiliate}/plazo/${deadline}`
+        `/lineacredito/${type === 'paralelo' ? '' : 'cancelacion/'}${this.nroAffiliate}/plazo/${deadline}`
       )
 
       return data
@@ -73,10 +76,20 @@ export class AndeService extends HttpClient {
     }
   }
 
-  public async getDeadlineCancellation(deadline: number = 0): Promise<TAndeResponse['lineacredito'] | null> {
+  public async getPaymentMethods(): Promise<TAndeResponse['formacobro'] | null> {
     try {
-      const { data } = await this.http.get<TAndeResponse['lineacredito']>(
-        `lineacredito/cancelacion/${this.nroAffiliate}/plazo/${deadline}`
+      const { data } = await this.http.get<TAndeResponse['formacobro']>(`/formacobroptmo`)
+
+      return data
+    } catch (error) {
+      return null
+    }
+  }
+
+  public async calculateLending(type: TTypeLendingSpecial, amount: number, deadline: number): Promise<any | null> {
+    try {
+      const { data } = await this.http.get<any>(
+        `calculo/${this.nroAffiliate}/monto/${amount}/plazo/${deadline}/cancelacion/${type === 'paralelo' ? 0 : 1}`
       )
 
       return data
@@ -84,4 +97,16 @@ export class AndeService extends HttpClient {
       return null
     }
   }
+
+  // public async nameFunction(deadline: number = 0): Promise<any | null> {
+  //   try {
+  //     const { data } = await this.http.get<any>(
+  //       ``
+  //     )
+
+  //     return data
+  //   } catch (error) {
+  //     return null
+  //   }
+  // }
 }
