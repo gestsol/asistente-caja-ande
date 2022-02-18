@@ -8,7 +8,7 @@ type TAndeBody = {
 
 type TAndeResponse = {
   autenticar: {
-    nic: number
+    afiliado: TAffiliate
     token: string
   }
   lineacredito: Array<TDeadline>

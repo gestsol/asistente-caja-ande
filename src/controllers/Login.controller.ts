@@ -12,22 +12,13 @@ export class LoginController extends Controller {
         TREE_LEVEL = 'LOGIN'
         TREE_STEP = 'STEP_1'
 
-        // response = `
-        // Hola! soy el asistente virtual de los afiliados de la CAJA 🤓
-        // Nuestra caja, tu futuro!
-
-        // Por favor envíanos tu número de CI para ayudarte
-
-        // ${MENU_HOME}
-        // `
-
         response = `
         Hola! soy el asistente virtual de los afiliados de la CAJA 🤓
         Nuestra caja, tu futuro!
 
-        Por favor envíanos tu número de CI, número de afiliado y número de celular separados por comas
+        Por favor envíanos tu número de CI y número de afiliado separados por los espacios que desee
 
-        *Ejemplo*: 1234567,12345,1234567890
+        *Ejemplo*: 1234567   12345
 
         ${MENU_HOME}
         `
@@ -46,25 +37,20 @@ export class LoginController extends Controller {
           break
         }
 
-        const [nroCedula, nroAfiliado, nroCelular] = this.message.split(',')
+        const [nroCedula, nroAfiliado] = this.message.split(' ').filter(m => m.length)
 
         const data = await this.andeService.login({
           nroCedula,
           nroAfiliado,
-          nroCelular
+          nroCelular: '0991712781' // TODO: mejorar esto, quizas en una variable de entorno
         })
 
         if (data) {
-          // TODO: Guardar los datos del afiliado
+          // Guardar los datos del afiliado
           ANDE = {
-            affiliate: ({
-              nic: data.nic,
-              nroCedula,
-              nroCelular,
-              codPersonalAnde: nroAfiliado
-            } as unknown) as TAffiliate,
+            affiliate: data.afiliado,
             token: data.token
-          } as TAnde
+          }
 
           new HomeController({
             ...this.data,
@@ -78,21 +64,6 @@ export class LoginController extends Controller {
           `
         }
         break
-
-      // case 'STEP_2':
-      // if (this.message === '53054' || this.message === '10893') {
-      //   new HomeController({
-      //     ...this.data,
-      //     message: 'menu'
-      //   })
-      // } else {
-      //   response = `
-      //   Nro. de afiliado invalido ❌
-
-      //   ${MENU_RETURN}
-      //   `
-      // }
-      // break
 
       case 'STEP_3':
         TREE_LEVEL = 'MAIN'
