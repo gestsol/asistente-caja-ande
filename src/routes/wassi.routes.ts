@@ -20,7 +20,9 @@ router.post(
         menuHome: OPTIONS_HOME
       })
     } catch (error) {
-      res.status(400).json({
+      console.error('ERROR:', error)
+
+      res.status(500).json({
         status: 'Error',
         error: (error as Error).message
       })

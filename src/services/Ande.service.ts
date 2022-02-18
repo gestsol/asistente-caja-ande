@@ -15,7 +15,7 @@ export class AndeService extends HttpClient {
         'X-token': ANDE?.token || ''
       }
     })
-    this.nroAffiliate = ANDE!.affiliate.codPersonalAnde
+    this.nroAffiliate = ANDE?.affiliate.codPersonalAnde || 0
   }
 
   // public async getAffiliateByPhone(phone: string): Promise<any | null> {
