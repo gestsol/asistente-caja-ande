@@ -66,10 +66,8 @@ export class LendingsController extends Controller {
           response = `
           Préstamo especial ✨
 
-          ( INFORMACIÓN )
-
-          (A) Nuevos prestamos
-          (B) Prétamo con cancelación
+          (A) Préstamos en paralelo
+          (B) Prétamos con cancelación
 
           ${MENU_HOME}
           `
@@ -115,15 +113,19 @@ export class LendingsController extends Controller {
           const deadlineList = await this.andeService.getDeadline()
 
           if (deadlineList?.length) {
+            STORE.deadlineList = deadlineList
+
             const lendingOptions = convertArrayInOptions(deadlineList, (item, i) => {
               return `
-              *Opción ${i + 1}*
-              Plazo: ${item.plazo}
-              Monto: ${item.monto}
+              (${i + 1})
+              *Plazo*: ${item.plazo}
+              *Monto*: ${item.monto}
               `
             })
 
             response = `
+            Opciones de plazo para préstamo en paralelo
+
             ${lendingOptions}
             ${MENU_HOME}
             `
@@ -133,18 +135,24 @@ export class LendingsController extends Controller {
           break
 
         case 'B':
+          TREE_STEP = 'STEP_2'
+
           const deadlineCancellationList = await this.andeService.getDeadlineCancellation()
 
           if (deadlineCancellationList?.length) {
+            STORE.deadlineCancellationList = deadlineCancellationList
+
             const lendingOptions = convertArrayInOptions(deadlineCancellationList, (item, i) => {
               return `
-              *Opción ${i + 1}*
+              *Opción (${i + 1})*
               Plazo: ${item.plazo}
               Monto: ${item.monto}
               `
             })
 
             response = `
+            Opciones de plazo para préstamo con cancelación
+
             ${lendingOptions}
             ${MENU_HOME}
             `
@@ -153,15 +161,6 @@ export class LendingsController extends Controller {
           }
 
           break
-
-        // TODO:
-        // case '3':
-        //   response = `
-        //   ( INFORMACIÓN )
-
-        //   ${MENU_HOME}
-        //   `
-        //   break
 
         case 'L':
           response = `
@@ -202,7 +201,17 @@ export class LendingsController extends Controller {
         default:
           switch (TREE_STEP) {
             case 'STEP_2':
-              response = subOptions
+              const optionSelected = Number(this.message)
+
+              if (!isNaN(optionSelected)) {
+                const deadline = (STORE.deadlineList as TDeadline[]).find((_, index) => index === optionSelected - 1)
+
+                console.log('PLAZO SELECCIONADO', deadline)
+
+                response = subOptions
+              } else {
+                response = messageOptionInvalid(options)
+              }
               break
 
             case 'STEP_3':

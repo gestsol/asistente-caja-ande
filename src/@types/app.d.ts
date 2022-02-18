@@ -35,12 +35,15 @@ type TSession = {
   treeLevel: TLevel
   treeStep: TStep
   ande: TAnde
+  store: TStore
 }
 
 type TAnde = {
   affiliate: TAffiliate
   token: string
 } | null
+
+type TStore = { [key: string]: any }
 
 type TLevel =
   | 'MAIN'
@@ -65,6 +68,7 @@ type TWassiData = TWassiBody['data']
 // Base de datos temporal
 declare var SESSIONS: TSession[]
 declare var ANDE: TAnde
+declare var STORE: TStore
 
 declare var TREE_LEVEL: TLevel
 declare var TREE_STEP: TStep

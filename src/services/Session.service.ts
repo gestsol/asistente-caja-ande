@@ -21,20 +21,20 @@ export class SessionService {
       ANDE = session.ande
       TREE_LEVEL = session.treeLevel
       TREE_STEP = session.treeStep
+      STORE = session.store
 
       // Se reinicia el temporizador del cierre de sesión
       this.timer!.refresh()
     } else {
-      TREE_LEVEL = 'MAIN'
-      TREE_STEP = ''
-      ANDE = null
+      this.initGlobalValues()
 
       // Crear nueva sesión
       SESSIONS.push({
         phone,
         treeLevel: 'MAIN',
         treeStep: '',
-        ande: null
+        ande: null,
+        store: {}
       })
       this.autoLogout(phone)
 
@@ -62,7 +62,8 @@ export class SessionService {
         phone,
         treeLevel: TREE_LEVEL,
         treeStep: TREE_STEP,
-        ande: ANDE
+        ande: ANDE,
+        store: STORE
       }
 
       TREE_LEVEL = session.treeLevel
@@ -76,13 +77,19 @@ export class SessionService {
   }
 
   private startDatabase(): void {
-    // Iniciar variables super globales
+    this.initGlobalValues()
+
+    // TODO: Por ahora se usa una variable super globale para almacenar las sesiones.
+    // Pero en el futuro esto debe ser almacenado en una DB local (json o sqlite) o remota (mongo, postgress)
+    global.SESSIONS = []
+  }
+
+  private initGlobalValues(): void {
+    // Inicializacion de valores globales
     global.TREE_LEVEL = 'MAIN'
     global.TREE_STEP = ''
     global.ANDE = null
-    // TODO: Por ahora se usan variables super globales para almacenar las sesiones.
-    // Pero esto debe ser almacenado en una DB local (json o sqlite)
-    global.SESSIONS = []
+    global.STORE = {}
   }
 
   private static getSession(phone: string): TSession | null {
