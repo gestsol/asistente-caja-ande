@@ -1,8 +1,22 @@
+type TAndeError = {
+  mensaje: string
+  codigo: number
+}
+
 type TAndeBody = {
   autenticar: {
     nroCedula: string
     nroAfiliado: string
     nroCelular: string
+  }
+  solicitudcredito: {
+    plazo: number
+    montoSolicitado: number
+    formaCobro: number
+    idCuentaBancaria: number
+    nroCuentaBancaria: null | number
+    idBanco: null | number
+    cumpleRequisitos: number
   }
 }
 
@@ -15,6 +29,53 @@ type TAndeResponse = {
   formacobro: Array<{
     codigo: number
     descripcion: string
+  }>
+  calculo: {
+    montoCuota: number
+    montoSeguro: number
+    montoIVA: number
+    tasaInteres: number
+    saldoPrestamosCancelar: number
+    cuotaOtrosPrestamos: number
+    seguroOtrosPrestamos: number
+    ivaOtrosPrestamos: null | any
+    totalNuevaCuota: number
+    totalNetoRetirar: number
+    saldoTarjetaCredito: number
+    saldoPendiente: number
+    saldoDiferido: number
+    nivelEndeudamiento: number
+    nivelEndeudamientoMaximo: number
+    capacidadPago: null | any
+    capacidadPagoNuevo: number
+    cumpleNivelEndeudamiento: boolean
+    cumpleMontoParalelo: boolean
+    cumpleMontoCancelacion: boolean
+    cumpleCuota: boolean
+    cumple12cuotas: boolean
+    numerosPtmosNoCumple12Cuotas: null | any
+    montoMaximoParalelo: number
+    montoMaximoCancelacion: number
+    cuotaMaxima: number
+    enProcesoCobro: boolean
+    cuotaPeriodoGracia: null | any
+  }
+  cuentas: Array<{
+    id: {
+      codBanco: number
+      nroCuentaBanco: string
+    }
+    nroCedula: number
+    idRegistro: number
+    codPersonalAnde: number
+    fechaInsert: number
+    usuarioInsert: string
+    nroCuentaConfirmacion: null | any
+    banco: {
+      codigo: number
+      nombre: string
+      disponibleTransferencia: boolean
+    }
   }>
 }
 
@@ -54,35 +115,3 @@ type TDeadline = {
   tasaInteres: number
   monto: number
 }
-
-// TODO: crear este tipo de dato dentro de TAndeResponse
-// type TCalculo = {
-//   montoCuota: 461449
-//   montoSeguro: 8333
-//   montoIVA: 0
-//   tasaInteres: 10.0
-//   saldoPrestamosCancelar: 0
-//   cuotaOtrosPrestamos: 1786187
-//   seguroOtrosPrestamos: 69786
-//   ivaOtrosPrestamos: null
-//   totalNuevaCuota: 2325755
-//   totalNetoRetirar: 10000000
-//   saldoTarjetaCredito: 0
-//   saldoPendiente: 0
-//   saldoDiferido: 0
-//   nivelEndeudamiento: 44.43
-//   nivelEndeudamientoMaximo: 65.0
-//   capacidadPago: null
-//   capacidadPagoNuevo: 1440813
-//   cumpleNivelEndeudamiento: true
-//   cumpleMontoParalelo: true
-//   cumpleMontoCancelacion: true
-//   cumpleCuota: true
-//   cumple12cuotas: true
-//   numerosPtmosNoCumple12Cuotas: null
-//   montoMaximoParalelo: 40669769
-//   montoMaximoCancelacion: 40669769
-//   cuotaMaxima: 1889175
-//   enProcesoCobro: false
-//   cuotaPeriodoGracia: null
-// }

@@ -1,10 +1,19 @@
 import { MENU_HOME } from '~ENTITIES/consts'
 
-export const messageOptionInvalid = (opciones: string): string => `
-Opción invalida, las opciones disponibles son:
-${opciones}
-${MENU_HOME}
-`
+export const messageOptionInvalid = (options?: string): string => {
+  if (options) {
+    return `
+    ❌ Opción invalida, las opciones disponibles son:
+    ${options}
+    ${MENU_HOME}
+    `
+  } else {
+    return `
+    ❌ Opción invalida, intente de nuevo.
+    ${MENU_HOME}
+    `
+  }
+}
 
 export const messageFormatter = (message: string): string => {
   // Eliminar los espacios que hay en cada salto de linea debido a la identación del código.

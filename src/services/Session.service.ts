@@ -20,6 +20,7 @@ export class SessionService {
       // para tener facil acceso a ellas dentro de los controladores
       ANDE = session.ande
       TREE_LEVEL = session.treeLevel
+      TREE_OPTION = session.option
       TREE_STEP = session.treeStep
       STORE = session.store
 
@@ -32,9 +33,10 @@ export class SessionService {
       SESSIONS.push({
         phone,
         treeLevel: TREE_LEVEL,
+        option: TREE_OPTION,
         treeStep: TREE_STEP,
-        ande: null,
-        store: {}
+        ande: ANDE,
+        store: STORE
       })
       this.autoLogout(phone)
 
@@ -61,6 +63,7 @@ export class SessionService {
       const sessionUpdated: TSession = {
         phone,
         treeLevel: TREE_LEVEL,
+        option: TREE_OPTION,
         treeStep: TREE_STEP,
         ande: ANDE,
         store: STORE
@@ -69,10 +72,21 @@ export class SessionService {
       TREE_LEVEL = session.treeLevel
       TREE_STEP = session.treeStep
       ANDE = session.ande
+
       // Actualizar sesión
       SESSIONS = [...sessions, sessionUpdated]
 
-      botDebug('SESSIONS', SESSIONS)
+      // Para ver los datos desde la terminal
+      const sessionDebug = [
+        ...sessions,
+        {
+          ...sessionUpdated,
+          ande: (JSON.stringify(sessionUpdated.ande) as unknown) as TAnde,
+          store: (JSON.stringify(sessionUpdated.store) as unknown) as TStore
+        }
+      ]
+
+      botDebug('SESSIONS', sessionDebug)
     }
   }
 
@@ -87,9 +101,10 @@ export class SessionService {
   private initGlobalValues(): void {
     // Inicializacion de valores globales
     global.TREE_LEVEL = 'MAIN'
+    global.TREE_OPTION = ''
     global.TREE_STEP = ''
     global.ANDE = null
-    global.STORE = {}
+    global.STORE = {} as TStore
   }
 
   private static getSession(phone: string): TSession | null {

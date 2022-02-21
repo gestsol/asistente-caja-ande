@@ -13,7 +13,7 @@ export class LendingsController extends Controller {
 
     const subOptions = `
     (L) La totalidad
-    (M) Elija monto menor`
+    (M) Escriba un monto menor`
 
     if (TREE_STEP === '') {
       TREE_LEVEL = 'LENDINGS'
@@ -61,6 +61,8 @@ export class LendingsController extends Controller {
     } else {
       switch (this.message) {
         case '111':
+          this.initStore()
+
           response = `
           Préstamo especial ✨
 
@@ -85,12 +87,13 @@ export class LendingsController extends Controller {
           break
 
         case 'A':
-          TREE_STEP = 'STEP_2'
+          STORE.lendingSpecial.payload.type = 'paralelo'
 
-          const deadlineList = await this.andeService.getLendingsSpecial('paralelo')
+          const deadlineList = await this.andeService.getLendingsSpecial()
 
           if (deadlineList?.length) {
-            STORE.deadlineList = deadlineList
+            TREE_STEP = 'STEP_2'
+            STORE.lendingSpecial.payload.deadlineList = deadlineList
 
             const lendingOptions = convertArrayInOptions(deadlineList, (item, i) => {
               return `
@@ -102,26 +105,25 @@ export class LendingsController extends Controller {
 
             response = `
             Opciones de plazo para préstamo en paralelo
-
             ${lendingOptions}
             ${MENU_HOME}
             `
           } else {
-            // TODO: pensar mejor esta respuesta
             response = `
-            No hay opciones disponibles 😔
+            No hay opciones disponibles para préstamos en paralelo 😔
             ${MENU_HOME}
             `
           }
           break
 
         case 'B':
-          TREE_STEP = 'STEP_2'
+          STORE.lendingSpecial.payload.type = 'cancelacion'
 
-          const deadlineCancellationList = await this.andeService.getLendingsSpecial('cancelacion')
+          const deadlineCancellationList = await this.andeService.getLendingsSpecial()
 
           if (deadlineCancellationList?.length) {
-            STORE.deadlineCancellationList = deadlineCancellationList
+            TREE_STEP = 'STEP_2'
+            STORE.lendingSpecial.payload.deadlineList = deadlineCancellationList
 
             const lendingOptions = convertArrayInOptions(deadlineCancellationList, (item, i) => {
               return `
@@ -138,17 +140,17 @@ export class LendingsController extends Controller {
             ${MENU_HOME}
             `
           } else {
-            // TODO: pensar mejor esta respuesta
             response = `
-            No hay opciones disponibles 😔
+            No hay opciones disponibles para prétamo con cancelación 😔
             ${MENU_HOME}
             `
           }
-
           break
 
         case '0':
           TREE_LEVEL = 'HOME'
+          this.initStore()
+
           new HomeController({
             ...this.data,
             message: 'menu'
@@ -158,62 +160,158 @@ export class LendingsController extends Controller {
         default:
           switch (TREE_STEP) {
             case 'STEP_2':
-              const optionSelected = Number(this.message)
+              const deadlineSelected = Number(this.message)
 
-              if (!isNaN(optionSelected)) {
+              if (!isNaN(deadlineSelected)) {
                 TREE_STEP = 'STEP_3'
-                const deadline = (STORE.deadlineList as TDeadline[]).find((_, index) => index === optionSelected - 1)
 
-                delete STORE.deadlineList
-                STORE.deadline = deadline
+                const deadline = STORE.lendingSpecial.payload.deadlineList.find(
+                  (_, index) => index === deadlineSelected - 1
+                )!
+
+                STORE.lendingSpecial.body.plazo = deadline.plazo
+                STORE.lendingSpecial.payload.deadline = deadline
 
                 response = subOptions
                 break
               }
 
+              response = messageOptionInvalid()
+              break
+
             case 'STEP_3':
-              if (this.message === 'L' || this.message === 'M') {
-                TREE_STEP = 'STEP_4'
+              if (this.message === 'L' || !isNaN(Number(this.message))) {
+                let { monto, plazo } = STORE.lendingSpecial.payload.deadline
+                monto = this.message === 'L' ? monto : Number(this.message)
 
-                const { monto, plazo } = STORE.deadline as TDeadline
-
-                const calculation = await this.andeService.calculateLending('paralelo', monto, plazo)
+                const calculation = await this.andeService.calculateLending(monto, plazo)
                 // TODO: que se debe hacer con esta información ?, por ahora se muestra el resultado en consola
                 // para comprobar que la peticion se realiza adecuadamente
-                delete STORE.dealine
-                STORE.calculation = calculation
-                console.log(calculation)
+                // console.log(calculation)
 
-                const paymentMethods = await this.andeService.getPaymentMethods()
+                if (calculation) {
+                  STORE.lendingSpecial.body.montoSolicitado = monto
 
-                const paymentOptions = convertArrayInOptions(paymentMethods!, (item, i) => {
-                  return `
-                  (${i + 1}) ${item.descripcion}
-                  `
-                })
+                  const paymentMethods = await this.andeService.getPaymentMethods()
 
-                response = `
-                ¿Cómo querés realizar el pago de tu préstamo?
+                  if (paymentMethods) {
+                    TREE_STEP = 'STEP_4'
+                    STORE.lendingSpecial.payload.payMethodList = paymentMethods
 
-                ${paymentOptions}
-                ${MENU_HOME}
-                `
-                break
-              }
+                    const paymentOptions = convertArrayInOptions(
+                      paymentMethods!,
+                      (item, i) => `
+                      (${i + 1}) ${item.descripcion}`
+                    )
 
-            case 'STEP_4':
-              if (this.message === 'C' || this.message === 'T') {
-                response =
-                  this.message === 'C' ? '( OPCION NO DISPONIBLE )' : 'Por favor indica tu número de cuenta del banco'
+                    response = `
+                    ¿Cómo querés realizar el pago de tu préstamo?
 
-                response += `
+                    ${paymentOptions}
+                    ${MENU_HOME}
+                    `
+                  } else {
+                    response = `
+                    No hay métodos de pago disponibles 😔
+                    ${MENU_HOME}
+                    `
+                  }
+                } else {
+                  response = `
+                  Monto invalido, intentelo nuevamente
                   ${MENU_HOME}
                   `
+                }
+
                 break
               }
 
+              response = messageOptionInvalid()
+              break
+
+            case 'STEP_4':
+              const payMethodSelected = Number(this.message)
+
+              const paymentMethod = STORE.lendingSpecial.payload.payMethodList.find(
+                (_, index) => index === payMethodSelected - 1
+              )
+
+              if (paymentMethod) {
+                const { descripcion, codigo } = paymentMethod
+
+                if (descripcion === 'CHEQUE') {
+                  response = `
+                  Opción no disponible
+
+                  ${MENU_HOME}
+                  `
+                  break
+                }
+
+                if (descripcion === 'TRANSFERENCIA EN CUENTA') {
+                  TREE_STEP = 'STEP_6'
+
+                  STORE.lendingSpecial.body.formaCobro = codigo
+
+                  response = 'Por favor indica tu número de cuenta del banco'
+                  break
+                }
+              }
+
+              response = messageOptionInvalid()
+              break
+
+            case 'STEP_6':
+              // TODO: Preguntar si los numeros de cuenta solo continen numeros
+              if (!isNaN(Number(this.message))) {
+                const accountList = await this.andeService.getAccountsBank()
+
+                if (accountList) {
+                  const account = accountList.find(account => account.id.nroCuentaBanco === this.message)
+
+                  if (account) {
+                    STORE.lendingSpecial.body.idCuentaBancaria = account.idRegistro
+
+                    const result = await this.andeService.createCredit({
+                      ...STORE.lendingSpecial.body,
+                      nroCuentaBancaria: null,
+                      idBanco: null,
+                      cumpleRequisitos: 1
+                    })
+
+                    if (typeof result === 'object') {
+                      // TODO: Determinar respuesta en la peticion y eliminar este log
+                      console.log('LINEA DE CREDITO:', result)
+
+                      response = `
+                      ✅ Prestamo generado exitosamente
+
+                      ${MENU_HOME}
+                      `
+                    } else {
+                      response = `
+                      ⚠️ ${result}
+
+                      ${MENU_HOME}
+                      `
+                    }
+                  } else {
+                    response = `
+                    No tiene ninguna cuenta bancaria asociada a este número ${this.message}, verifique los datos e intente nuevamente
+
+                    ${MENU_HOME}
+                    `
+                  }
+                } else response = 'Error al buscar las cuentas asociadas, por favor intentelo nuevamente'
+
+                break
+              }
+
+              response = messageOptionInvalid()
+              break
+
             default:
-              response = messageOptionInvalid(options)
+              response = TREE_STEP === 'STEP_1' ? messageOptionInvalid(options) : messageOptionInvalid()
               break
           }
           break
@@ -221,5 +319,9 @@ export class LendingsController extends Controller {
     }
 
     this.sendMessage(response)
+  }
+
+  private initStore(): void {
+    STORE = { lendingSpecial: { payload: {}, body: {} } as any }
   }
 }

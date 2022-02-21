@@ -4,6 +4,7 @@ import { stringify } from 'qs'
 
 export class AndeService extends HttpClient {
   private nroAffiliate: number
+  private typeLending: TLendingSpecial
 
   constructor() {
     const { apiUrl } = getConfig().ande
@@ -16,6 +17,7 @@ export class AndeService extends HttpClient {
       }
     })
     this.nroAffiliate = ANDE?.affiliate.codPersonalAnde || 0
+    this.typeLending = STORE.lendingSpecial?.payload?.type || 'paralelo'
   }
 
   // public async getAffiliateByPhone(phone: string): Promise<any | null> {
@@ -45,11 +47,11 @@ export class AndeService extends HttpClient {
   //   }
   // }
 
-  public async login(body: TAndeBody['autenticar']): Promise<TAndeResponse['autenticar'] | null> {
+  public async login<R = TAndeResponse['autenticar']>(body: TAndeBody['autenticar']): Promise<R | null> {
     const urlEncoded = stringify(body) // convertir datos en formato x-www-form-urlencoded
 
     try {
-      const { data } = await this.http.post<TAndeResponse['autenticar']>('/autenticar', urlEncoded, {
+      const { data } = await this.http.post<R>('/autenticar', urlEncoded, {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
         }
@@ -61,13 +63,10 @@ export class AndeService extends HttpClient {
     }
   }
 
-  public async getLendingsSpecial(
-    type: TTypeLendingSpecial,
-    deadline: number = 0
-  ): Promise<TAndeResponse['lineacredito'] | null> {
+  public async getLendingsSpecial<R = TAndeResponse['lineacredito']>(deadline: number = 0): Promise<R | null> {
     try {
-      const { data } = await this.http.get<TAndeResponse['lineacredito']>(
-        `/lineacredito/${type === 'paralelo' ? '' : 'cancelacion/'}${this.nroAffiliate}/plazo/${deadline}`
+      const { data } = await this.http.get<R>(
+        `/lineacredito/${this.typeLending === 'paralelo' ? '' : 'cancelacion/'}${this.nroAffiliate}/plazo/${deadline}`
       )
 
       return data
@@ -76,20 +75,12 @@ export class AndeService extends HttpClient {
     }
   }
 
-  public async getPaymentMethods(): Promise<TAndeResponse['formacobro'] | null> {
+  public async calculateLending<R = TAndeResponse['calculo']>(amount: number, deadline: number): Promise<R | null> {
     try {
-      const { data } = await this.http.get<TAndeResponse['formacobro']>(`/formacobroptmo`)
-
-      return data
-    } catch (error) {
-      return null
-    }
-  }
-
-  public async calculateLending(type: TTypeLendingSpecial, amount: number, deadline: number): Promise<any | null> {
-    try {
-      const { data } = await this.http.get<any>(
-        `calculo/${this.nroAffiliate}/monto/${amount}/plazo/${deadline}/cancelacion/${type === 'paralelo' ? 0 : 1}`
+      const { data } = await this.http.get<R>(
+        `/calculo/${this.nroAffiliate}/monto/${amount}/plazo/${deadline}/cancelacion/${
+          this.typeLending === 'paralelo' ? 0 : 1
+        }`
       )
 
       return data
@@ -98,12 +89,46 @@ export class AndeService extends HttpClient {
     }
   }
 
-  // public async nameFunction(deadline: number = 0): Promise<any | null> {
+  public async getPaymentMethods<R = TAndeResponse['formacobro']>(): Promise<R | null> {
+    try {
+      const { data } = await this.http.get<R>(`/formacobroptmo`)
+
+      return data
+    } catch (error) {
+      return null
+    }
+  }
+
+  public async getAccountsBank<R = TAndeResponse['cuentas']>(): Promise<R | null> {
+    try {
+      const { data } = await this.http.get<R>(`/cuentas/${this.nroAffiliate}`)
+
+      return data
+    } catch (error) {
+      return null
+    }
+  }
+
+  public async createCredit<R = object>(body: TAndeBody['solicitudcredito']): Promise<R | string> {
+    try {
+      const { data } = await this.http.post<R>(
+        `/solicitudcredito/${this.nroAffiliate}/cancelacion/${this.typeLending === 'paralelo' ? 0 : 1}`,
+        body
+      )
+
+      return data
+    } catch (error) {
+      return (error as TAndeError)?.mensaje || 'Error al crear linea de credito, intente nuevamente'
+    }
+  }
+
+  // NOTA: TEMPLATE
+  // public async nameFunction<R = any>(body: any): Promise<R | null> {
   //   try {
-  //     const { data } = await this.http.get<any>(
+  //     const { data } = await this.http.get<R>(
   //       ``
   //     )
-
+  //
   //     return data
   //   } catch (error) {
   //     return null
