@@ -31,8 +31,8 @@ export class SessionService {
       // Crear nueva sesión
       SESSIONS.push({
         phone,
-        treeLevel: 'MAIN',
-        treeStep: '',
+        treeLevel: TREE_LEVEL,
+        treeStep: TREE_STEP,
         ande: null,
         store: {}
       })
