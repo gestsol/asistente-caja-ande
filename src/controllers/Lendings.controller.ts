@@ -6,12 +6,10 @@ import { convertArrayInOptions, messageOptionInvalid } from '~UTILS/message.util
 export class LendingsController extends Controller {
   async startDecisionTree() {
     let response = ''
-
     const options = `
     (111) Préstamo especial ✨
     (113) Préstamo estudiantil 📚
     (114) Préstamo extraordinario 💰`
-
     const subOptions = `
     (L) La totalidad
     ( ) Escriba un monto menor`
@@ -42,7 +40,7 @@ export class LendingsController extends Controller {
 
           default:
             response = `
-            ${ANDE?.affiliate.nombre || 'NAME'} felicidades 🎉
+            ${ANDE!.affiliate.nombre} felicidades 🎉
             Tenés un crédito Pre-Aprobado.
 
             (3) Más información del crédito pre aprobado
@@ -254,7 +252,8 @@ export class LendingsController extends Controller {
                   }
                 } else {
                   response = `
-                  ${calculeResponse}
+                  ⚠️ ${calculeResponse}
+
                   ${MENU_HOME}
                   `
                 }
@@ -357,6 +356,6 @@ export class LendingsController extends Controller {
   }
 
   private initStore(): void {
-    STORE = { lendingSpecial: { payload: {}, body: {} } as any }
+    STORE = { lendingSpecial: { payload: {}, body: {} } } as any
   }
 }

@@ -6,6 +6,7 @@ import { messageOptionInvalid } from '~UTILS/message.util'
 export class LendingQuery extends Controller {
   async startDecisionTree() {
     let response = ''
+
     const options = `
     (131) Total de cuotas de créditos vigentes
     (132) Situación de crédito solicitado
@@ -27,33 +28,64 @@ export class LendingQuery extends Controller {
         break
 
       case '131':
-        response = `
-        Total de cuotas de créditos vigentes:
+        const fee = await this.andeService.getTotalFee()
 
-        ( INFORMACIÓN )
+        if (typeof fee === 'object') {
+          response = `
+          Total de cuotas de créditos vigentes:
 
-        ${MENU_HOME}
-        `
+          ${fee.totalCuota}
+
+          ${MENU_HOME}
+          `
+        } else {
+          response = `
+          ${fee}
+
+          ${MENU_HOME}
+          `
+        }
         break
 
       case '132':
-        response = `
-        Situación de crédito solicitado:
+        const situationLending = await this.andeService.getSituationLending()
 
-        ( INFORMACIÓN )
+        if (typeof situationLending === 'object') {
+          response = `
+          Situación de crédito solicitado:
 
-        ${MENU_HOME}
-        `
+          ${situationLending.situacion}
+
+          ${MENU_HOME}
+          `
+        } else {
+          response = `
+          ${situationLending}
+
+          ${MENU_HOME}
+          `
+        }
         break
 
       case '133':
-        response = `
-        Fecha de cierre mensual de préstamos:
+        const closingDate = await this.andeService.getClosingDate()
 
-        ( INFORMACIÓN )
+        if (typeof closingDate === 'object') {
+          response = `
+          Fecha de cierre mensual de préstamos:
 
-        ${MENU_HOME}
-        `
+          *Periodo*: ${closingDate.periodo}
+          *Fecha*: ${closingDate.fecha}
+
+          ${MENU_HOME}
+          `
+        } else {
+          response = `
+          ${closingDate}
+
+          ${MENU_HOME}
+          `
+        }
         break
 
       case '134':

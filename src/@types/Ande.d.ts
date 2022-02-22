@@ -103,6 +103,16 @@ type TAndeResponse = {
     limiteNormal: number
   }>
   solicitudtc: {}
+  montocuota: {
+    totalCuota: number
+  }
+  situacioncredito: {
+    situacion: string
+  }
+  fechacierre: {
+    periodo: string // '202202'
+    fecha: string // '16/02/2022'
+  }
 }
 
 type TAffiliate = {

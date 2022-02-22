@@ -22,7 +22,7 @@ export class AndeService extends HttpClient {
   }
 
   // NOTA: TEMPLATE
-  // public async nameFunction<R = any>(body: any): Promise<R | null> {
+  // public async nameFunction<R = any>(body: any): Promise<R | string> {
   //   try {
   //     const { data } = await this.http.get<R>(
   //       ``
@@ -30,7 +30,7 @@ export class AndeService extends HttpClient {
   //
   //     return data
   //   } catch (error) {
-  //     return null
+  //     return (error as TAndeError)?.mensaje || 'Error message default'
   //   }
   // }
 
@@ -170,6 +170,38 @@ export class AndeService extends HttpClient {
       return data
     } catch (error) {
       return null
+    }
+  }
+
+  // LENDING-QUERY _____________________________________________________________________________________________________
+
+  public async getTotalFee<R = TAndeResponse['montocuota']>(): Promise<R | string> {
+    try {
+      const { data } = await this.http.get<R>(`/montocuota/${this.nroAffiliate}`)
+
+      return data
+    } catch (error) {
+      return (error as TAndeError)?.mensaje || '❌ No se pudo obtener el total de cuotas'
+    }
+  }
+
+  public async getSituationLending<R = TAndeResponse['situacioncredito']>(): Promise<R | string> {
+    try {
+      const { data } = await this.http.get<R>(`/situacioncredito/${this.nroAffiliate}`)
+
+      return data
+    } catch (error) {
+      return (error as TAndeError)?.mensaje || '❌ No se pudo obtener su situación de crédito actual'
+    }
+  }
+
+  public async getClosingDate<R = TAndeResponse['fechacierre']>(): Promise<R | string> {
+    try {
+      const { data } = await this.http.get<R>('/fechacierre')
+
+      return data
+    } catch (error) {
+      return (error as TAndeError)?.mensaje || 'Sin datos 😔'
     }
   }
 }
