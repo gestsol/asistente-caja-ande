@@ -18,6 +18,17 @@ type TAndeBody = {
     idBanco: null | number
     cumpleRequisitos: number
   }
+  solicitudtc: {
+    esAdicional: number
+    tipoFamilia: null | any
+    lineaCredito: number
+    nroCedula: number
+    nombreApellido: null | any
+    direccion: null | any
+    celular: null | any
+    telefono: null | any
+    correo: null | any
+  }
 }
 
 type TAndeResponse = {
@@ -77,6 +88,21 @@ type TAndeResponse = {
       disponibleTransferencia: boolean
     }
   }>
+  datosstc: Array<{
+    estadoTarjeta: string // 'Operativa                     '
+    fechaVto: number
+    nroCuenta: null | any
+    nroTarjeta: string
+    saldo: number
+    saldoActual: number
+    disponible: number
+    pagoMinimo: number
+    disponiblePlan: number
+    pagoMinimoPendiente: number
+    amortizacionPendiente: number
+    limiteNormal: number
+  }>
+  solicitudtc: {}
 }
 
 type TAffiliate = {

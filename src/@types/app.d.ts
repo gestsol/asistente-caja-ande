@@ -55,6 +55,11 @@ type TStore = {
     }
     body: TAndeBody['solicitudcredito']
   }
+  creditCard: {
+    body: {
+      lineaCredito: number
+    }
+  }
 }
 
 type TLevel =

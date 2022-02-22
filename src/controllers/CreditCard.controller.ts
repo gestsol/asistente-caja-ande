@@ -6,6 +6,7 @@ import { messageOptionInvalid } from '~UTILS/message.util'
 export class CreditCardController extends Controller {
   protected async startDecisionTree(): Promise<void> {
     let response = ''
+
     const options = `
     (121) Nueva tarjeta de crédito 💳
     (122) Deuda total y disponibilidad de tarjeta de crédito
@@ -13,10 +14,14 @@ export class CreditCardController extends Controller {
     (124) Tarjeta adicional
     (125) Situación actual de tu tarjeta de crédito`
 
+    const amountMax = 'xxx'
+
     switch (this.message) {
       case 'menu':
         TREE_LEVEL = 'CREDIT_CARD'
         TREE_STEP = ''
+
+        this.initStore()
 
         response = `
         Elige una de las siguiente opciones:
@@ -26,27 +31,25 @@ export class CreditCardController extends Controller {
         break
 
       case '121':
-        response = `
-        Tu nueva tarjeta puede tener hasta xxx guaraníes.
-        ¿Deseas solicitarla con el monto máximo?
+        const creditCards = await this.andeService.getCreditCards()
 
-        (M) Quiero el monto máximo
-        (O) Deseo otro monto
-        `
-        break
+        if (creditCards?.length) {
+          response = `
+          Ya dispones de una tarjeta de crédito con la CAJA 🤓
 
-      case 'M':
-        response = `
-        Se ha ingresado una solicitud para tarjeta de crédito con un monto máximo de xx guaraníes.
+          ${MENU_HOME}
+          `
+        } else {
+          TREE_STEP = 'STEP_1'
 
-        (C) Confirmo
-        (R) Rechazo
-        `
-        break
+          response = `
+          Tu nueva tarjeta puede tener hasta ${amountMax} guaraníes.
+          ¿Deseas solicitarla con el monto máximo?
 
-      case 'O':
-        TREE_STEP = 'STEP_3'
-        response = 'Por favor, indicar el monto para la tarjeta.'
+          (M) Quiero el monto máximo
+          ( ) Escriba el monto que desea
+          `
+        }
         break
 
       case '122':
@@ -63,8 +66,8 @@ export class CreditCardController extends Controller {
         response = `
         Revisa aquí la fecha de vencimiento de tu tarjeta de crédito
 
-        - Pago Mínimo:  ( INFORMACIÓN )
-        - Fecha Vencimiento:    ( INFORMACIÓN )
+        - Pago Mínimo: ( INFORMACIÓN )
+        - Fecha Vencimiento: ( INFORMACIÓN )
         - Fecha Cierre: ( INFORMACIÓN )
 
         ${MENU_HOME}
@@ -72,6 +75,8 @@ export class CreditCardController extends Controller {
         break
 
       case '124':
+        TREE_STEP = 'STEP_3'
+
         response = `
         Solicita una tarjeta adicional aquí 🤓
         ¿Para quién es la tarjeta?
@@ -79,30 +84,6 @@ export class CreditCardController extends Controller {
         (H) Hijo
         (Y) Cónyuge
         `
-        break
-
-      case 'H':
-        TREE_STEP = 'STEP_1'
-        response = '¿Cuál es el apellido?'
-        break
-
-      case 'Y':
-        TREE_STEP = 'STEP_1'
-        response = '¿Cuál es el apellido?'
-        break
-
-      case 'S':
-        response = `
-        Se ha ingresado una solicitud para tarjeta de crédito adicional con un monto máximo de xxx guaraníes.
-
-        (C) Confirmo
-        (R) Rechazo
-        `
-        break
-
-      case 'N':
-        TREE_STEP = 'STEP_3'
-        response = 'Ingrese monto (debe ser menor a su monto disponible)'
         break
 
       case '125':
@@ -113,24 +94,11 @@ export class CreditCardController extends Controller {
         `
         break
 
-      case 'C':
-        response = `
-        Solicitud enviada ✅
-
-        ${MENU_HOME}
-        `
-        break
-
-      case 'R':
-        response = `
-        Solicitud cancelada ❌
-
-        ${MENU_HOME}
-        `
-        break
-
       case '0':
         TREE_LEVEL = 'HOME'
+
+        this.initStore()
+
         new HomeController({
           ...this.data,
           message: 'menu'
@@ -140,23 +108,72 @@ export class CreditCardController extends Controller {
       default:
         switch (TREE_STEP) {
           case 'STEP_1':
-            TREE_STEP = 'STEP_2'
-            response = '¿Cuál es el nombre?'
+            if (this.message === 'M' || !isNaN(Number(this.message))) {
+              const amount = this.message === 'M' ? Number(amountMax) : Number(this.message)
+
+              STORE.creditCard.body.lineaCredito = amount
+
+              response = `
+              Se ha ingresado una solicitud para tarjeta de crédito con un monto máximo de ${amount} guaraníes.
+
+              (C) Confirmo
+              (R) Rechazo
+              `
+              TREE_STEP = 'STEP_2'
+              break
+            }
+
+            response = messageOptionInvalid()
             break
 
           case 'STEP_2':
-            response = `
-              Actualmente la línea posee xxxx guaraníes disponible
-              ¿Desea asignar ese monto a la nueva tarjeta?
+            if (this.message === 'C') {
+              const creditCardResponse = await this.andeService.createCreditCard({
+                esAdicional: 0,
+                tipoFamilia: null,
+                lineaCredito: STORE.creditCard.body.lineaCredito, // 8000000
+                nroCedula: ANDE!.affiliate.nroCedula, // 3809540
+                nombreApellido: null,
+                direccion: null,
+                celular: null,
+                telefono: null,
+                correo: null
+              })
 
-              (S) SI
-              (N) NO
+              if (creditCardResponse) {
+                response = `
+                ✅ Solicitud enviada
+
+                ${MENU_HOME}
+                `
+              }
+              break
+            }
+
+            if (this.message === 'R') {
+              response = `
+              ❌ Solicitud cancelada
+
+              ${MENU_HOME}
               `
+            }
             break
 
           case 'STEP_3':
-            this.message = 'S'
-            this.startDecisionTree()
+            TREE_STEP = 'STEP_4'
+            response = '¿Cuál es el nombre y apellido?'
+            break
+
+          case 'STEP_4':
+            TREE_STEP = 'STEP_1'
+
+            response = `
+            Tu nueva tarjeta puede tener hasta ${amountMax} guaraníes.
+            ¿Deseas solicitarla con el monto máximo?
+
+            (M) Si
+            ( ) Ingrese monto (debe ser menor a su monto disponible)
+            `
             break
 
           default:
@@ -167,5 +184,9 @@ export class CreditCardController extends Controller {
     }
 
     this.sendMessage(response)
+  }
+
+  private initStore(): void {
+    STORE = { creditCard: { body: {} } } as any
   }
 }

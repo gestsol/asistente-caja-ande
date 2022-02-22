@@ -150,4 +150,26 @@ export class AndeService extends HttpClient {
       return (error as TAndeError)?.mensaje || 'Error al crear linea de credito, intente nuevamente'
     }
   }
+
+  // CREDIT-CARD _______________________________________________________________________________________________________
+
+  public async getCreditCards<R = TAndeResponse['datosstc']>(): Promise<R | null> {
+    try {
+      const { data } = await this.http.get<R>(`/datostc/${this.nroAffiliate}`)
+
+      return data
+    } catch (error) {
+      return null
+    }
+  }
+
+  public async createCreditCard<R = TAndeResponse['solicitudtc']>(body: TAndeBody['solicitudtc']): Promise<R | null> {
+    try {
+      const { data } = await this.http.get<R>(`/solicitudtc/${this.nroAffiliate}`)
+
+      return data
+    } catch (error) {
+      return null
+    }
+  }
 }
