@@ -6,6 +6,7 @@ import { convertArrayInOptions, messageOptionInvalid } from '~UTILS/message.util
 export class LendingsController extends Controller {
   async startDecisionTree() {
     let response = ''
+
     const options = `
     (111) Préstamo especial ✨
     (113) Préstamo estudiantil 📚
@@ -13,7 +14,7 @@ export class LendingsController extends Controller {
 
     const subOptions = `
     (L) La totalidad
-    (M) Escriba un monto menor`
+    ( ) Escriba un monto menor`
 
     if (TREE_STEP === '') {
       TREE_LEVEL = 'LENDINGS'
@@ -33,10 +34,10 @@ export class LendingsController extends Controller {
 
           case '3':
             response = `
-              ( INFORMACIÓN )
+            ( INFORMACIÓN )
 
-              ${MENU_HOME}
-              `
+            ${MENU_HOME}
+            `
             break
 
           default:
@@ -52,6 +53,8 @@ export class LendingsController extends Controller {
       } else {
         TREE_STEP = 'STEP_1'
 
+        this.initStore()
+
         response = `
         Elige una de las siguientes opciones:
         ${options}
@@ -61,8 +64,6 @@ export class LendingsController extends Controller {
     } else {
       switch (this.message) {
         case '111':
-          this.initStore()
-
           response = `
           Préstamo especial ✨
 
@@ -73,23 +74,63 @@ export class LendingsController extends Controller {
           break
 
         case '113':
-          response = `
-          Préstamo estudiantil 📚
-          ${subOptions}
-          `
+          const deadlineStundentList = await this.andeService.getLendings('student')
+
+          if (deadlineStundentList?.length) {
+            TREE_STEP = 'STEP_2'
+            STORE.lendingSpecial.payload.deadlineList = deadlineStundentList
+
+            const lendingOptions = convertArrayInOptions(deadlineStundentList, (item, i) => {
+              return `
+              (${i + 1})
+              *Plazo*: ${item.plazo}
+              *Monto*: ${item.monto}
+              `
+            })
+
+            response = `
+            Opciones de plazo para préstamo estudiantil:
+            ${lendingOptions}
+            ${MENU_HOME}
+            `
+          } else {
+            response = `
+            No hay opciones disponibles para préstamos estudiantil 😔
+            ${MENU_HOME}
+            `
+          }
           break
 
         case '114':
-          response = `
-          Préstamo extraordinario 💰
-          ${subOptions}
-          `
+          const deadlineExtraList = await this.andeService.getLendings('extraordinary')
+
+          if (deadlineExtraList?.length) {
+            TREE_STEP = 'STEP_2'
+            STORE.lendingSpecial.payload.deadlineList = deadlineExtraList
+
+            const lendingOptions = convertArrayInOptions(deadlineExtraList, (item, i) => {
+              return `
+              (${i + 1})
+              *Plazo*: ${item.plazo}
+              *Monto*: ${item.monto}
+              `
+            })
+
+            response = `
+            Opciones de plazo para préstamo extraordinario:
+            ${lendingOptions}
+            ${MENU_HOME}
+            `
+          } else {
+            response = `
+            No hay opciones disponibles para préstamos extraordinario 😔
+            ${MENU_HOME}
+            `
+          }
           break
 
         case 'A':
-          STORE.lendingSpecial.payload.type = 'paralelo'
-
-          const deadlineList = await this.andeService.getLendingsSpecial()
+          const deadlineList = await this.andeService.getLendings('paralelo')
 
           if (deadlineList?.length) {
             TREE_STEP = 'STEP_2'
@@ -104,7 +145,7 @@ export class LendingsController extends Controller {
             })
 
             response = `
-            Opciones de plazo para préstamo en paralelo
+            Opciones de plazo para préstamo en paralelo:
             ${lendingOptions}
             ${MENU_HOME}
             `
@@ -119,7 +160,7 @@ export class LendingsController extends Controller {
         case 'B':
           STORE.lendingSpecial.payload.type = 'cancelacion'
 
-          const deadlineCancellationList = await this.andeService.getLendingsSpecial()
+          const deadlineCancellationList = await this.andeService.getLendings('cancelacion')
 
           if (deadlineCancellationList?.length) {
             TREE_STEP = 'STEP_2'
@@ -127,15 +168,14 @@ export class LendingsController extends Controller {
 
             const lendingOptions = convertArrayInOptions(deadlineCancellationList, (item, i) => {
               return `
-              *Opción (${i + 1})*
+              *(${i + 1})*
               Plazo: ${item.plazo}
               Monto: ${item.monto}
               `
             })
 
             response = `
-            Opciones de plazo para préstamo con cancelación
-
+            Opciones de plazo para préstamo con cancelación:
             ${lendingOptions}
             ${MENU_HOME}
             `
@@ -184,12 +224,9 @@ export class LendingsController extends Controller {
                 let { monto, plazo } = STORE.lendingSpecial.payload.deadline
                 monto = this.message === 'L' ? monto : Number(this.message)
 
-                const calculation = await this.andeService.calculateLending(monto, plazo)
-                // TODO: que se debe hacer con esta información ?, por ahora se muestra el resultado en consola
-                // para comprobar que la peticion se realiza adecuadamente
-                // console.log(calculation)
+                const calculeResponse = await this.andeService.calculateLending(monto, plazo)
 
-                if (calculation) {
+                if (typeof calculeResponse === 'object') {
                   STORE.lendingSpecial.body.montoSolicitado = monto
 
                   const paymentMethods = await this.andeService.getPaymentMethods()
@@ -206,7 +243,6 @@ export class LendingsController extends Controller {
 
                     response = `
                     ¿Cómo querés realizar el pago de tu préstamo?
-
                     ${paymentOptions}
                     ${MENU_HOME}
                     `
@@ -218,11 +254,10 @@ export class LendingsController extends Controller {
                   }
                 } else {
                   response = `
-                  Monto invalido, intentelo nuevamente
+                  ${calculeResponse}
                   ${MENU_HOME}
                   `
                 }
-
                 break
               }
 
@@ -272,16 +307,16 @@ export class LendingsController extends Controller {
                   if (account) {
                     STORE.lendingSpecial.body.idCuentaBancaria = account.idRegistro
 
-                    const result = await this.andeService.createCredit({
+                    const creditResponse = await this.andeService.createCredit({
                       ...STORE.lendingSpecial.body,
                       nroCuentaBancaria: null,
                       idBanco: null,
                       cumpleRequisitos: 1
                     })
 
-                    if (typeof result === 'object') {
-                      // TODO: Determinar respuesta en la peticion y eliminar este log
-                      console.log('LINEA DE CREDITO:', result)
+                    if (typeof creditResponse === 'object') {
+                      // TODO: Determinar respuesta en la peticion y despues eliminar este log
+                      console.log('LINEA DE CREDITO:', creditResponse)
 
                       response = `
                       ✅ Prestamo generado exitosamente
@@ -290,7 +325,7 @@ export class LendingsController extends Controller {
                       `
                     } else {
                       response = `
-                      ⚠️ ${result}
+                      ⚠️ ${creditResponse}
 
                       ${MENU_HOME}
                       `

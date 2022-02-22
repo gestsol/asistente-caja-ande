@@ -4,7 +4,7 @@ import { stringify } from 'qs'
 
 export class AndeService extends HttpClient {
   private nroAffiliate: number
-  private typeLending: TLendingSpecial
+  private typeLending: TTypeLending
 
   constructor() {
     const { apiUrl } = getConfig().ande
@@ -16,33 +16,20 @@ export class AndeService extends HttpClient {
         'X-token': ANDE?.token || ''
       }
     })
+
     this.nroAffiliate = ANDE?.affiliate.codPersonalAnde || 0
     this.typeLending = STORE.lendingSpecial?.payload?.type || 'paralelo'
   }
 
-  // public async getAffiliateByPhone(phone: string): Promise<any | null> {
+  // NOTA: TEMPLATE
+  // public async nameFunction<R = any>(body: any): Promise<R | null> {
   //   try {
-  //     const { data } = await this.http.get(`/afiliado/celular/${phone}`)
+  //     const { data } = await this.http.get<R>(
+  //       ``
+  //     )
+  //
   //     return data
-  //   } catch (_) {
-  //     return null
-  //   }
-  // }
-
-  // public async getAffiliateByCI(ci: string): Promise<TAffiliate | null> {
-  //   try {
-  //     const { data } = await this.http.get(`/afiliado/cedula/${ci}`)
-  //     return data
-  //   } catch (_) {
-  //     return null
-  //   }
-  // }
-
-  // public async getAffiliateByNro(affiliate: string): Promise<TAffiliate | null> {
-  //   try {
-  //     const { data } = await this.http.get<TAffiliate>(`/opcionesmenu/${affiliate}`)
-  //     return data
-  //   } catch (_) {
+  //   } catch (error) {
   //     return null
   //   }
   // }
@@ -63,11 +50,36 @@ export class AndeService extends HttpClient {
     }
   }
 
-  public async getLendingsSpecial<R = TAndeResponse['lineacredito']>(deadline: number = 0): Promise<R | null> {
+  // LENDING ___________________________________________________________________________________________________________
+
+  public async getLendings<R = TAndeResponse['lineacredito']>(
+    type: TTypeLending,
+    deadline: number = 0
+  ): Promise<R | null> {
+    STORE.lendingSpecial.payload.type = type
+
+    let endpoint = ''
+
+    switch (type) {
+      case 'paralelo':
+        endpoint = `/lineacredito/${this.nroAffiliate}/plazo/${deadline}`
+        break
+
+      case 'cancelacion':
+        endpoint = `/lineacredito/cancelacion/${this.nroAffiliate}/plazo/${deadline}`
+        break
+
+      case 'student':
+        endpoint = `/lineacreditoestudiantil/${this.nroAffiliate}`
+        break
+
+      case 'extraordinary':
+        endpoint = `/lineacreditoextra/${this.nroAffiliate}`
+        break
+    }
+
     try {
-      const { data } = await this.http.get<R>(
-        `/lineacredito/${this.typeLending === 'paralelo' ? '' : 'cancelacion/'}${this.nroAffiliate}/plazo/${deadline}`
-      )
+      const { data } = await this.http.get<R>(endpoint)
 
       return data
     } catch (error) {
@@ -75,17 +87,17 @@ export class AndeService extends HttpClient {
     }
   }
 
-  public async calculateLending<R = TAndeResponse['calculo']>(amount: number, deadline: number): Promise<R | null> {
+  public async calculateLending<R = TAndeResponse['calculo']>(amount: number, deadline: number): Promise<R | string> {
     try {
       const { data } = await this.http.get<R>(
         `/calculo/${this.nroAffiliate}/monto/${amount}/plazo/${deadline}/cancelacion/${
-          this.typeLending === 'paralelo' ? 0 : 1
+          this.typeLending === 'cancelacion' ? 1 : 0
         }`
       )
 
       return data
     } catch (error) {
-      return null
+      return (error as TAndeError)?.mensaje || 'Monto invalido, intentelo nuevamente'
     }
   }
 
@@ -110,28 +122,32 @@ export class AndeService extends HttpClient {
   }
 
   public async createCredit<R = object>(body: TAndeBody['solicitudcredito']): Promise<R | string> {
+    let endpoint = '/solicitudcredito'
+
+    switch (this.typeLending) {
+      case 'paralelo':
+        endpoint += `/${this.nroAffiliate}/cancelacion/0`
+        break
+
+      case 'cancelacion':
+        endpoint += `/${this.nroAffiliate}/cancelacion/1`
+        break
+
+      case 'student':
+        endpoint += `/estudiantil/${this.nroAffiliate}`
+        break
+
+      case 'extraordinary':
+        endpoint += `/extraordinario/${this.nroAffiliate}`
+        break
+    }
+
     try {
-      const { data } = await this.http.post<R>(
-        `/solicitudcredito/${this.nroAffiliate}/cancelacion/${this.typeLending === 'paralelo' ? 0 : 1}`,
-        body
-      )
+      const { data } = await this.http.post<R>(endpoint, body)
 
       return data
     } catch (error) {
       return (error as TAndeError)?.mensaje || 'Error al crear linea de credito, intente nuevamente'
     }
   }
-
-  // NOTA: TEMPLATE
-  // public async nameFunction<R = any>(body: any): Promise<R | null> {
-  //   try {
-  //     const { data } = await this.http.get<R>(
-  //       ``
-  //     )
-  //
-  //     return data
-  //   } catch (error) {
-  //     return null
-  //   }
-  // }
 }

@@ -13,8 +13,8 @@ export class ServerService {
   }
 
   private middlewares(): void {
-    this.app.use('*', requestDebug)
     this.app.use(express.json())
+    this.app.use('*', requestDebug)
   }
 
   private routes(): void {

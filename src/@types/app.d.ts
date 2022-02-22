@@ -47,7 +47,7 @@ type TAnde = null | {
 type TStore = {
   lendingSpecial: {
     payload: {
-      type: TLendingSpecial
+      type: TTypeLending
       deadlineList: TDeadline[]
       deadline: TDeadline
       payMethodList: TAndeResponse['formacobro']
@@ -75,7 +75,7 @@ type TStep = '' | 'STEP_1' | 'STEP_2' | 'STEP_3' | 'STEP_4' | 'STEP_5' | 'STEP_6
 
 type TWassiData = TWassiBody['data']
 
-type TLendingSpecial = 'paralelo' | 'cancelacion'
+type TTypeLending = 'paralelo' | 'cancelacion' | 'student' | 'extraordinary'
 
 // DECLARATIONS ________________________________________________________________________________________________________
 
