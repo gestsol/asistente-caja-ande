@@ -204,4 +204,26 @@ export class AndeService extends HttpClient {
       return (error as TAndeError)?.mensaje || 'Sin datos 😔'
     }
   }
+
+  // NEWS ______________________________________________________________________________________________________________
+
+  public async getPaymentDate<R = TAndeResponse['fechacobro']>(): Promise<R | string> {
+    try {
+      const { data } = await this.http.get<R>(`/fechacobro/${this.nroAffiliate}`)
+
+      return data
+    } catch (error) {
+      return (error as TAndeError)?.mensaje || '❌ Error al obtener la fecha de pago'
+    }
+  }
+
+  public async getLinks<R = TAndeResponse['enlaces']>(): Promise<R | string> {
+    try {
+      const { data } = await this.http.get<R>(`/enlaces`)
+
+      return data
+    } catch (error) {
+      return (error as TAndeError)?.mensaje || '❌ No se pudieron obtener las noticias destacadas'
+    }
+  }
 }

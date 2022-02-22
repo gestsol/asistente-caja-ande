@@ -1,16 +1,15 @@
 import { Controller } from '~CLASS/Controller'
 import { HomeController } from '~CONTROLLERS/Home.controller'
 import { MENU_HOME } from '~ENTITIES/consts'
-import { messageOptionInvalid } from '~UTILS/message.util'
+import { convertArrayInOptions, messageOptionInvalid } from '~UTILS/message.util'
 
 export class NewsController extends Controller {
   async startDecisionTree() {
     let response = ''
+
     const options = `
     (141) Fecha de pago de haberes
-    (142) Noticias destacadas de la CAJA
-    (143) Horario de atención al público
-    (144) Contactos telefónicos`
+    (142) Noticias destacadas de la CAJA`
 
     switch (this.message) {
       case 'menu':
@@ -25,43 +24,46 @@ export class NewsController extends Controller {
         break
 
       case '141':
-        response = `
-        No te olvides de tus fechas de cobro! 😇
+        const paymentDate = await this.andeService.getPaymentDate()
 
-        ( INFORMACIÓN )
+        if (typeof paymentDate === 'object') {
+          console.log(paymentDate)
 
-        ${MENU_HOME}
-        `
+          response = `
+          No te olvides de tus fechas de cobro! 😇
+
+          ( INFORMACIÓN )
+
+          ${MENU_HOME}
+          `
+        } else {
+          response = `
+          ${paymentDate}
+
+          ${MENU_HOME}
+          `
+        }
         break
 
       case '142':
-        response = `
-        Las mejores promociones en un solo lugar 😔
+        const links = await this.andeService.getLinks()
 
-        ( INFORMACIÓN )
+        if (typeof links === 'object') {
+          const enabledLinks = links.filter(link => link.estado)
 
-        ${MENU_HOME}
-        `
-        break
+          const linkList = convertArrayInOptions(enabledLinks, item => {
+            return `
+            *${item.nombre}*
+            ${item.descripcion}
+            `
+          })
 
-      case '143':
-        response = `
-        Horario de atención al público:
-
-        ( INFORMACIÓN )
-
-        ${MENU_HOME}
-        `
-        break
-
-      case '144':
-        response = `
-        Contactos telefónicos:
-
-        ( INFORMACIÓN )
-
-        ${MENU_HOME}
-        `
+          response = `
+          Las mejores promociones en un solo lugar 🌎
+          ${linkList}
+          ${MENU_HOME}
+          `
+        }
         break
 
       case '0':

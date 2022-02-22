@@ -113,6 +113,13 @@ type TAndeResponse = {
     periodo: string // '202202'
     fecha: string // '16/02/2022'
   }
+  fechacobro: {}
+  enlaces: Array<{
+    codigo: number
+    nombre: string
+    descripcion: string
+    estado: boolean
+  }>
 }
 
 type TAffiliate = {
