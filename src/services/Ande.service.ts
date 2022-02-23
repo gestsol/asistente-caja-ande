@@ -226,4 +226,16 @@ export class AndeService extends HttpClient {
       return (error as TAndeError)?.mensaje || '❌ No se pudieron obtener las noticias destacadas'
     }
   }
+
+  // INFO ______________________________________________________________________________________________________________
+
+  public async getInfoList<R = TAndeResponse['info']>(): Promise<R | string> {
+    try {
+      const { data } = await this.http.get<R>('/info')
+
+      return data
+    } catch (error) {
+      return (error as TAndeError)?.mensaje || '❌ No se pudo obtener la información'
+    }
+  }
 }

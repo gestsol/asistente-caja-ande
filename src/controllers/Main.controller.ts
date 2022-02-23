@@ -6,7 +6,7 @@ import { LendingQuery } from '~CONTROLLERS/LendingQuery.controller'
 import { NewsController } from '~CONTROLLERS/News.controller'
 import { PersonalDataController } from '~CONTROLLERS/PersonalData.controller'
 import { DownloadController } from '~CONTROLLERS/Download.controller'
-import { LinksController } from '~CONTROLLERS/Links.controller'
+import { InfoController } from '~CONTROLLERS/Info.controller'
 import { EntryTable } from '~CONTROLLERS/EntryTable.controller'
 import { LendingsController } from '~CONTROLLERS/Lendings.controller'
 
@@ -79,7 +79,7 @@ export class MainController extends Controller {
         break
 
       case 'LINKS':
-        new LinksController(this.data)
+        new InfoController(this.data)
         break
 
       case 'ENTRY_TABLE':

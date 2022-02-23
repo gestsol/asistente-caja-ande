@@ -6,7 +6,7 @@ import { NewsController } from '~CONTROLLERS/News.controller'
 import { PersonalDataController } from '~CONTROLLERS/PersonalData.controller'
 import { DownloadController } from '~CONTROLLERS/Download.controller'
 import { LendingsController } from '~CONTROLLERS/Lendings.controller'
-import { LinksController } from '~CONTROLLERS/Links.controller'
+import { InfoController } from '~CONTROLLERS/Info.controller'
 import { EntryTable } from '~CONTROLLERS/EntryTable.controller'
 
 import { MENU_RETURN } from '~ENTITIES/consts'
@@ -73,7 +73,7 @@ export class HomeController extends Controller {
         break
 
       case '17':
-        new LinksController({
+        new InfoController({
           ...this.data,
           message: 'menu'
         })

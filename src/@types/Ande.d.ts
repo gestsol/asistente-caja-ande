@@ -120,6 +120,12 @@ type TAndeResponse = {
     descripcion: string
     estado: boolean
   }>
+  info: Array<{
+    codigo: number
+    nombre: string
+    descripcion: string
+    estado: boolean
+  }>
 }
 
 type TAffiliate = {

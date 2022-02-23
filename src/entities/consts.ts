@@ -13,5 +13,5 @@ export const OPTIONS_HOME = `
 (14) Noticias e informaciones del mes 📱
 (15) Datos personales 😊
 (16) Descargas 🤗
-(17) Link de interés 😄
+(17) Información varias 😄
 (18) Mesa de entrada`
