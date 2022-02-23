@@ -12,6 +12,12 @@ type TConfig = {
   modeAPP: 'API' | 'BOT'
   timerSessionMin: number
   messageSession: boolean
+  adminPhomeList: Array<string>
+  affiliate: {
+    nroCedula: string
+    nroAfiliado: string
+    nroCelular: string
+  }
 }
 
 type TConfigHttpClient = {

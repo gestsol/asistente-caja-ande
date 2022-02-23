@@ -1,6 +1,7 @@
 import { WassiService } from '~SERVICES/Wassi.service'
 import { botDebug } from '~UTILS/debug.util'
 import { getConfig } from '~UTILS/config.util'
+import { AndeService } from '~SERVICES/Ande.service'
 
 export class SessionService {
   private wassi?: WassiService
@@ -25,9 +26,28 @@ export class SessionService {
       STORE = session.store
 
       // Se reinicia el temporizador del cierre de sesión
-      this.timer!.refresh()
+      this.timer?.refresh()
     } else {
-      this.initGlobalValues()
+      const isAdmin = getConfig().adminPhomeList.includes(phone)
+
+      if (isAdmin) {
+        // Nueva sesión para usuario ADMIN
+        const loginData = await new AndeService().login(getConfig().affiliate)
+
+        // Inicializacion de valores globales para usuario ADMIN
+        global.TREE_LEVEL = 'HOME'
+        global.TREE_OPTION = ''
+        global.TREE_STEP = ''
+        global.ANDE = {
+          affiliate: loginData!.afiliado,
+          token: loginData!.token
+        }
+        global.STORE = {} as TStore
+      } else {
+        // Nueva sesión para usuario normal
+        this.initGlobalValues()
+        this.autoLogout(phone)
+      }
 
       // Crear nueva sesión
       SESSIONS.push({
@@ -38,7 +58,6 @@ export class SessionService {
         ande: ANDE,
         store: STORE
       })
-      this.autoLogout(phone)
 
       botDebug('SESSION', 'session started')
       await this.notifySession(phone, 'Sesión iniciada ✅')

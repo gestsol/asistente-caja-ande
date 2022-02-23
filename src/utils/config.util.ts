@@ -25,6 +25,12 @@ export const getConfig = (): TConfig => {
     },
     modeAPP: (ENV.MODE_APP as any) || 'BOT',
     timerSessionMin: Number(ENV.TIMER_SESSION_MIN) || 5,
-    messageSession: ENV.MESSAGE_SESSION === 'true' ? true : false
+    messageSession: ENV.MESSAGE_SESSION === 'true' ? true : false,
+    adminPhomeList: (ENV.ADMIN_PHONE_LIST as string)?.split(',') || [],
+    affiliate: {
+      nroCedula: (ENV.AFFILIATE_NRO_CEDULA as string) || '',
+      nroAfiliado: (ENV.AFFILIATE_NRO as string) || '',
+      nroCelular: (ENV.AFFILIATE_NRO_CELULAR as string) || ''
+    }
   }
 }
