@@ -43,7 +43,12 @@ export class HttpClient {
       },
       (error: AxiosError) => {
         console.error('ERROR-RESPONSE:', error.message)
-        throw error.response?.data || null
+        throw <TAndeError>error.response?.data
+          ? error.response?.data
+          : {
+              codigo: error.response?.status === 500 ? 505 : error.response?.status,
+              mensaje: error.response?.statusText
+            }
       }
     )
   }

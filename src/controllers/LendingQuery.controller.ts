@@ -1,7 +1,7 @@
 import { Controller } from '~CLASS/Controller'
 import { HomeController } from '~CONTROLLERS/Home.controller'
-import { MENU_HOME } from '~ENTITIES/consts'
 import { messageOptionInvalid } from '~UTILS/message.util'
+import { MENU_HOME } from '~ENTITIES/consts'
 
 export class LendingQuery extends Controller {
   async startDecisionTree() {
@@ -89,33 +89,87 @@ export class LendingQuery extends Controller {
         break
 
       case '134':
-        response = `
-        Descuento del mes:
+        const clainList = await this.andeService.getClainList()
 
-        ( INFORMACIÓN )
+        if (typeof clainList === 'object') {
+          const monthDiscount = await this.andeService.getClain(clainList[0].periodo)
 
-        ${MENU_HOME}
-        `
+          if (typeof monthDiscount === 'object') {
+            response = `
+            Descuento del mes:
+
+            *Préstamo*
+            Total reclamo: ${monthDiscount.totalReclamoPrestamo}
+            Total pago: ${monthDiscount.totalPagoPrestamo}
+
+            *Seguro*
+            Total reclamo: ${monthDiscount.totalReclamoSeguro}
+            Total pago: ${monthDiscount.totalPagoSeguro}
+
+            ${MENU_HOME}
+            `
+          } else {
+            response = `
+            ${monthDiscount}
+
+            ${MENU_HOME}
+            `
+          }
+        } else {
+          response = `
+          ${clainList}
+
+          ${MENU_HOME}
+          `
+        }
         break
 
       case '135':
-        response = `
-        Diferimiento de cuotas por reposo:
+        const restFee = await this.andeService.getRestFee()
 
-        ( INFORMACIÓN )
+        if (typeof restFee === 'object') {
+          response = `
+          Diferimiento de cuotas por reposo:
 
-        ${MENU_HOME}
-        `
+          Resolución: ${restFee.nroResolucion}
+          Acta: ${restFee.nroActa}
+
+          Fecha Resolución: ${restFee.fechaResolucion}
+          Periodo Desde: ${restFee.periodoDesde}
+          Periodo Hasta: ${restFee.periodoHasta}
+          Fecha de autorización: ${restFee.fechaAutorizacion}
+
+          ${MENU_HOME}
+          `
+        } else {
+          response = `
+          ${restFee}
+
+          ${MENU_HOME}
+          `
+        }
+
         break
 
       case '136':
-        response = `
-        Último pago de tesorería:
+        const treasuryPayment = await this.andeService.getLastTreasuryPayment()
 
-        ( INFORMACIÓN )
+        if (typeof treasuryPayment === 'object') {
+          response = `
+          Último pago de tesorería:
 
-        ${MENU_HOME}
-        `
+          Fecha: ${treasuryPayment.fecha}
+          Importe: ${treasuryPayment.importe}
+
+          ${MENU_HOME}
+          `
+        } else {
+          response = `
+          ${treasuryPayment}
+
+          ${MENU_HOME}
+          `
+        }
         break
 
       case '0':

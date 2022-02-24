@@ -66,7 +66,13 @@ type TStore = {
       lineaCredito: number
     }
   }
+  download: {
+    type: TDocType
+    docList: TDocList
+  }
 }
+
+type TDocList = Array<TAndeResponse['facturaCabecera'][0] & { nroDocumento: string }>
 
 type TLevel =
   | 'MAIN'
@@ -87,6 +93,8 @@ type TStep = '' | 'STEP_1' | 'STEP_2' | 'STEP_3' | 'STEP_4' | 'STEP_5' | 'STEP_6
 type TWassiData = TWassiBody['data']
 
 type TTypeLending = 'paralelo' | 'cancelacion' | 'student' | 'extraordinary'
+
+type TDocType = 'factura' | 'extracto' | 'liquidacionhaber'
 
 // DECLARATIONS ________________________________________________________________________________________________________
 

@@ -29,6 +29,10 @@ type TAndeBody = {
     telefono: null | any
     correo: null | any
   }
+  facturaPdf: {
+    periodo: string
+    nroDocumento: string
+  }
 }
 
 type TAndeResponse = {
@@ -102,7 +106,7 @@ type TAndeResponse = {
     amortizacionPendiente: number
     limiteNormal: number
   }>
-  solicitudtc: {}
+  solicitudtc: {} // TODO:
   montocuota: {
     totalCuota: number
   }
@@ -113,7 +117,7 @@ type TAndeResponse = {
     periodo: string // '202202'
     fecha: string // '16/02/2022'
   }
-  fechacobro: {}
+  fechacobro: {} // TODO:
   enlaces: Array<{
     codigo: number
     nombre: string
@@ -126,6 +130,53 @@ type TAndeResponse = {
     descripcion: string
     estado: boolean
   }>
+  facturaCabecera: Array<{
+    nic: null | any
+    codPersonal: number
+    periodo: string
+    periodoLetra: string
+    codPeriodoDcto: null | any
+    nroFactura: string
+    importeTotal: null | any
+    codInstitucion: null | any
+  }>
+  extractoCabecera: {
+    nroAfiliado: number
+    periodo: number
+    periodoLetra: string
+  }
+  liquidacionhaberCabecera: {
+    nic: number
+    codPersonal: number
+    periodo: number
+    periodoLetra: string
+  }
+  pdf: string
+  reclamoCabecera: Array<{
+    nroAfiliado: number
+    periodo: string
+    periodoLetra: string
+  }>
+  reclamo: {
+    totalReclamoPrestamo: number
+    totalReclamoSeguro: number
+    totalPagoPrestamo: number
+    totalPagoSeguro: number
+  }
+  reposo: {
+    id: number
+    nroResolucion: string
+    nroActa: number
+    fechaResolucion: string
+    periodoDesde: string
+    periodoHasta: string
+    nroExpediente: string
+    fechaAutorizacion: string
+  }
+  pagocaja: {
+    importe: number
+    fecha: string
+  }
 }
 
 type TAffiliate = {
