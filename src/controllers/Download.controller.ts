@@ -101,11 +101,13 @@ export class DownloadController extends Controller {
               const months12Time = getDatePrevious(months12).getTime()
 
               // Se filtra los documentos con fechas de los ultimos 12 meses
-              const docs = docList.filter(({ periodo }) => getDateFromPeriod(periodo).getTime() >= months12Time)
+              const docLastMonth12 = docList.filter(
+                ({ periodo }) => getDateFromPeriod(periodo).getTime() >= months12Time
+              )
 
               // Se ejcutan todas las peticiones en paralelo haciendo uso de "Promise.allSettled"
-              const pdfList = await Promise.allSettled(
-                docs.map(async ({ periodo, nroDocumento }) => {
+              const fileList = await Promise.allSettled(
+                docLastMonth12.map(async ({ periodo, nroDocumento }) => {
                   return this.andeService.downloadDoc(type, {
                     periodo,
                     nroDocumento
@@ -116,13 +118,13 @@ export class DownloadController extends Controller {
               // Preparar una lista de respuestas
               const responseList: string[] = []
 
-              pdfList.forEach(doc => {
+              fileList.forEach(file => {
                 // Todas las promesas seran resueltas incluso si hay error
                 // debido a que el servicio "Ande.service" captura cualquier error
-                if (doc.status === 'fulfilled') {
-                  if (typeof doc.value === 'object') {
-                    responseList.push(doc.value.pdf.substring(0, 40) + '...')
-                  } else responseList.push(doc.value)
+                if (file.status === 'fulfilled') {
+                  if (typeof file.value === 'object') {
+                    responseList.push(file.value.pdf.substring(0, 40) + '...')
+                  } else responseList.push(file.value)
                 }
               })
 
@@ -148,13 +150,15 @@ export class DownloadController extends Controller {
                 const doc = docList.find(doc => doc.periodo === periodo)
 
                 if (doc) {
-                  const filePDF = await this.andeService.downloadDoc(type, {
+                  const file = await this.andeService.downloadDoc(type, {
                     periodo,
                     nroDocumento: doc.nroDocumento
                   })
 
                   console.log('DOCUMENTO PDF:')
-                  console.log((filePDF as string).substring(0, 40) + '...')
+                  if (typeof file === 'object') {
+                    console.log(file.pdf.substring(0, 40) + '...')
+                  } else console.log(file)
 
                   response = `
                   EN DESARROLLO

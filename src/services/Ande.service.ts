@@ -18,10 +18,10 @@ export class AndeService extends HttpClient {
     })
 
     this.nroAffiliate = ANDE?.affiliate.codPersonalAnde || 0
-    this.typeLending = STORE.lendingSpecial?.payload?.type || 'paralelo'
+    this.typeLending = STORE.lending?.type || 'paralelo'
   }
 
-  private errorMessageHandler(error: unknown | TAndeError, message: string): string {
+  private errorMessageHandler(error: unknown | TAndeError, message?: string): string {
     const err = error as TAndeError
 
     switch (err.codigo) {
@@ -32,7 +32,7 @@ export class AndeService extends HttpClient {
         return `⚠️ ${err.mensaje}`
 
       default:
-        return '❌ Error al obtener los datos requeridos, intentelo nuevamente'
+        return '❌ Error al ejecutar la acción requerida, intente nuevamente'
     }
   }
 
@@ -70,8 +70,8 @@ export class AndeService extends HttpClient {
   public async getLendings<R = TAndeResponse['lineacredito']>(
     type: TTypeLending,
     deadline: number = 0
-  ): Promise<R | null> {
-    STORE.lendingSpecial.payload.type = type
+  ): Promise<R | string> {
+    STORE.lending.type = type
 
     let endpoint = ''
 
@@ -84,21 +84,37 @@ export class AndeService extends HttpClient {
         endpoint = `/lineacredito/cancelacion/${this.nroAffiliate}/plazo/${deadline}`
         break
 
-      case 'student':
+      case 'estudiantil':
         endpoint = `/lineacreditoestudiantil/${this.nroAffiliate}`
         break
 
-      case 'extraordinary':
+      case 'extraordinario':
         endpoint = `/lineacreditoextra/${this.nroAffiliate}`
         break
     }
 
     try {
-      const { data } = await this.http.get<R>(endpoint)
+      const { data } = await this.http.get<R | TAndeResponse['lineacreditoextra']>(endpoint)
 
-      return data
+      let dataWrapper: TAndeResponse['lineacredito']
+
+      if (Array.isArray(data)) dataWrapper = data
+      else {
+        const { plazoPrestamo, interesIPC, montoMaximo } = data as TAndeResponse['lineacreditoextra']
+
+        dataWrapper = [
+          {
+            plazo: plazoPrestamo,
+            tasaInteres: interesIPC,
+            monto: montoMaximo
+          }
+        ]
+      }
+
+      return (dataWrapper as unknown) as R
     } catch (error) {
-      return null
+      const deadlineType = type === 'paralelo' || type === 'cancelacion' ? 'especial' : type
+      return this.errorMessageHandler(error, `No hay plazos disponibles para préstamo ${deadlineType}`)
     }
   }
 
@@ -126,7 +142,7 @@ export class AndeService extends HttpClient {
     }
   }
 
-  public async getAccountsBank<R = TAndeResponse['cuentas']>(): Promise<R | null> {
+  public async getBankAccountList<R = TAndeResponse['cuentas']>(): Promise<R | null> {
     try {
       const { data } = await this.http.get<R>(`/cuentas/${this.nroAffiliate}`)
 
@@ -148,12 +164,8 @@ export class AndeService extends HttpClient {
         endpoint += `/${this.nroAffiliate}/cancelacion/1`
         break
 
-      case 'student':
-        endpoint += `/estudiantil/${this.nroAffiliate}`
-        break
-
-      case 'extraordinary':
-        endpoint += `/extraordinario/${this.nroAffiliate}`
+      default:
+        endpoint += `/${this.typeLending}/${this.nroAffiliate}`
         break
     }
 
@@ -162,7 +174,17 @@ export class AndeService extends HttpClient {
 
       return data
     } catch (error) {
-      return (error as TAndeError)?.mensaje || '❌ Error al crear linea de credito, intente nuevamente'
+      return this.errorMessageHandler(error)
+    }
+  }
+
+  public async createCreditExtra<R = any>(body: TAndeBody['solicitudcreditoExtraordinario']): Promise<R | string> {
+    try {
+      const { data } = await this.http.post<R>(`/solicitudcredito/extraordinario/${this.nroAffiliate}`)
+
+      return data
+    } catch (error) {
+      return this.errorMessageHandler(error)
     }
   }
 

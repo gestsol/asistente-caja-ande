@@ -39,7 +39,6 @@ type TEnv = 'development' | 'production'
 type TSession = {
   phone: string
   treeLevel: TLevel
-  option: string
   treeStep: TStep
   ande: TAnde
   store: TStore
@@ -51,15 +50,13 @@ type TAnde = null | {
 }
 
 type TStore = {
-  lendingSpecial: {
-    payload: {
-      type: TTypeLending
-      deadlineList: TDeadline[]
-      deadline: TDeadline
-      payMethodList: TAndeResponse['formacobro']
-      payMethod: TAndeResponse['formacobro'][0]
-    }
-    body: TAndeBody['solicitudcredito']
+  lending: {
+    type: TTypeLending
+    deadlineList: TDeadline[]
+    deadline: TDeadline
+    payMethodList: TAndeResponse['formacobro']
+    payMethod: TAndeResponse['formacobro'][0]
+    amount: number
   }
   creditCard: {
     body: {
@@ -92,7 +89,7 @@ type TStep = '' | 'STEP_1' | 'STEP_2' | 'STEP_3' | 'STEP_4' | 'STEP_5' | 'STEP_6
 
 type TWassiData = TWassiBody['data']
 
-type TTypeLending = 'paralelo' | 'cancelacion' | 'student' | 'extraordinary'
+type TTypeLending = 'paralelo' | 'cancelacion' | 'estudiantil' | 'extraordinario'
 
 type TDocType = 'factura' | 'extracto' | 'liquidacionhaber'
 
@@ -104,5 +101,4 @@ declare var ANDE: TAnde
 declare var STORE: TStore
 
 declare var TREE_LEVEL: TLevel
-declare var TREE_OPTION: string
 declare var TREE_STEP: TStep

@@ -18,6 +18,13 @@ type TAndeBody = {
     idBanco: null | number
     cumpleRequisitos: number
   }
+  solicitudcreditoExtraordinario: {
+    monto: number
+    origen: number
+    tipoDesembolso: number
+    codBanco: number
+    nroCtaBancaria: number
+  }
   solicitudtc: {
     esAdicional: number
     tipoFamilia: null | any
@@ -41,6 +48,22 @@ type TAndeResponse = {
     token: string
   }
   lineacredito: Array<TDeadline>
+  lineacreditoextra: {
+    pendienteTarjetas: number
+    pendienteExtraordinarios: number
+    montoMaximo: number
+    saldoExtraordinarioVigente: number
+    interesIPC: number
+    plazoPrestamo: number
+    tipoDesembolso: number
+    soloCheque: boolean
+    codBanco: number
+    banco: string
+    numeroCuentaBancaria: string
+    codInstitucion: number
+    totalSaldos: number
+  }
+
   formacobro: Array<{
     codigo: number
     descripcion: string
