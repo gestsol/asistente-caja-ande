@@ -129,7 +129,7 @@ export class SessionService {
 
   private async notifySession(phone: string, message: string): Promise<void> {
     if (getConfig().messageSession) {
-      await this.wassi!.sendMessage(phone, message)
+      await this.wassi!.sendMessage({ phone, message })
     }
   }
 }

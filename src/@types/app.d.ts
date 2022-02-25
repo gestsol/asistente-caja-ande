@@ -91,7 +91,7 @@ type TWassiData = TWassiBody['data']
 
 type TTypeLending = 'paralelo' | 'cancelacion' | 'estudiantil' | 'extraordinario'
 
-type TDocType = 'factura' | 'extracto' | 'liquidacionhaber'
+type TDocType = 'factura' | 'prestamo' | 'liquidacionhaber'
 
 // DECLARATIONS ________________________________________________________________________________________________________
 

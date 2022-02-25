@@ -6,7 +6,7 @@ export function sessionHandler(): Handler {
 
   return async (req: Request, _, next: NextFunction): Promise<void> => {
     try {
-      const { fromNumber, body } = req.body.data as TWassiBody['data']
+      const { fromNumber, body } = req.body.data as TWassiRequest['data']
 
       if (!fromNumber || !body) throw new Error('Body is incorrect')
 

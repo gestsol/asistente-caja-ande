@@ -54,6 +54,8 @@ export class DownloadController extends Controller {
         break
 
       case '162':
+        STORE.download.type = 'prestamo'
+
         response = `
         EN DESARROLLO
 
@@ -141,48 +143,48 @@ export class DownloadController extends Controller {
               break
             }
 
+            const periodo = getPeriodFromMessage(this.message)
+
             // Obtener documento del periodo ingresado
-            if (this.message) {
-              const periodo = getPeriodFromMessage(this.message)
+            if (periodo) {
               const { type, docList } = STORE.download
+              const { codPersonalAnde } = ANDE!.affiliate
 
-              if (periodo) {
-                const doc = docList.find(doc => doc.periodo === periodo)
+              const doc = docList.find(doc => doc.periodo === periodo)
 
-                if (doc) {
-                  const file = await this.andeService.downloadDoc(type, {
-                    periodo,
-                    nroDocumento: doc.nroDocumento
-                  })
+              if (doc) {
+                const file = await this.andeService.downloadDoc(type, {
+                  periodo,
+                  nroDocumento: doc.nroDocumento
+                })
 
-                  console.log('DOCUMENTO PDF:')
-                  if (typeof file === 'object') {
-                    console.log(file.pdf.substring(0, 40) + '...')
-                  } else console.log(file)
+                if (typeof file === 'object') {
+                  const filename = `${type}-${codPersonalAnde}-${doc.nroDocumento}`
 
-                  response = `
-                  EN DESARROLLO
-
-                  ${MENU_HOME}
-                  `
+                  // FIXME: Los documentos se envian en blanco
+                  await this.sendFile(filename, file.pdf)
                 } else {
                   response = `
-                  No existe una factura del periodo ingresado, intente con otro mes y año
+                  ${file}
 
                   ${MENU_HOME}
                   `
                 }
               } else {
                 response = `
-                El formato de mes y año son invalidos, intente de nuevo
+                No existe una factura del periodo ingresado, intente con otro mes y año
 
                 ${MENU_HOME}
                 `
               }
               break
-            }
+            } else {
+              response = `
+              El formato de mes y año son invalidos, intente de nuevo
 
-            response = messageOptionInvalid()
+              ${MENU_HOME}
+              `
+            }
             break
 
           default:

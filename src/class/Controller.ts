@@ -42,7 +42,10 @@ export class Controller {
 
       switch (getConfig().modeAPP) {
         case 'BOT':
-          const wassiResponse = await this.wassiService.sendMessage(this.data.phone, _response)
+          const wassiResponse = await this.wassiService.sendMessage({
+            phone: this.data.phone,
+            message: _response
+          })
 
           if (wassiResponse) {
             let { message, status } = wassiResponse
@@ -67,5 +70,33 @@ export class Controller {
       // Update session
       SessionService.update(this.data.phone)
     }
+  }
+
+  protected async sendFile(filename: string, file: string): Promise<void> {
+    // TODO: remover los mensajes de log, cuando se consiga verificar el buen funcionamiento
+    console.log(file)
+    const [fileData] = await this.wassiService.uploadFile({ filename }, file)
+
+    if (fileData) {
+      console.log(fileData)
+
+      const wassiResponse = await this.wassiService.sendFile({
+        phone: this.data.phone,
+        media: { file: fileData.id }
+      })
+
+      console.log(wassiResponse)
+
+      if (wassiResponse) {
+        const {
+          media: { file },
+          status
+        } = wassiResponse
+
+        botDebug('WASSI', `Archivo in ${status}, id: ${file}`)
+      }
+    }
+
+    this.data.res.end()
   }
 }

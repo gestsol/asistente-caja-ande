@@ -8,19 +8,64 @@ export class WassiService extends HttpClient {
     const { apiUrl, token, device } = getConfig().wassi
     super({
       baseURL: apiUrl,
-      defaultPath: '/v1/messages',
+      defaultPath: '/v1',
       headers: { token }
     })
     this.device = device
   }
 
-  public async sendMessage(phone: string, message: string): Promise<TWassiResponse | null> {
-    const body = { phone, message, device: this.device }
+  public async sendMessage<R = TWassiResponse['messages']['message']>({
+    phone,
+    message,
+    device = this.device
+  }: TWassiBody['messages']): Promise<R | null> {
+    const body = { phone, message, device }
 
     try {
-      const { data } = await this.http.post('/', body)
+      const { data } = await this.http.post<R>('/messages', body)
+
       return data
     } catch (_) {
+      console.log(_)
+      return null
+    }
+  }
+
+  public async uploadFile<R = TWassiResponse['files']>(
+    { filename, expiration = '90d', permission = 'public' }: TWassiBody['files'],
+    binary: string
+  ): Promise<R | []> {
+    try {
+      const { data } = await this.http.post('/files', binary, {
+        headers: { 'Content-Type': 'application/pdf' },
+        params: {
+          filename,
+          expiration,
+          format: 'native',
+          permission
+        }
+      })
+      return data
+    } catch (_) {
+      console.log(_)
+      return []
+    }
+  }
+
+  public async sendFile<R = TWassiResponse['messages']['media']>({
+    phone,
+    media,
+    device = this.device
+  }: TWassiBody['messages']) {
+    const body = { phone, media, device }
+
+    try {
+      const { data } = await this.http.post<R>('/messages', body)
+
+      return data
+    } catch (_) {
+      // TODO: crear un mensaje para retornar en caso de error
+      console.log(_)
       return null
     }
   }
