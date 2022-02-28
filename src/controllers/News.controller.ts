@@ -79,6 +79,6 @@ export class NewsController extends Controller {
         break
     }
 
-    this.sendMessage(response)
+    return this.sendMessage(response)
   }
 }

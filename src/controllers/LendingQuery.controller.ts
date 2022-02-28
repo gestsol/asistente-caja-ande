@@ -185,6 +185,6 @@ export class LendingQuery extends Controller {
         break
     }
 
-    this.sendMessage(response)
+    return this.sendMessage(response)
   }
 }

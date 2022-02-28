@@ -2,7 +2,7 @@ import { AndeService } from '~SERVICES/Ande.service'
 import { WassiService } from '~SERVICES/Wassi.service'
 import { SessionService } from '~SERVICES/Session.service'
 import { botDebug } from '~UTILS/debug.util'
-import { messageFormatter, messageOptionInvalid } from '~UTILS/message.util'
+import { messageFormatter } from '~UTILS/message.util'
 import { getConfig } from '~UTILS/config.util'
 
 export class Controller {
@@ -11,7 +11,6 @@ export class Controller {
   protected data: TDataController
   protected message: string
 
-  protected response: string = ''
   protected options: string = ''
   protected menuHome: string = ''
 
@@ -21,23 +20,30 @@ export class Controller {
     this.data = data
     this.message = data.message
     this.menuHome = data.menuHome
-    this.startDecisionTree()
+    this.start()
   }
 
-  protected async startDecisionTree(): Promise<void> {}
+  private async start(): Promise<void> {
+    const response = await this.startDecisionTree()
+    console.log(response)
 
-  protected async executeOptions(func: Function): Promise<void> {
-    await func()
-    // TODO: Manejar los menu de retorno aqui mismo
-    // if (this.message === '00') {
-    //   this.message = 'menu'
-    //   await this.startDecisionTree()
-    // }
-    await this.sendMessage(this.response || messageOptionInvalid(this.options))
-  }
+    if (response && !this.data.res.headersSent) {
+      this.data.res.end()
+    }
 
-  protected async sendMessage(response: string): Promise<void> {
     if (response) {
+      // Update session
+      SessionService.update(this.data.phone)
+    }
+  }
+
+  // Este metodo solo sirve como interface para overwrite en los controllers
+  protected async startDecisionTree(): Promise<any> {
+    return true
+  }
+
+  protected async sendMessage(response: string): Promise<boolean> {
+    if (response && response !== 'OK') {
       const _response = messageFormatter(response)
 
       switch (getConfig().modeAPP) {
@@ -53,8 +59,6 @@ export class Controller {
 
             botDebug('WASSI', `Message in ${status}, ${message}`)
           }
-
-          this.data.res.end()
           break
 
         case 'API':
@@ -66,37 +70,41 @@ export class Controller {
           }
           break
       }
-
-      // Update session
-      SessionService.update(this.data.phone)
     }
+
+    return response ? true : false
   }
 
-  protected async sendFile(filename: string, file: string): Promise<void> {
-    // TODO: remover los mensajes de log, cuando se consiga verificar el buen funcionamiento
-    console.log(file)
-    const [fileData] = await this.wassiService.uploadFile({ filename }, file)
+  protected async sendFile(filename: string, file: TDataStream): Promise<void> {
+    switch (getConfig().modeAPP) {
+      case 'BOT':
+        const [fileData] = await this.wassiService.uploadFile({ filename }, file)
 
-    if (fileData) {
-      console.log(fileData)
+        if (fileData) {
+          const wassiResponse = await this.wassiService.sendFile({
+            phone: this.data.phone,
+            media: { file: fileData.id }
+          })
 
-      const wassiResponse = await this.wassiService.sendFile({
-        phone: this.data.phone,
-        media: { file: fileData.id }
-      })
+          if (wassiResponse) {
+            const {
+              media: { file },
+              status
+            } = wassiResponse
 
-      console.log(wassiResponse)
+            botDebug('WASSI', `File in ${status}, ${file}`)
+          }
+        }
+        break
 
-      if (wassiResponse) {
-        const {
-          media: { file },
-          status
-        } = wassiResponse
-
-        botDebug('WASSI', `Archivo in ${status}, id: ${file}`)
-      }
+      case 'API':
+        if (!this.data.res.headersSent) {
+          this.data.res.json({
+            status: 'OK',
+            file: file.setEncoding('utf-8').read()
+          })
+        }
+        break
     }
-
-    this.data.res.end()
   }
 }

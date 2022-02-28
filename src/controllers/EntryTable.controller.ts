@@ -6,6 +6,7 @@ import { messageOptionInvalid } from '~UTILS/message.util'
 export class EntryTable extends Controller {
   async startDecisionTree() {
     let response = ''
+
     const options = ``
 
     switch (this.message) {
@@ -33,6 +34,6 @@ export class EntryTable extends Controller {
         break
     }
 
-    this.sendMessage(response)
+    return this.sendMessage(response)
   }
 }

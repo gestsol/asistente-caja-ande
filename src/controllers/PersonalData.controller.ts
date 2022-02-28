@@ -6,6 +6,7 @@ import { messageOptionInvalid } from '~UTILS/message.util'
 export class PersonalDataController extends Controller {
   async startDecisionTree() {
     let response = ''
+
     const options = `
     (151) Cargar una foto (Reconocimiento facial)
     (152) Cargar domicilio (envío de ubicación)`
@@ -67,6 +68,6 @@ export class PersonalDataController extends Controller {
         break
     }
 
-    this.sendMessage(response)
+    return this.sendMessage(response)
   }
 }

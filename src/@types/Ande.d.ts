@@ -38,7 +38,7 @@ type TAndeBody = {
   }
   facturaPdf: {
     periodo: string
-    nroDocumento: string
+    nroFactura?: string
   }
 }
 
@@ -129,7 +129,7 @@ type TAndeResponse = {
     amortizacionPendiente: number
     limiteNormal: number
   }>
-  solicitudtc: {} // TODO:
+  solicitudtc: any // TODO:
   montocuota: {
     totalCuota: number
   }
@@ -154,27 +154,27 @@ type TAndeResponse = {
     estado: boolean
   }>
   facturaCabecera: Array<{
-    nic: null | any
-    codPersonal: number
+    nic?: null | any
+    codPersonal?: number
     periodo: string
     periodoLetra: string
-    codPeriodoDcto: null | any
-    nroFactura: string
-    importeTotal: null | any
-    codInstitucion: null | any
+    codPeriodoDcto?: null | any
+    nroFactura?: string
+    importeTotal?: null | any
+    codInstitucion?: null | any
   }>
-  extractoCabecera: {
+  extractoCabecera: Array<{
     nroAfiliado: number
-    periodo: number
+    periodo: string
     periodoLetra: string
-  }
-  liquidacionhaberCabecera: {
-    nic: number
-    codPersonal: number
-    periodo: number
+  }>
+  liquidacionhaberCabecera: Array<{
+    nic?: number
+    codPersonal?: number
+    periodo: string
     periodoLetra: string
-  }
-  pdf: string
+  }>
+  pdf: TDataStream
   reclamoCabecera: Array<{
     nroAfiliado: number
     periodo: string

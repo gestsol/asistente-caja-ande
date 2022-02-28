@@ -59,9 +59,7 @@ type TStore = {
     amount: number
   }
   creditCard: {
-    body: {
-      lineaCredito: number
-    }
+    amount: number
   }
   download: {
     type: TDocType
@@ -69,7 +67,9 @@ type TStore = {
   }
 }
 
-type TDocList = Array<TAndeResponse['facturaCabecera'][0] & { nroDocumento: string }>
+type TDocList = TAndeResponse['facturaCabecera'] &
+  TAndeResponse['extractoCabecera'] &
+  TAndeResponse['liquidacionhaberCabecera']
 
 type TLevel =
   | 'MAIN'
@@ -91,7 +91,9 @@ type TWassiData = TWassiBody['data']
 
 type TTypeLending = 'paralelo' | 'cancelacion' | 'estudiantil' | 'extraordinario'
 
-type TDocType = 'factura' | 'prestamo' | 'liquidacionhaber'
+type TDocType = 'factura' | 'extracto' | 'liquidacionhaber'
+
+type TDataStream = import('http').IncomingMessage
 
 // DECLARATIONS ________________________________________________________________________________________________________
 

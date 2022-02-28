@@ -15,6 +15,7 @@ import { messageOptionInvalid } from '~UTILS/message.util'
 export class HomeController extends Controller {
   async startDecisionTree() {
     let response = ''
+
     const options = this.menuHome
 
     switch (this.message) {
@@ -106,6 +107,6 @@ export class HomeController extends Controller {
         break
     }
 
-    this.sendMessage(response)
+    return this.sendMessage(response)
   }
 }

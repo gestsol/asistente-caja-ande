@@ -21,8 +21,8 @@ export class AndeService extends HttpClient {
     this.typeLending = STORE.lending?.type || 'paralelo'
   }
 
-  private errorMessageHandler(error: unknown | TAndeError, message?: string): string {
-    const err = error as TAndeError
+  private errorMessageHandler(error: unknown | TAndeError | Error, message?: string): string {
+    const err = error as TAndeError & Error
 
     switch (err.codigo) {
       case 404:
@@ -32,6 +32,7 @@ export class AndeService extends HttpClient {
         return `⚠️ ${err.mensaje}`
 
       default:
+        console.error(err)
         return '❌ Error al ejecutar la acción requerida, intente nuevamente'
     }
   }
@@ -190,13 +191,13 @@ export class AndeService extends HttpClient {
 
   // CREDIT-CARD _______________________________________________________________________________________________________
 
-  public async getCreditCards<R = TAndeResponse['datosstc']>(): Promise<R | null> {
+  public async getCreditCards<R = TAndeResponse['datosstc']>(): Promise<R | string> {
     try {
       const { data } = await this.http.get<R>(`/datostc/${this.nroAffiliate}`)
 
       return data
     } catch (error) {
-      return null
+      return this.errorMessageHandler(error, 'No se pudo obtener información sobre tarjeta de crédito')
     }
   }
 
@@ -317,33 +318,40 @@ export class AndeService extends HttpClient {
 
   // DOWNLOAD __________________________________________________________________________________________________________
 
-  public async getDocsList<R = TDocList>(docType: TDocType): Promise<R | string> {
+  public async getDocList<R = TDocList>(docType: TDocType): Promise<R | string> {
+    STORE.download.type = docType
+
     try {
-      const { data } = await this.http.get<TDocList>(`/${docType}/cabecera/${this.nroAffiliate}`)
+      const { data } = await this.http.get<R>(`/${docType}/cabecera/${this.nroAffiliate}`)
 
-      const dataWrapper = data.map(item => ({
-        ...item,
-        nroDocumento: item.nroFactura
-      }))
-
-      return (dataWrapper as unknown) as R
+      return data
     } catch (error) {
       return this.errorMessageHandler(error, 'No hay documentos para descargar')
     }
   }
 
-  public async downloadDoc<R = TAndeResponse['pdf']>(
+  public async getDoc<R = TAndeResponse['pdf']>(
     docType: TDocType,
-    { periodo, nroDocumento }: TAndeBody['facturaPdf']
-  ): Promise<{ pdf: R } | string> {
+    { periodo, nroFactura }: TAndeBody['facturaPdf']
+  ): Promise<{ filename: string; pdf: R } | string> {
     try {
-      const { data } = await this.http.get<string>(`/${docType}/pdf/${this.nroAffiliate}/${periodo}/${nroDocumento}`)
+      const { headers, data } = await this.http.get<R>(
+        `/${docType}/pdf/${this.nroAffiliate}/${periodo}${docType === 'factura' ? `/${nroFactura}` : ''}`,
+        {
+          // Muy importante colocar esta propiedad debido a que este endpoint lo que hace
+          // es compartir la ruta donde se encuentra el documento
+          responseType: 'stream'
+        }
+      )
 
       return {
-        pdf: (data.substring(0, 40) as unknown) as R
+        // Se obtiene el nombre del documento por medio del header,
+        // el cual tiene el siguiente formato "attachment; filename=<FILE_NAME>.pdf"
+        filename: headers['content-disposition'].split('=')[1].split('.')[0],
+        pdf: data
       }
     } catch (error) {
-      return this.errorMessageHandler(error, 'No se pudo obtener el documento solicitado')
+      return this.errorMessageHandler(error, `No se pudo obtener el documento: ${docType}_${periodo}`)
     }
   }
 }

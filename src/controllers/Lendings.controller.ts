@@ -346,7 +346,7 @@ export class LendingsController extends Controller {
       }
     }
 
-    this.sendMessage(response)
+    return this.sendMessage(response)
   }
 
   private initStore(): void {

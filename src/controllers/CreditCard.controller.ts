@@ -1,18 +1,17 @@
 import { Controller } from '~CLASS/Controller'
 import { HomeController } from '~CONTROLLERS/Home.controller'
+import { convertArrayInOptions, messageOptionInvalid } from '~UTILS/message.util'
 import { MENU_HOME } from '~ENTITIES/consts'
-import { messageOptionInvalid } from '~UTILS/message.util'
 
 export class CreditCardController extends Controller {
-  protected async startDecisionTree(): Promise<void> {
+  async startDecisionTree() {
     let response = ''
 
     const options = `
-    (121) Nueva tarjeta de crédito 💳
+    (121) Tarjeta de crédito 💳
     (122) Deuda total y disponibilidad de tarjeta de crédito
     (123) Monto y vencimiento de tu tarjeta
-    (124) Tarjeta adicional
-    (125) Situación actual de tu tarjeta de crédito`
+    (124) Situación actual de tu tarjeta de crédito`
 
     const amountMax = 'xxx'
 
@@ -33,65 +32,112 @@ export class CreditCardController extends Controller {
       case '121':
         const creditCards = await this.andeService.getCreditCards()
 
-        if (creditCards?.length) {
+        if (typeof creditCards === 'object') {
+          if (creditCards.length) {
+            // TREE_STEP = ''
+
+            // response = `
+            // Ya dispones de tarjeta de crédito con la CAJA 🤓
+            // ¿Para quién es la tarjeta nueva?
+
+            // (H) Hijo
+            // (Y) Cónyuge
+
+            // ${MENU_HOME}
+            // `
+
+            response = `
+            EN DESARROLLO
+
+            ${MENU_HOME}
+            `
+          } else {
+            TREE_STEP = 'STEP_1'
+
+            response = `
+            Tenes disponible ${amountMax} guaraníes para tu tarjeta de crédito.
+            ¿Deseas solicitarla con el monto máximo?
+
+            (M) Quiero el monto máximo
+            (  ) Escriba el monto que desea
+            `
+          }
+        } else {
           response = `
-          Ya dispones de una tarjeta de crédito con la CAJA 🤓
+          ${creditCards}
 
           ${MENU_HOME}
-          `
-        } else {
-          TREE_STEP = 'STEP_1'
-
-          response = `
-          Tu nueva tarjeta puede tener hasta ${amountMax} guaraníes.
-          ¿Deseas solicitarla con el monto máximo?
-
-          (M) Quiero el monto máximo
-          ( ) Escriba el monto que desea
           `
         }
         break
 
       case '122':
         response = `
-        Nunca fue tan sencillo tener esta información en la comodidad de tu celular 😎
-
-        ( INFORMACIÓN )
+        EN DESARROLLO
 
         ${MENU_HOME}
         `
+        // const creditCards = await this.andeService.getCreditCards()
+
+        // if (typeof creditCards === 'object') {
+        //   convertArrayInOptions(creditCards, (item, i) => {
+        //     return `
+        //     *Tarjeta ${item.nroTarjeta}*
+
+        //     Saldo disponible: ${item.disponible}
+        //     Deuda total: ${item.pagoMinimoPendiente}
+
+        //     `
+        //   })
+
+        //   response = `
+        //   Nunca fue tan sencillo tener esta información en la comodidad de tu celular 😎
+
+        //   ${creditCards}
+
+        //   ${MENU_HOME}
+        //   `
+        // } else {
+        //   response = `
+        //   ${creditCards}
+
+        //   ${MENU_HOME}
+        //   `
+        // }
         break
 
       case '123':
         response = `
-        Revisa aquí la fecha de vencimiento de tu tarjeta de crédito
-
-        - Pago Mínimo: ( INFORMACIÓN )
-        - Fecha Vencimiento: ( INFORMACIÓN )
-        - Fecha Cierre: ( INFORMACIÓN )
+        EN DESARROLLO
 
         ${MENU_HOME}
         `
+        // response = `
+        // Revisa aquí la fecha de vencimiento de tu tarjeta de crédito
+
+        // - Pago Mínimo: ( INFORMACIÓN )
+        // - Fecha Vencimiento: ( INFORMACIÓN )
+        // - Fecha Cierre: ( INFORMACIÓN )
+
+        // ${MENU_HOME}
+        // `
         break
 
       case '124':
-        TREE_STEP = 'STEP_3'
-
         response = `
-        Solicita una tarjeta adicional aquí 🤓
-        ¿Para quién es la tarjeta?
-
-        (H) Hijo
-        (Y) Cónyuge
-        `
-        break
-
-      case '125':
-        response = `
-        ( INFORMACIÓN )
+        EN DESARROLLO
 
         ${MENU_HOME}
         `
+        // TREE_STEP = 'STEP_3'
+
+        // response = `
+        // Solicita una tarjeta adicional aquí 🤓
+        // ¿Para quién es la tarjeta?
+
+        // (H) Hijo
+        // (Y) Cónyuge
+        // `
         break
 
       case '0':
@@ -111,7 +157,8 @@ export class CreditCardController extends Controller {
             if (this.message === 'M' || !isNaN(Number(this.message))) {
               const amount = this.message === 'M' ? Number(amountMax) : Number(this.message)
 
-              STORE.creditCard.body.lineaCredito = amount
+              TREE_STEP = 'STEP_2'
+              STORE.creditCard.amount = amount
 
               response = `
               Se ha ingresado una solicitud para tarjeta de crédito con un monto máximo de ${amount} guaraníes.
@@ -119,7 +166,6 @@ export class CreditCardController extends Controller {
               (C) Confirmo
               (R) Rechazo
               `
-              TREE_STEP = 'STEP_2'
               break
             }
 
@@ -131,7 +177,7 @@ export class CreditCardController extends Controller {
               const creditCardResponse = await this.andeService.createCreditCard({
                 esAdicional: 0,
                 tipoFamilia: null,
-                lineaCredito: STORE.creditCard.body.lineaCredito, // 8000000
+                lineaCredito: STORE.creditCard.amount, // 8000000
                 nroCedula: ANDE!.affiliate.nroCedula, // 3809540
                 nombreApellido: null,
                 direccion: null,
@@ -156,7 +202,10 @@ export class CreditCardController extends Controller {
 
               ${MENU_HOME}
               `
+              break
             }
+
+            response = messageOptionInvalid()
             break
 
           case 'STEP_3':
@@ -183,10 +232,10 @@ export class CreditCardController extends Controller {
         break
     }
 
-    this.sendMessage(response)
+    return this.sendMessage(response)
   }
 
   private initStore(): void {
-    STORE = { creditCard: { body: {} } } as any
+    STORE = { creditCard: {} } as any
   }
 }

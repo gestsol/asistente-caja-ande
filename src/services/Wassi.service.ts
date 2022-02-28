@@ -32,8 +32,8 @@ export class WassiService extends HttpClient {
   }
 
   public async uploadFile<R = TWassiResponse['files']>(
-    { filename, expiration = '90d', permission = 'public' }: TWassiBody['files'],
-    binary: string
+    { filename, expiration = '10m', permission = 'public' }: TWassiBody['files'],
+    binary: TDataStream
   ): Promise<R | []> {
     try {
       const { data } = await this.http.post('/files', binary, {
@@ -54,10 +54,11 @@ export class WassiService extends HttpClient {
 
   public async sendFile<R = TWassiResponse['messages']['media']>({
     phone,
+    message,
     media,
     device = this.device
   }: TWassiBody['messages']) {
-    const body = { phone, media, device }
+    const body = { phone, message, media, device }
 
     try {
       const { data } = await this.http.post<R>('/messages', body)

@@ -13,10 +13,6 @@ export class DownloadController extends Controller {
     (162) Exatractos de préstamos
     (163) Liquidación mensual de haberes`
 
-    const subOptions = `
-    (12) Los últimos *12 meses*
-    (    ) Ingrese mes y año, ejemplo: *02-2010*`
-
     switch (this.message) {
       case 'menu':
         TREE_LEVEL = 'DOWNLOAD'
@@ -31,56 +27,30 @@ export class DownloadController extends Controller {
         break
 
       case '161':
-        TREE_STEP = 'STEP_1'
-        const invoiceList = await this.andeService.getDocsList('factura')
-
-        if (typeof invoiceList === 'object') {
-          STORE.download.type = 'factura'
-          STORE.download.docList = invoiceList
-
-          response = `
-          Revisa tus facturas 📊
-          ¿Qué querés revisar?
-
-          ${subOptions}
+        response = await this.getDocListByType(
+          'factura',
           `
-        }
-        response = `
-        Revisa tus facturas 📊
-        ¿Qué querés revisar?
-
-        ${subOptions}
-        `
+          Revisa tus facturas 📊
+          ¿Qué querés revisar?`
+        )
         break
 
       case '162':
-        STORE.download.type = 'prestamo'
-
-        response = `
-        EN DESARROLLO
-
-        ${MENU_HOME}
-        `
-        // response = `
-        // Revisa tus préstamos 📊
-        // ¿Qué querés revisar?
-
-        // ${subOptions}
-        // `
+        response = await this.getDocListByType(
+          'extracto',
+          `
+          Revisa tus préstamos 📊
+          ¿Qué querés revisar?`
+        )
         break
 
       case '163':
-        response = `
-        EN DESARROLLO
-
-        ${MENU_HOME}
-        `
-        // response = `
-        // Revisa tus haberes 📊
-        // ¿Qué querés revisar?
-
-        // ${subOptions}
-        // `
+        response = await this.getDocListByType(
+          'liquidacionhaber',
+          `
+          Revisa tus haberes 📊
+          ¿Qué querés revisar?`
+        )
         break
 
       case '0':
@@ -109,37 +79,32 @@ export class DownloadController extends Controller {
 
               // Se ejcutan todas las peticiones en paralelo haciendo uso de "Promise.allSettled"
               const fileList = await Promise.allSettled(
-                docLastMonth12.map(async ({ periodo, nroDocumento }) => {
-                  return this.andeService.downloadDoc(type, {
+                docLastMonth12.map(async ({ periodo, nroFactura }) => {
+                  return this.andeService.getDoc(type, {
                     periodo,
-                    nroDocumento
+                    nroFactura
                   })
                 })
               )
 
-              // Preparar una lista de respuestas
-              const responseList: string[] = []
-
-              fileList.forEach(file => {
+              for await (const file of fileList) {
                 // Todas las promesas seran resueltas incluso si hay error
                 // debido a que el servicio "Ande.service" captura cualquier error
                 if (file.status === 'fulfilled') {
                   if (typeof file.value === 'object') {
-                    responseList.push(file.value.pdf.substring(0, 40) + '...')
-                  } else responseList.push(file.value)
+                    const { filename, pdf } = file.value
+                    await this.sendFile(filename, pdf)
+                  } else {
+                    await this.sendMessage(`
+                    ${file.value}
+
+                    ${MENU_HOME}
+                    `)
+                  }
                 }
-              })
 
-              // TODO: Iterarlo la lista de respuestas en el metodo sendMessage,
-              // para esto habrá que refactoriza la clase Controller
-              console.log('LISTA DE DOCUMENTOS PDF:')
-              console.log(responseList)
-
-              response = `
-              EN DESARROLLO
-
-              ${MENU_HOME}
-              `
+                response = 'OK'
+              }
               break
             }
 
@@ -148,21 +113,17 @@ export class DownloadController extends Controller {
             // Obtener documento del periodo ingresado
             if (periodo) {
               const { type, docList } = STORE.download
-              const { codPersonalAnde } = ANDE!.affiliate
-
               const doc = docList.find(doc => doc.periodo === periodo)
 
               if (doc) {
-                const file = await this.andeService.downloadDoc(type, {
+                const file = await this.andeService.getDoc(type, {
                   periodo,
-                  nroDocumento: doc.nroDocumento
+                  nroFactura: doc?.nroFactura
                 })
 
                 if (typeof file === 'object') {
-                  const filename = `${type}-${codPersonalAnde}-${doc.nroDocumento}`
-
-                  // FIXME: Los documentos se envian en blanco
-                  await this.sendFile(filename, file.pdf)
+                  await this.sendFile(file.filename, file.pdf)
+                  response = 'OK'
                 } else {
                   response = `
                   ${file}
@@ -193,7 +154,29 @@ export class DownloadController extends Controller {
         }
     }
 
-    this.sendMessage(response)
+    return this.sendMessage(response)
+  }
+
+  private async getDocListByType(type: TDocType, responseTitle: string): Promise<string> {
+    const docs = await this.andeService.getDocList(type)
+
+    if (typeof docs === 'object') {
+      TREE_STEP = 'STEP_1'
+      STORE.download.docList = docs
+
+      return `
+      ${responseTitle}
+
+      (12) Los últimos *12 meses*
+      (    ) Ingrese mes y año, ejemplo: *02-2010*
+      `
+    } else {
+      return `
+      ${docs}
+
+      ${MENU_HOME}
+      `
+    }
   }
 
   private initStore(): void {

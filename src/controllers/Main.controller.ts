@@ -15,6 +15,7 @@ import { messageOptionInvalid } from '~UTILS/message.util'
 export class MainController extends Controller {
   async startDecisionTree() {
     let response = ''
+
     const options = `
     (1) Acceso para afiliados de la CAJA
     (2) No afiliados`
