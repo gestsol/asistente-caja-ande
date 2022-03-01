@@ -1,5 +1,6 @@
 type TConfig = {
   port: number
+  nroBot: string
   debug: boolean
   wassi: {
     apiUrl: string

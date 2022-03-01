@@ -25,7 +25,6 @@ export class Controller {
 
   private async start(): Promise<void> {
     const response = await this.startDecisionTree()
-    console.log(response)
 
     if (response && !this.data.res.headersSent) {
       this.data.res.end()
