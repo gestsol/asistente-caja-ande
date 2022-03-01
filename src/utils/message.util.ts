@@ -35,7 +35,7 @@ export const messageSanitize = (message: string): string => {
   return messageSanitized.trim()
 }
 
-export const convertArrayInOptions = <T>(array: Array<T>, template: (item: T, i: number) => string): string => {
+export const convertArrayInMessage = <T>(array: Array<T>, template: (item: T, i: number) => string): string => {
   const options = array.map((item, i) => template(item, i)).join('')
 
   return options

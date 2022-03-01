@@ -1,7 +1,7 @@
 import { Controller } from '~CLASS/Controller'
 import { HomeController } from '~CONTROLLERS/Home.controller'
 import { MENU_HOME } from '~ENTITIES/consts'
-import { convertArrayInOptions, messageOptionInvalid } from '~UTILS/message.util'
+import { convertArrayInMessage, messageOptionInvalid } from '~UTILS/message.util'
 
 export class NewsController extends Controller {
   async startDecisionTree() {
@@ -51,7 +51,7 @@ export class NewsController extends Controller {
         if (typeof links === 'object') {
           const enabledLinks = links.filter(link => link.estado)
 
-          const linkList = convertArrayInOptions(enabledLinks, item => {
+          const linkList = convertArrayInMessage(enabledLinks, item => {
             return `
             *${item.nombre}*
             ${item.descripcion}

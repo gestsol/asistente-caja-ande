@@ -1,6 +1,6 @@
 import { Controller } from '~CLASS/Controller'
 import { HomeController } from '~CONTROLLERS/Home.controller'
-import { convertArrayInOptions, messageOptionInvalid } from '~UTILS/message.util'
+import { convertArrayInMessage, messageOptionInvalid } from '~UTILS/message.util'
 import { MENU_HOME } from '~ENTITIES/consts'
 
 export class CreditCardController extends Controller {
@@ -13,7 +13,8 @@ export class CreditCardController extends Controller {
     (123) Monto y vencimiento de tu tarjeta
     (124) Situación actual de tu tarjeta de crédito`
 
-    const amountMax = 'xxx'
+    const defaultError = 'Usted no posee una tarjeta de credito, cree una escribiendo la opción *121*'
+    const amountMax = 10_000_000
 
     switch (this.message) {
       case 'menu':
@@ -22,122 +23,119 @@ export class CreditCardController extends Controller {
 
         this.initStore()
 
-        response = `
-        Elige una de las siguiente opciones:
-        ${options}
-        ${MENU_HOME}
-        `
+        const creditCards = STORE.creditCard?.tcList || (await this.andeService.getCreditCardList())
+
+        if (typeof creditCards === 'object') {
+          STORE.creditCard.tcList = creditCards
+
+          response = `
+          Elige una de las siguiente opciones:
+          ${options}
+          ${MENU_HOME}
+          `
+        }
         break
 
       case '121':
-        const creditCards = await this.andeService.getCreditCards()
+        if (STORE.creditCard.tcList) {
+          TREE_STEP = 'STEP_3'
 
-        if (typeof creditCards === 'object') {
-          if (creditCards.length) {
-            // TREE_STEP = ''
+          response = `
+          Ya dispones de tarjeta de crédito con la CAJA 🤓
+          ¿Para quién es la tarjeta nueva?
 
-            // response = `
-            // Ya dispones de tarjeta de crédito con la CAJA 🤓
-            // ¿Para quién es la tarjeta nueva?
+          (H) Hijo
+          (Y) Cónyuge
 
-            // (H) Hijo
-            // (Y) Cónyuge
+          ${MENU_HOME}
+          `
+        } else {
+          TREE_STEP = 'STEP_1'
 
-            // ${MENU_HOME}
-            // `
+          response = `
+          Tenes disponible ${amountMax} guaraníes para tu tarjeta de crédito.
+          ¿Deseas solicitarla con el monto máximo?
 
-            response = `
-            EN DESARROLLO
+          (M) Quiero el monto máximo
+          (  ) Escriba el monto que desea
+          `
+        }
 
-            ${MENU_HOME}
-            `
-          } else {
-            TREE_STEP = 'STEP_1'
+        break
 
-            response = `
-            Tenes disponible ${amountMax} guaraníes para tu tarjeta de crédito.
-            ¿Deseas solicitarla con el monto máximo?
+      case '122':
+        if (STORE.creditCard.tcList) {
+          const creditCardList = convertArrayInMessage(STORE.creditCard.tcList, item => {
+            return `
+            *Tarjeta:* ${item.nroTarjeta}
+            *Saldo disponible:* ${item.disponible}
+            *Deuda total:* ${item.pagoMinimoPendiente}`
+          })
 
-            (M) Quiero el monto máximo
-            (  ) Escriba el monto que desea
-            `
-          }
+          response = `
+          Nunca fue tan sencillo tener esta información en la comodidad de tu celular 😎
+          ${creditCardList}
+
+          ${MENU_HOME}
+          `
         } else {
           response = `
-          ${creditCards}
+          ${defaultError}
 
           ${MENU_HOME}
           `
         }
         break
 
-      case '122':
-        response = `
-        EN DESARROLLO
-
-        ${MENU_HOME}
-        `
-        // const creditCards = await this.andeService.getCreditCards()
-
-        // if (typeof creditCards === 'object') {
-        //   convertArrayInOptions(creditCards, (item, i) => {
-        //     return `
-        //     *Tarjeta ${item.nroTarjeta}*
-
-        //     Saldo disponible: ${item.disponible}
-        //     Deuda total: ${item.pagoMinimoPendiente}
-
-        //     `
-        //   })
-
-        //   response = `
-        //   Nunca fue tan sencillo tener esta información en la comodidad de tu celular 😎
-
-        //   ${creditCards}
-
-        //   ${MENU_HOME}
-        //   `
-        // } else {
-        //   response = `
-        //   ${creditCards}
-
-        //   ${MENU_HOME}
-        //   `
-        // }
-        break
-
       case '123':
-        response = `
-        EN DESARROLLO
+        if (STORE.creditCard.tcList) {
+          const creditCardList = convertArrayInMessage(STORE.creditCard.tcList, item => {
+            const dateVto = new Date(item.fechaVto).toLocaleString('es', {
+              // Agregar la zona horaria de Paraguay
+              timeZone: 'America/Asuncion'
+            })
 
-        ${MENU_HOME}
-        `
-        // response = `
-        // Revisa aquí la fecha de vencimiento de tu tarjeta de crédito
+            return `
+            *Tarjeta:* ${item.nroTarjeta}
+            *Pago Mínimo:* ${item.pagoMinimo}
+            *Fecha Vto:* ${dateVto}`
+            // TODO: Falta Fecha cierre: ${ ?? }
+          })
 
-        // - Pago Mínimo: ( INFORMACIÓN )
-        // - Fecha Vencimiento: ( INFORMACIÓN )
-        // - Fecha Cierre: ( INFORMACIÓN )
+          response = `
+          Revisa aquí la fecha de vencimiento de tu tarjeta de crédito
+          ${creditCardList}
+          ${MENU_HOME}
+          `
+        } else {
+          response = `
+          ${defaultError}
 
-        // ${MENU_HOME}
-        // `
+          ${MENU_HOME}
+          `
+        }
         break
 
       case '124':
-        response = `
-        EN DESARROLLO
+        if (STORE.creditCard.tcList) {
+          const creditCardList = convertArrayInMessage(STORE.creditCard.tcList, item => {
+            return `
+            *Tarjeta:* ${item.nroTarjeta}
+            *Estado:* ${item.estadoTarjeta.trim()}`
+          })
 
-        ${MENU_HOME}
-        `
-        // TREE_STEP = 'STEP_3'
+          response = `
+          ${creditCardList}
 
-        // response = `
-        // Solicita una tarjeta adicional aquí 🤓
-        // ¿Para quién es la tarjeta?
+          ${MENU_HOME}
+          `
+        } else {
+          response = `
+          ${defaultError}
 
-        // (H) Hijo
-        // (Y) Cónyuge
-        // `
+          ${MENU_HOME}
+          `
+        }
         break
 
       case '0':

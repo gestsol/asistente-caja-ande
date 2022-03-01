@@ -1,6 +1,6 @@
 import { Controller } from '~CLASS/Controller'
 import { HomeController } from '~CONTROLLERS/Home.controller'
-import { convertArrayInOptions, messageOptionInvalid } from '~UTILS/message.util'
+import { convertArrayInMessage, messageOptionInvalid } from '~UTILS/message.util'
 import { MENU_HOME } from '~ENTITIES/consts'
 
 export class LendingsController extends Controller {
@@ -80,7 +80,7 @@ export class LendingsController extends Controller {
             TREE_STEP = 'STEP_2'
             STORE.lending.deadlineList = deadlineStundentList
 
-            const lendingOptions = convertArrayInOptions(deadlineStundentList, (item, i) => {
+            const lendingOptions = convertArrayInMessage(deadlineStundentList, (item, i) => {
               return `
               (${i + 1})
               *Plazo*: ${item.plazo}
@@ -109,7 +109,7 @@ export class LendingsController extends Controller {
             TREE_STEP = 'STEP_2'
             STORE.lending.deadlineList = deadlineExtraList
 
-            const lendingOptions = convertArrayInOptions(deadlineExtraList, (item, i) => {
+            const lendingOptions = convertArrayInMessage(deadlineExtraList, (item, i) => {
               return `
               (${i + 1})
               *Plazo*: ${item.plazo}
@@ -138,7 +138,7 @@ export class LendingsController extends Controller {
             TREE_STEP = 'STEP_2'
             STORE.lending.deadlineList = deadlineList
 
-            const lendingOptions = convertArrayInOptions(deadlineList, (item, i) => {
+            const lendingOptions = convertArrayInMessage(deadlineList, (item, i) => {
               return `
               (${i + 1})
               *Plazo*: ${item.plazo}
@@ -167,7 +167,7 @@ export class LendingsController extends Controller {
             TREE_STEP = 'STEP_2'
             STORE.lending.deadlineList = deadlineCancelList
 
-            const lendingOptions = convertArrayInOptions(deadlineCancelList, (item, i) => {
+            const lendingOptions = convertArrayInMessage(deadlineCancelList, (item, i) => {
               return `
               *(${i + 1})*
               Plazo: ${item.plazo}
@@ -233,7 +233,7 @@ export class LendingsController extends Controller {
                     STORE.lending.amount = monto
                     STORE.lending.payMethodList = paymentMethods
 
-                    const paymentOptions = convertArrayInOptions(
+                    const paymentOptions = convertArrayInMessage(
                       paymentMethods!,
                       (item, i) => `
                       (${i + 1}) ${item.descripcion}`

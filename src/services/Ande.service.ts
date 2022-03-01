@@ -191,13 +191,13 @@ export class AndeService extends HttpClient {
 
   // CREDIT-CARD _______________________________________________________________________________________________________
 
-  public async getCreditCards<R = TAndeResponse['datosstc']>(): Promise<R | string> {
+  public async getCreditCardList<R = TAndeResponse['datosstc']>(): Promise<R | null> {
     try {
       const { data } = await this.http.get<R>(`/datostc/${this.nroAffiliate}`)
 
       return data
     } catch (error) {
-      return this.errorMessageHandler(error, 'No se pudo obtener información sobre tarjeta de crédito')
+      return null
     }
   }
 

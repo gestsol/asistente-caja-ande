@@ -1,7 +1,7 @@
 import { Controller } from '~CLASS/Controller'
 import { HomeController } from '~CONTROLLERS/Home.controller'
 import { MENU_HOME } from '~ENTITIES/consts'
-import { convertArrayInOptions, messageOptionInvalid } from '~UTILS/message.util'
+import { convertArrayInMessage, messageOptionInvalid } from '~UTILS/message.util'
 
 export class InfoController extends Controller {
   async startDecisionTree() {
@@ -18,7 +18,7 @@ export class InfoController extends Controller {
           if (infoList.length) {
             const enabledInfoList = infoList.filter(info => info.estado)
 
-            const infoOptions = convertArrayInOptions(enabledInfoList, (item, i) => {
+            const infoOptions = convertArrayInMessage(enabledInfoList, (item, i) => {
               return `*${item.nombre}:* ${item.descripcion}
               `
             })

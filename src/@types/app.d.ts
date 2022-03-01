@@ -60,6 +60,7 @@ type TStore = {
     amount: number
   }
   creditCard: {
+    tcList: TAndeResponse['datosstc']
     amount: number
   }
   download: {
