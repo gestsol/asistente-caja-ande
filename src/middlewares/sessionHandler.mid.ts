@@ -10,8 +10,8 @@ export function sessionHandler(): Handler {
     try {
       const { fromNumber, body } = req.body.data as TWassiRequest['data']
 
-      // Validar la data del body de la petición POST
-      if (!fromNumber || !body) throw new Error('Body is incorrect')
+      // Validar la data del body de la petición POST en modo API
+      if (getConfig().modeAPP === 'API' && (!fromNumber || !body)) throw new Error('Body is incorrect')
 
       // Descartar el número del bot entre los usuarios que escriben
       if (fromNumber === getConfig().nroBot) res.end()

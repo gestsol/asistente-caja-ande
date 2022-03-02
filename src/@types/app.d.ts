@@ -96,8 +96,6 @@ type TLevel =
 
 type TStep = '' | 'STEP_1' | 'STEP_2' | 'STEP_3' | 'STEP_4' | 'STEP_5' | 'STEP_6'
 
-type TWassiData = TWassiBody['data']
-
 type TTypeLending = 'paralelo' | 'cancelacion' | 'estudiantil' | 'extraordinario'
 
 type TDocType = 'factura' | 'extracto' | 'liquidacionhaber'

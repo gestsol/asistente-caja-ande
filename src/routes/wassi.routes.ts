@@ -1,4 +1,4 @@
-import { Router, Request, Response } from 'express'
+import { Router, Request, Response, NextFunction } from 'express'
 import { MainController } from '~CONTROLLERS/Main.controller'
 import { sessionHandler } from '~MIDDLEWARES'
 import { convertMessageInUppercase } from '~UTILS/message.util'
@@ -9,8 +9,8 @@ const router = Router()
 router.post(
   '/',
   sessionHandler(),
-  async (req: Request, res: Response): Promise<void> => {
-    const { fromNumber, body } = req.body.data as TWassiData
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const { fromNumber, body } = req.body.data as TWassiRequest['data']
 
     try {
       new MainController({
@@ -20,12 +20,7 @@ router.post(
         menuHome: OPTIONS_HOME
       })
     } catch (error) {
-      console.error('ERROR:', error)
-
-      res.status(500).json({
-        status: 'Error',
-        error: (error as Error).message
-      })
+      next(error)
     }
   }
 )

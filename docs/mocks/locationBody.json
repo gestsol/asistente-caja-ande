@@ -1,0 +1,119 @@
+{
+  "id": "41CC65822FB245DD49D0B9843CE8FD1E",
+  "object": "message",
+  "event": "message:in:new",
+  "created": 1646256828,
+  "device": {
+    "id": "61e5bb67625a563809c2fca8",
+    "phone": "56974586807",
+    "alias": "Caja Ande",
+    "plan": "io-business"
+  },
+  "data": {
+    "id": "41CC65822FB245DD49D0B9843CE8FD1E",
+    "scope": "message",
+    "type": "location",
+    "flow": "inbound",
+    "status": "active",
+    "ack": "delivered",
+    "from": "584245309444@c.us",
+    "fromNumber": "+584245309444",
+    "to": "56974586807@c.us",
+    "toNumber": "+56974586807",
+    "date": "2022-03-02T21:33:48.000Z",
+    "timestamp": 1646256828,
+    "body": null,
+    "chat": {
+      "id": "584245309444@c.us",
+      "name": "Edixon 🚀",
+      "date": "2022-03-02T21:40:40.000Z",
+      "type": "chat",
+      "status": "removed",
+      "waStatus": "removed",
+      "statusUpdatedAt": "2022-03-02T21:53:50.491Z",
+      "statusUpdatedBy": "61e5ae0d29528c4e85a9d5c2",
+      "deletedAt": "2022-03-02T21:53:50.452Z",
+      "firstMessageAt": "2022-02-04T00:47:36.000Z",
+      "lastMessageAt": "2022-03-02T21:40:40.000Z",
+      "lastOutboundMessageAt": "2022-03-02T21:37:32.000Z",
+      "lastInboundMessageAt": "2022-03-02T21:40:40.000Z",
+      "stats": {
+        "notes": 0,
+        "localMessages": 90,
+        "inboundMessages": 0,
+        "outboundMessages": 0
+      },
+      "labels": [],
+      "owner": {
+        "agent": "61e5ae0d29528c4e85a9d5c2",
+        "assigner": "61e5ae0d29528c4e85a9d5c2",
+        "assignedAt": "2022-02-04T15:59:06.427Z"
+      },
+      "contact": {
+        "wid": "584245309444@c.us",
+        "phone": "+584245309444",
+        "displayName": "Edixon 🚀",
+        "formattedName": "+58 424-5309444",
+        "formattedShortName": "+58 424-5309444",
+        "syncedAt": "2022-03-02T21:53:47.123Z",
+        "createdAt": "2022-02-04T00:23:30.894Z",
+        "createdBy": null,
+        "locationInfo": {
+          "alpha2": "VE",
+          "alpha3": "VEN",
+          "countryCallingCodes": [
+            "+58"
+          ],
+          "currencies": [
+            "VEF"
+          ],
+          "emoji": "🇻🇪",
+          "ioc": "VEN",
+          "languages": [
+            {
+              "code": "SPA",
+              "name": "Spanish",
+              "nativeName": "Español"
+            }
+          ],
+          "name": "Venezuela",
+          "status": "assigned"
+        },
+        "image": {
+          "url": "https://pps.whatsapp.net/v/t61.24694-24/236347721_594919515216407_1602896837911199201_n.jpg?ccb=11-4&oh=b34253d5d33d271500422bbf9018b1ef&oe=62266588"
+        }
+      }
+    },
+    "location": {
+      "latitude": 10.015082256542021,
+      "longitude": -69.25863627344371,
+      "name": "Av. 3, Cabudare 3023, Lara, Venezuela",
+      "address": "Av. 3, Cabudare 3023, Lara, Venezuela"
+    },
+    "events": {},
+    "meta": {
+      "containsEmoji": false,
+      "isGif": false,
+      "isStar": false,
+      "isGroup": false,
+      "isForwarded": false,
+      "isEphemeral": false,
+      "isNotification": false,
+      "isLive": false,
+      "isBroadcast": false,
+      "isBizNotification": false,
+      "isDoc": false,
+      "isLinkPreview": false,
+      "isPSA": false,
+      "isRevoked": false,
+      "isUnreadType": false,
+      "isFailed": false,
+      "notifyName": "",
+      "rtl": false
+    },
+    "webhook": {
+      "status": "notified",
+      "webhookSyncedAt": "2022-03-02T21:59:18.849Z"
+    }
+  }
+}
