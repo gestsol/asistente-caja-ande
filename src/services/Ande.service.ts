@@ -17,7 +17,7 @@ export class AndeService extends HttpClient {
       }
     })
 
-    this.nroAffiliate = ANDE?.affiliate.codPersonalAnde || 0
+    this.nroAffiliate = ANDE?.affiliate?.codPersonalAnde || 0
     this.typeLending = STORE.lending?.type || 'paralelo'
   }
 

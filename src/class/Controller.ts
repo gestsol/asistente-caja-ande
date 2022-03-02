@@ -54,9 +54,9 @@ export class Controller {
 
           if (wassiResponse) {
             let { message, status } = wassiResponse
-            message = message.length < 40 ? message : message.substring(0, 40) + '...'
+            message = message.length < 60 ? message : message.substring(0, 60) + '...'
 
-            botDebug('WASSI', `Message in ${status}, ${message}`)
+            botDebug('WASSI-OUT', `${getConfig().nroBot} -> (Message in ${status}) ${message}`)
           }
           break
 
@@ -91,7 +91,7 @@ export class Controller {
               status
             } = wassiResponse
 
-            botDebug('WASSI', `File in ${status}, ${file}`)
+            botDebug('WASSI-OUT', `${getConfig().nroBot} -> (File in ${status}) ${file}`)
           }
         }
         break

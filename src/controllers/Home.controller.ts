@@ -25,9 +25,9 @@ export class HomeController extends Controller {
         const fullName = convertMessageInFullname(ANDE!.affiliate.nombre)
 
         response = `
-        Bienvenido ${fullName}. En Caja Ande trabajamo para vos 🤓, revisa las opciones que tenemos desponible:
+        Bienvenido *${fullName}* en Caja Ande trabajamos para vos 🤓
+        Revisa las opciones que tenemos desponible:
         ${options}
-
         (00) Cerrar Sesión ↩️
         `
         break

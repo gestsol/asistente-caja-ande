@@ -20,7 +20,7 @@ export class LoginController extends Controller {
         Hola! soy el asistente virtual de los afiliados de la CAJA 🤓
         Nuestra caja, tu futuro!
 
-        Por favor envíanos tu número de CI, número de afiliado y número de cedula separados por los espacios que desee
+        Por favor envíanos tu número de CI, número de afiliado y número de celular separados por los espacios que desee
 
         *Ejemplo*: 1234567 12345 0123456789
 

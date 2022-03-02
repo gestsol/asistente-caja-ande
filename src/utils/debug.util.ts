@@ -12,10 +12,10 @@ export function botDebug(title: string, message: string | object): void {
 }
 
 function prepareTitle(title: string): string {
-  const sizeTitle = 8
+  const sizeTitle = 9
 
   if (title.length > sizeTitle) {
-    throw new Error('The size of the title of the debug message must be less than 9')
+    throw new Error(`The size of the title of the debug message must be less than ${sizeTitle + 1}`)
   } else {
     const count = sizeTitle - title.length
 
