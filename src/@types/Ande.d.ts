@@ -27,14 +27,14 @@ type TAndeBody = {
   }
   solicitudtc: {
     esAdicional: number
-    tipoFamilia: null | any
+    tipoFamilia: TAndeResponse['tipofamiliatc'][0]['codigo'] | null
     lineaCredito: number
     nroCedula: number
-    nombreApellido: null | any
-    direccion: null | any
-    celular: null | any
-    telefono: null | any
-    correo: null | any
+    nombreApellido: string | null
+    direccion: string | null
+    celular: string | null
+    telefono: string | null
+    correo: string | null
   }
   facturaPdf: {
     periodo: string
@@ -63,7 +63,6 @@ type TAndeResponse = {
     codInstitucion: number
     totalSaldos: number
   }
-
   formacobro: Array<{
     codigo: number
     descripcion: string
@@ -200,6 +199,16 @@ type TAndeResponse = {
     importe: number
     fecha: string
   }
+  lineacreditotc: {
+    lineaCreditoMinimo: number
+    lineaCreditoMaximoCRE: number
+    pagoMinimo: number
+    tieneRepactacion: number
+  }
+  tipofamiliatc: Array<{
+    codigo: number
+    descripcion: string
+  }>
 }
 
 type TAffiliate = {

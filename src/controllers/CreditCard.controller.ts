@@ -1,6 +1,7 @@
 import { Controller } from '~CLASS/Controller'
 import { HomeController } from '~CONTROLLERS/Home.controller'
 import { convertArrayInMessage, messageOptionInvalid } from '~UTILS/message.util'
+import { isNumber } from '~UTILS/validation.util'
 import { MENU_HOME } from '~ENTITIES/consts'
 
 export class CreditCardController extends Controller {
@@ -14,7 +15,6 @@ export class CreditCardController extends Controller {
     (124) Situación actual de tu tarjeta de crédito`
 
     const defaultError = 'Usted no posee una tarjeta de credito, cree una escribiendo la opción *121*'
-    const amountMax = 10_000_000
 
     switch (this.message) {
       case 'menu':
@@ -33,38 +33,68 @@ export class CreditCardController extends Controller {
           ${options}
           ${MENU_HOME}
           `
+        } else {
+          response = `
+          ${creditCards}
+
+          ${MENU_HOME}
+          `
         }
         break
 
       case '121':
-        if (STORE.creditCard.tcList) {
-          TREE_STEP = 'STEP_3'
+        const creditLine = STORE.creditCard?.creditLine || (await this.andeService.getCreditLine())
 
+        if (typeof creditLine === 'object') {
+          STORE.creditCard.creditLine = creditLine
+
+          if (STORE.creditCard.tcList.length) {
+            const familyTypeList = await this.andeService.getFamilyTypeList()
+
+            if (typeof familyTypeList === 'object') {
+              TREE_STEP = 'STEP_3'
+              STORE.creditCard.familyTypeList = familyTypeList
+
+              const familyTypes = convertArrayInMessage(familyTypeList, (item, i) => {
+                return `
+                (${i + 1}) ${item.descripcion}`
+              })
+
+              response = `
+              Ya dispones de tarjeta de crédito con la CAJA 🤓
+              ¿Para quién es la tarjeta nueva?
+
+              ${familyTypes}
+
+              ${MENU_HOME}
+              `
+            } else {
+              response = `
+              ${familyTypeList}
+
+              ${MENU_HOME}
+              `
+            }
+          } else {
+            TREE_STEP = 'STEP_1'
+            STORE.creditCard.ci = ANDE!.affiliate.nroCedula
+            STORE.creditCard.fullName = ANDE!.affiliate.nombre
+            STORE.creditCard.address = '' // TODO: obtener direccion del usuario afiliado
+            STORE.creditCard.phone = ANDE!.affiliate.celulares || ''
+
+            response = this.getMessageAmount()
+          }
+        } else {
           response = `
-          Ya dispones de tarjeta de crédito con la CAJA 🤓
-          ¿Para quién es la tarjeta nueva?
-
-          (H) Hijo
-          (Y) Cónyuge
+          ${creditLine}
 
           ${MENU_HOME}
           `
-        } else {
-          TREE_STEP = 'STEP_1'
-
-          response = `
-          Tenes disponible ${amountMax} guaraníes para tu tarjeta de crédito.
-          ¿Deseas solicitarla con el monto máximo?
-
-          (M) Quiero el monto máximo
-          (  ) Escriba el monto que desea
-          `
         }
-
         break
 
       case '122':
-        if (STORE.creditCard.tcList) {
+        if (STORE.creditCard.tcList.length) {
           const creditCardList = convertArrayInMessage(STORE.creditCard.tcList, item => {
             return `
             *Tarjeta:* ${item.nroTarjeta}
@@ -88,12 +118,13 @@ export class CreditCardController extends Controller {
         break
 
       case '123':
-        if (STORE.creditCard.tcList) {
+        if (STORE.creditCard.tcList.length) {
           const creditCardList = convertArrayInMessage(STORE.creditCard.tcList, item => {
-            const dateVto = new Date(item.fechaVto).toLocaleString('es', {
+            const fullDateVto = new Date(item.fechaVto).toLocaleString('es', {
               // Agregar la zona horaria de Paraguay
               timeZone: 'America/Asuncion'
             })
+            const dateVto = fullDateVto.split(' ')[0]
 
             return `
             *Tarjeta:* ${item.nroTarjeta}
@@ -117,7 +148,7 @@ export class CreditCardController extends Controller {
         break
 
       case '124':
-        if (STORE.creditCard.tcList) {
+        if (STORE.creditCard.tcList.length) {
           const creditCardList = convertArrayInMessage(STORE.creditCard.tcList, item => {
             return `
             *Tarjeta:* ${item.nroTarjeta}
@@ -152,8 +183,11 @@ export class CreditCardController extends Controller {
       default:
         switch (TREE_STEP) {
           case 'STEP_1':
-            if (this.message === 'M' || !isNaN(Number(this.message))) {
-              const amount = this.message === 'M' ? Number(amountMax) : Number(this.message)
+            console.log(isNumber(this.message))
+
+            if (this.message === 'M' || isNumber(this.message)) {
+              const amount =
+                this.message === 'M' ? STORE.creditCard.creditLine.lineaCreditoMaximoCRE : Number(this.message)
 
               TREE_STEP = 'STEP_2'
               STORE.creditCard.amount = amount
@@ -172,29 +206,39 @@ export class CreditCardController extends Controller {
 
           case 'STEP_2':
             if (this.message === 'C') {
+              const { tcList, familyType, amount, ci, fullName, address, phone } = STORE.creditCard
+
               const creditCardResponse = await this.andeService.createCreditCard({
-                esAdicional: 0,
-                tipoFamilia: null,
-                lineaCredito: STORE.creditCard.amount, // 8000000
-                nroCedula: ANDE!.affiliate.nroCedula, // 3809540
-                nombreApellido: null,
-                direccion: null,
-                celular: null,
+                esAdicional: tcList.length ? 1 : 0,
+                tipoFamilia: familyType?.codigo || null,
+                lineaCredito: amount,
+                nroCedula: ci,
+                nombreApellido: fullName,
+                direccion: address || null,
+                celular: phone || null,
                 telefono: null,
                 correo: null
               })
 
-              if (creditCardResponse) {
+              if (typeof creditCardResponse === 'object') {
                 response = `
                 ✅ Solicitud enviada
 
                 ${MENU_HOME}
                 `
+                break
+              } else {
+                response = `
+                ${creditCardResponse}
+
+                ${MENU_HOME}
+                `
+                break
               }
-              break
             }
 
             if (this.message === 'R') {
+              TREE_STEP = ''
               response = `
               ❌ Solicitud cancelada
 
@@ -207,20 +251,68 @@ export class CreditCardController extends Controller {
             break
 
           case 'STEP_3':
-            TREE_STEP = 'STEP_4'
-            response = '¿Cuál es el nombre y apellido?'
+            const familyTypeSelected = isNumber(this.message)
+
+            if (familyTypeSelected) {
+              const familyType = STORE.creditCard.familyTypeList!.find((_, index) => index === familyTypeSelected - 1)
+
+              if (familyType) {
+                TREE_STEP = 'STEP_4'
+                STORE.creditCard.familyType = familyType
+                response = '¿Cuál es el nombre y apellido?'
+                break
+              }
+            }
+
+            response = messageOptionInvalid()
             break
 
           case 'STEP_4':
-            TREE_STEP = 'STEP_1'
+            const [name, lastname] = this.message.split(' ')
 
-            response = `
-            Tu nueva tarjeta puede tener hasta ${amountMax} guaraníes.
-            ¿Deseas solicitarla con el monto máximo?
+            if (name && lastname) {
+              TREE_STEP = 'STEP_5'
+              STORE.creditCard.fullName = `${name} ${lastname}`
+              response = 'Indica el CI y número celular del adicional, colocalo separado por espacios'
+            } else {
+              response = `
+              Ingrese correctamente el nombre y apellido de la persona
 
-            (M) Si
-            ( ) Ingrese monto (debe ser menor a su monto disponible)
-            `
+              ${MENU_HOME}
+              `
+            }
+            break
+
+          case 'STEP_5':
+            const [ci, phone] = this.message.split(' ')
+
+            if (ci && isNumber(ci) && phone) {
+              TREE_STEP = 'STEP_6'
+              STORE.creditCard.ci = Number(ci)
+              STORE.creditCard.phone = phone
+              response = 'Indica su dirección'
+            } else {
+              response = `
+              Ingrese correctamente el CI y celular de la persona
+
+              ${MENU_HOME}
+              `
+            }
+            break
+
+          case 'STEP_6':
+            // TODO: evaluar esto
+            if (this.message) {
+              TREE_STEP = 'STEP_1'
+              STORE.creditCard.address = this.message
+              response = this.getMessageAmount()
+            } else {
+              response = `
+              Ingrese correctamente la dirección de la persona
+
+              ${MENU_HOME}
+              `
+            }
             break
 
           default:
@@ -231,6 +323,15 @@ export class CreditCardController extends Controller {
     }
 
     return this.sendMessage(response)
+  }
+
+  private getMessageAmount(): string {
+    return `
+    Tenes disponible ${STORE.creditCard.creditLine.lineaCreditoMaximoCRE} guaraníes para tu tarjeta de crédito.
+    ¿Deseas solicitarla con el monto máximo?
+
+    (M) Quiero el monto máximo
+    (  ) Escriba el monto que desea (debe ser menor a su monto disponible)`
   }
 
   private initStore(): void {

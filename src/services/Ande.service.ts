@@ -32,7 +32,7 @@ export class AndeService extends HttpClient {
         return `⚠️ ${err.mensaje}`
 
       default:
-        console.error(err)
+        console.error('ERROR-SERVICE-ANDE:', err)
         return '❌ Error al ejecutar la acción requerida, intente nuevamente'
     }
   }
@@ -191,23 +191,47 @@ export class AndeService extends HttpClient {
 
   // CREDIT-CARD _______________________________________________________________________________________________________
 
-  public async getCreditCardList<R = TAndeResponse['datosstc']>(): Promise<R | null> {
+  public async getCreditCardList<R = TAndeResponse['datosstc']>(): Promise<R | [] | string> {
     try {
       const { data } = await this.http.get<R>(`/datostc/${this.nroAffiliate}`)
 
       return data
     } catch (error) {
-      return null
+      const errorAnde = error as TAndeError
+
+      return errorAnde?.codigo === 404
+        ? []
+        : this.errorMessageHandler(error, 'No se pudo obtener las tarjetas de crédito disponible')
     }
   }
 
-  public async createCreditCard<R = TAndeResponse['solicitudtc']>(body: TAndeBody['solicitudtc']): Promise<R | null> {
+  public async getCreditLine<R = TAndeResponse['lineacreditotc']>(): Promise<R | string> {
+    try {
+      const { data } = await this.http.get<R>(`/lineacreditotc/${this.nroAffiliate}`)
+
+      return data
+    } catch (error) {
+      return this.errorMessageHandler(error, 'No se pudo obtener información sobre linea de credito')
+    }
+  }
+
+  public async getFamilyTypeList<R = TAndeResponse['tipofamiliatc']>(): Promise<R | string> {
+    try {
+      const { data } = await this.http.get<R>('/tipofamiliatc')
+
+      return data
+    } catch (error) {
+      return this.errorMessageHandler(error, 'No se pudo obtener los tipos de familia disponible')
+    }
+  }
+
+  public async createCreditCard<R = TAndeResponse['solicitudtc']>(body: TAndeBody['solicitudtc']): Promise<R | string> {
     try {
       const { data } = await this.http.post<R>(`/solicitudtc/${this.nroAffiliate}`, body)
 
       return data
     } catch (error) {
-      return null
+      return this.errorMessageHandler(error, 'No se pudo solicitud la tarjeta de credito')
     }
   }
 

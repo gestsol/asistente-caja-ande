@@ -61,7 +61,14 @@ type TStore = {
   }
   creditCard: {
     tcList: TAndeResponse['datosstc']
+    creditLine: TAndeResponse['lineacreditotc']
+    familyTypeList?: TAndeResponse['tipofamiliatc']
+    familyType?: TAndeResponse['tipofamiliatc'][0]
     amount: number
+    fullName: string
+    ci: number
+    phone: string
+    address: string
   }
   download: {
     type: TDocType

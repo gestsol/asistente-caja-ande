@@ -205,14 +205,14 @@ export class LendingsController extends Controller {
               const deadlineSelected = Number(this.message)
 
               if (!isNaN(deadlineSelected)) {
-                TREE_STEP = 'STEP_3'
-
                 const deadline = STORE.lending.deadlineList.find((_, index) => index === deadlineSelected - 1)!
 
-                STORE.lending.deadline = deadline
-
-                response = subOptions
-                break
+                if (deadline) {
+                  TREE_STEP = 'STEP_3'
+                  STORE.lending.deadline = deadline
+                  response = subOptions
+                  break
+                }
               }
 
               response = messageOptionInvalid()
