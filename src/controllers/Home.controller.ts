@@ -9,8 +9,7 @@ import { LendingsController } from '~CONTROLLERS/Lendings.controller'
 import { InfoController } from '~CONTROLLERS/Info.controller'
 import { EntryTable } from '~CONTROLLERS/EntryTable.controller'
 
-import { MENU_RETURN } from '~ENTITIES/consts'
-import { messageOptionInvalid } from '~UTILS/message.util'
+import { convertMessageInFullname, messageOptionInvalid } from '~UTILS/message.util'
 
 export class HomeController extends Controller {
   async startDecisionTree() {
@@ -23,11 +22,13 @@ export class HomeController extends Controller {
         TREE_LEVEL = 'HOME'
         TREE_STEP = ''
 
+        const fullName = convertMessageInFullname(ANDE!.affiliate.nombre)
+
         response = `
-        Bienvenido ${ANDE?.affiliate.nombre ||
-          'NAME'}. En Caja Ande trabajamo para vos 🤓, revisa las opciones que tenemos desponible:
+        Bienvenido ${fullName}. En Caja Ande trabajamo para vos 🤓, revisa las opciones que tenemos desponible:
         ${options}
-        ${MENU_RETURN}
+
+        (00) Cerrar Sesión ↩️
         `
         break
 

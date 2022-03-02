@@ -14,7 +14,7 @@ export class CreditCardController extends Controller {
     (123) Monto y vencimiento de tu tarjeta
     (124) Situación actual de tu tarjeta de crédito`
 
-    const defaultError = 'Usted no posee una tarjeta de credito, cree una escribiendo la opción *121*'
+    const defaultError = 'Usted no posee una tarjeta de credito, para crear una seleccione la opción *121*'
 
     switch (this.message) {
       case 'menu':
@@ -331,7 +331,7 @@ export class CreditCardController extends Controller {
     ¿Deseas solicitarla con el monto máximo?
 
     (M) Quiero el monto máximo
-    (  ) Escriba el monto que desea (debe ser menor a su monto disponible)`
+    (    ) Escriba el monto que desea (debe ser menor a su monto disponible)`
   }
 
   private initStore(): void {

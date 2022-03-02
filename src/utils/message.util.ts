@@ -1,4 +1,5 @@
 import { MENU_HOME } from '~ENTITIES/consts'
+import { isNumber } from '~UTILS/validation.util'
 
 export const messageOptionInvalid = (options?: string): string => {
   if (options) {
@@ -25,18 +26,33 @@ export const messageFormatter = (message: string): string => {
   return messageFormated.trim()
 }
 
-export const messageSanitize = (message: string): string => {
-  // TODO: Analizar la estructura del mensaje y detertar si es numero o texto
-  // para depurar el mensaje adecuadamente
-  const letters = message.split('')
-  const firshLetterUpper = letters.shift()!.toUpperCase()
-  const messageSanitized = firshLetterUpper + letters.join('')
+export const convertMessageInUppercase = (message: string): string => {
+  const processedMessage = message.trim().toLowerCase()
 
-  return messageSanitized.trim()
+  if (isNumber(processedMessage)) return processedMessage
+  else {
+    let words = processedMessage.split(' ')
+
+    words = words.map(word => {
+      let letters = word.split('')
+      letters = letters.map((l, i) => (i === 0 ? l.toUpperCase() : l))
+
+      return letters.join('')
+    })
+
+    return words.join(' ')
+  }
 }
 
 export const convertArrayInMessage = <T>(array: Array<T>, template: (item: T, i: number) => string): string => {
   const options = array.map((item, i) => template(item, i)).join('')
 
   return options
+}
+
+export const convertMessageInArray = (message: string): Array<string> => message.split(' ').filter(m => m.length)
+
+export const convertMessageInFullname = (message: string): string => {
+  const [name, _, lastname] = message.split(' ')
+  return convertMessageInUppercase(`${name} ${lastname}`)
 }

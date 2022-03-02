@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express'
 import { MainController } from '~CONTROLLERS/Main.controller'
 import { sessionHandler } from '~MIDDLEWARES'
-import { messageSanitize } from '~UTILS/message.util'
+import { convertMessageInUppercase } from '~UTILS/message.util'
 import { OPTIONS_HOME } from '~ENTITIES/consts'
 
 const router = Router()
@@ -15,7 +15,7 @@ router.post(
     try {
       new MainController({
         phone: fromNumber,
-        message: messageSanitize(body),
+        message: convertMessageInUppercase(body),
         res,
         menuHome: OPTIONS_HOME
       })
