@@ -1,6 +1,7 @@
 import { HttpClient } from 'class/HttpClient'
 import { getConfig } from '~UTILS/config.util'
-import { stringify } from 'qs'
+import { stringify as qsStringify } from 'qs'
+import FormData from 'form-data'
 
 export class AndeService extends HttpClient {
   private nroAffiliate: number
@@ -51,7 +52,7 @@ export class AndeService extends HttpClient {
   // }
 
   public async login<R = TAndeResponse['autenticar']>(body: TAndeBody['autenticar']): Promise<R | null> {
-    const urlEncoded = stringify(body) // convertir datos en formato x-www-form-urlencoded
+    const urlEncoded = qsStringify(body) // convertir datos en formato x-www-form-urlencoded
 
     try {
       const { data } = await this.http.post<R>('/autenticar', urlEncoded, {
@@ -376,6 +377,37 @@ export class AndeService extends HttpClient {
       }
     } catch (error) {
       return this.errorMessageHandler(error, `No se pudo obtener el documento: ${docType}_${periodo}`)
+    }
+  }
+
+  // PERSONAL DATA _____________________________________________________________________________________________________
+
+  public async uploadPhoto<R = { uploaded: boolean }>(file: TDataStream): Promise<R | string> {
+    try {
+      const formData = new FormData()
+      formData.append('foto', file)
+
+      const { data } = await this.http.post<string>(`/foto/${this.nroAffiliate}`, formData, {
+        headers: formData.getHeaders()
+      })
+
+      return ({
+        uploaded: typeof data === 'string' && data === ''
+      } as unknown) as R
+    } catch (error) {
+      return this.errorMessageHandler(error, 'No se pudo subir la foto')
+    }
+  }
+
+  public async saveLocation<R = { saved: boolean }>(location: TAndeBody['ubicacion']): Promise<R | string> {
+    try {
+      const { data } = await this.http.put<string>(`/ubicacion/${this.nroAffiliate}`, location)
+
+      return ({
+        saved: typeof data === 'string' && data === ''
+      } as unknown) as R
+    } catch (error) {
+      return this.errorMessageHandler(error, 'No se pudo guardar la ubicación')
     }
   }
 }

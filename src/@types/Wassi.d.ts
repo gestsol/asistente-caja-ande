@@ -113,7 +113,7 @@ type TWassiRequest = {
   }
   data: {
     id: string
-    type: string
+    type: 'text' | 'image' | 'location'
     flow: string
     status: string
     ack: string
@@ -123,7 +123,7 @@ type TWassiRequest = {
     toNumber: string
     date: string
     timestamp: number
-    body: string
+    body?: string
     chat: {
       id: string
       name: string
@@ -139,6 +139,42 @@ type TWassiRequest = {
       labels: Array<any>
       owner: object
       contact: object
+    }
+    location?: {
+      latitude: number
+      longitude: number
+      name: string
+      address: string
+    }
+    media?: {
+      id: string
+      message: string
+      flow: string
+      status: string
+      caption: any | null
+      type: string
+      size: number
+      mime: string
+      extension: string
+      createdAt: string
+      expiresAt: string
+      meta: {
+        hasPreview: true
+        aspectRatio: number
+      }
+      stats: {
+        downloads: number
+      }
+      preview: {
+        height: number
+        image: string
+        mime: string
+        width: number
+      }
+      links: {
+        resource: string
+        download: string
+      }
     }
     events: object
     meta: {

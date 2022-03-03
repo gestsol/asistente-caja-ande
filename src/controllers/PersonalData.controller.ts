@@ -9,7 +9,7 @@ export class PersonalDataController extends Controller {
 
     const options = `
     (151) Cargar una foto (Reconocimiento facial)
-    (152) Cargar domicilio (envío de ubicación)`
+    (152) Cargar domicilio (Envío de ubicación)`
 
     switch (this.message) {
       case 'menu':
@@ -25,14 +25,18 @@ export class PersonalDataController extends Controller {
 
       case '151':
         TREE_STEP = 'STEP_1'
-        response =
-          'Para comenzar con el reconocimiento facial tenés que cargar una foto. Debe ser una foto de color claro y no utilizar lentes de sol ni mascarillas 😬'
+        response = `
+        Para comenzar con el reconocimiento facial tienes que cargar una foto.
+        Debe ser una foto de color claro y no utilizar lentes de sol ni mascarillas 😬
+        `
         break
 
       case '152':
         TREE_STEP = 'STEP_2'
-        response =
-          'Necesitamos saber tu domicilio, por favor envia tu dirección en un único mensaje. No olvides incluir el nombre de la calle y número de casa 🏡'
+        response = `
+        Necesitamos saber tu domicilio, por favor envia tu dirección usando la función de *enviar ubicación de Whatsapp* 🗺️
+        No olvides ubicar correctamente tu casa 🏡
+        `
         break
 
       case '0':
@@ -46,19 +50,66 @@ export class PersonalDataController extends Controller {
       default:
         switch (TREE_STEP) {
           case 'STEP_1':
-            response = `
-            Su fotografía ha sido guardada correctamente ✅
+            const isImage = this.data.dataType === 'image'
 
-            ${MENU_HOME}
-            `
+            // Validación basica de la imagen que se quiere subir
+            if (isImage && this.data.file) {
+              const image = await this.downloadFile(this.data.file.id)
+
+              if (image) {
+                const photo = await this.andeService.uploadPhoto(image)
+
+                if (typeof photo === 'object' && photo.uploaded) {
+                  response = `
+                  ✅ Su fotografía ha sido guardada correctamente
+
+                  ${MENU_HOME}
+                  `
+                } else {
+                  response = `
+                  ${photo}
+
+                  ${MENU_HOME}
+                  `
+                }
+              } else {
+                response = `
+                ⚠️ Error al obtener la imagen, intente de nuevo
+
+                ${MENU_HOME}
+                `
+              }
+            } else response = 'El archivo enviado es incorrecto, por favor revisa que sea una imagen correcta'
+
             break
 
           case 'STEP_2':
-            response = `
-            Su fotografía ha sido guardada correctamente ✅
+            console.log(this.data.location)
 
-            ${MENU_HOME}
-            `
+            const isLocation = this.data.dataType === 'location'
+
+            if (isLocation && this.data.location) {
+              const { latitude, longitude } = this.data.location
+
+              const location = await this.andeService.saveLocation({
+                ubicacionLatitud: latitude.toString(),
+                ubicacionLongitud: longitude.toString()
+              })
+
+              if (typeof location === 'object' && location.saved) {
+                response = `
+                ✅ Su ubicación ha sido guardada correctamente
+
+                ${MENU_HOME}
+                `
+              } else {
+                response = `
+                ${location}
+
+                ${MENU_HOME}
+                `
+              }
+            } else response = 'El archivo enviado es incorrecto, por favor revisa que sea una imagen correcta'
             break
 
           default:

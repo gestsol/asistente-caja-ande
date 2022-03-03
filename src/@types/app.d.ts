@@ -31,6 +31,14 @@ type TConfigHttpClient = {
 type TDataController = {
   phone: string
   message: string
+  dataType: TWassiRequest['data']['type']
+  file: {
+    id: string
+    size: number
+    mime: string
+    extension: string
+  } | null
+  location: TWassiRequest['data']['location'] | null
   res: import('express').Response
   menuHome: string
 }

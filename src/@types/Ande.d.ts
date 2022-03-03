@@ -40,6 +40,10 @@ type TAndeBody = {
     periodo: string
     nroFactura?: string
   }
+  ubicacion: {
+    ubicacionLatitud: string
+    ubicacionLongitud: string
+  }
 }
 
 type TAndeResponse = {

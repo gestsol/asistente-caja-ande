@@ -70,4 +70,16 @@ export class WassiService extends HttpClient {
       return null
     }
   }
+
+  public async downloadFile<R = TDataStream>(fileId: string): Promise<R | null> {
+    try {
+      const { data } = await this.http.get<R>(`/io/${this.device}/files/${fileId}/download`, {
+        responseType: 'stream'
+      })
+
+      return data
+    } catch (error) {
+      return null
+    }
+  }
 }
