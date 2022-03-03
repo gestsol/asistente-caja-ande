@@ -315,7 +315,7 @@ export class AndeService extends HttpClient {
 
       return data
     } catch (error) {
-      return (error as TAndeError)?.mensaje || '❌ Error al obtener la fecha de pago'
+      return this.errorMessageHandler(error, 'No se pudo obtener la fecha de pago')
     }
   }
 
@@ -325,7 +325,7 @@ export class AndeService extends HttpClient {
 
       return data
     } catch (error) {
-      return (error as TAndeError)?.mensaje || '❌ No se pudieron obtener las noticias destacadas'
+      return this.errorMessageHandler(error, 'No se lograron obtener las noticias destacadas')
     }
   }
 

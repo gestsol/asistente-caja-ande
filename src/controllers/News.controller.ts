@@ -17,25 +17,36 @@ export class NewsController extends Controller {
         TREE_STEP = ''
 
         response = `
-          Elige una de las siguientes opciones:
-          ${options}
-          ${MENU_HOME}
-          `
+        Elige una de las siguientes opciones:
+        ${options}
+        ${MENU_HOME}
+        `
         break
 
       case '141':
         const paymentDate = await this.andeService.getPaymentDate()
 
         if (typeof paymentDate === 'object') {
-          console.log(paymentDate)
+          const { codigo, mensaje } = paymentDate
 
-          response = `
-          No te olvides de tus fechas de cobro! 😇
+          if (codigo === 200 && mensaje) {
+            response = `
+            ${mensaje}
 
-          ( INFORMACIÓN )
+            ${MENU_HOME}
+            `
+          } else {
+            // TODO: Verificar que tipo de dato llega cuando hay una fecha de cobro
+            console.log(paymentDate)
 
-          ${MENU_HOME}
-          `
+            response = `
+            No te olvides de tus fechas de cobro! 😇
+
+            ${JSON.stringify(paymentDate)}
+
+            ${MENU_HOME}
+            `
+          }
         } else {
           response = `
           ${paymentDate}
@@ -54,13 +65,19 @@ export class NewsController extends Controller {
           const linkList = convertArrayInMessage(enabledLinks, item => {
             return `
             *${item.nombre}*
-            ${item.descripcion}
-            `
+            ${item.descripcion}`
           })
 
           response = `
           Las mejores promociones en un solo lugar 🌎
           ${linkList}
+
+          ${MENU_HOME}
+          `
+        } else {
+          response = `
+          ${links}
+
           ${MENU_HOME}
           `
         }

@@ -183,8 +183,6 @@ export class CreditCardController extends Controller {
       default:
         switch (TREE_STEP) {
           case 'STEP_1':
-            console.log(isNumber(this.message))
-
             if (this.message === 'M' || isNumber(this.message)) {
               const amount =
                 this.message === 'M' ? STORE.creditCard.creditLine.lineaCreditoMaximoCRE : Number(this.message)

@@ -119,7 +119,7 @@ type TAndeResponse = {
     }
   }>
   datosstc: Array<{
-    estadoTarjeta: string // 'Operativa                     '
+    estadoTarjeta: string
     fechaVto: number
     nroCuenta: null | any
     nroTarjeta: string
@@ -132,7 +132,7 @@ type TAndeResponse = {
     amortizacionPendiente: number
     limiteNormal: number
   }>
-  solicitudtc: any // TODO:
+  solicitudtc: any // TODO: Determinar respuesta correcta
   montocuota: {
     totalCuota: number
   }
@@ -140,10 +140,14 @@ type TAndeResponse = {
     situacion: string
   }
   fechacierre: {
-    periodo: string // '202202'
-    fecha: string // '16/02/2022'
+    periodo: string
+    fecha: string
   }
-  fechacobro: {} // TODO:
+  fechacobro: {
+    // TODO: Determinar respuesta cuando exista una fecha de cobro
+    mensaje?: string
+    codigo?: number
+  }
   enlaces: Array<{
     codigo: number
     nombre: string

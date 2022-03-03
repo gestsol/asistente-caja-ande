@@ -84,8 +84,6 @@ export class PersonalDataController extends Controller {
             break
 
           case 'STEP_2':
-            console.log(this.data.location)
-
             const isLocation = this.data.dataType === 'location'
 
             if (isLocation && this.data.location) {
