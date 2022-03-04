@@ -244,7 +244,7 @@ export class AndeService extends HttpClient {
 
       return data
     } catch (error) {
-      return (error as TAndeError)?.mensaje || '❌ No se pudo obtener el total de cuotas'
+      return this.errorMessageHandler(error, 'No se pudo obtener el total de cuotas')
     }
   }
 
@@ -254,7 +254,7 @@ export class AndeService extends HttpClient {
 
       return data
     } catch (error) {
-      return (error as TAndeError)?.mensaje || '❌ No se pudo obtener su situación de crédito actual'
+      return this.errorMessageHandler(error, 'No se pudo obtener su situación de crédito actual')
     }
   }
 
@@ -264,7 +264,7 @@ export class AndeService extends HttpClient {
 
       return data
     } catch (error) {
-      return (error as TAndeError)?.mensaje || 'Sin datos 😔'
+      return this.errorMessageHandler(error, 'No se encontro ninguna fecha de cierre')
     }
   }
 

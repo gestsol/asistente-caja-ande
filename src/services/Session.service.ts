@@ -92,17 +92,13 @@ export class SessionService {
       // Actualizar sesión
       SESSIONS = [...sessions, sessionUpdated]
 
-      // Para ver los datos desde la terminal
-      const sessionDebug = [
-        ...sessions,
-        {
-          ...sessionUpdated,
-          ande: (JSON.stringify(sessionUpdated.ande) as unknown) as TAnde,
-          store: (JSON.stringify(sessionUpdated.store) as unknown) as TStore
-        }
-      ]
+      const sessionDebug = JSON.stringify({
+        phone: sessionUpdated.phone,
+        treeLevel: sessionUpdated.treeLevel,
+        treeStep: sessionUpdated.treeStep
+      })
 
-      botDebug('SESSIONS', sessionDebug)
+      botDebug('SESSION', `session updated: ${sessionDebug}\n`)
     }
   }
 

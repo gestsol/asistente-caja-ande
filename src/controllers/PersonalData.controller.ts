@@ -107,7 +107,9 @@ export class PersonalDataController extends Controller {
                 ${MENU_HOME}
                 `
               }
-            } else response = 'El archivo enviado es incorrecto, por favor revisa que sea una imagen correcta'
+            } else
+              response =
+                'La ubicación es incorrecta, por favor envianos tu dirección usando la función de *enviar ubicación de Whatsapp* 🗺️'
             break
 
           default:
