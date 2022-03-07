@@ -44,6 +44,16 @@ type TAndeBody = {
     ubicacionLatitud: string
     ubicacionLongitud: string
   }
+  mesaentrada: {
+    descripcion: string
+    nroCedula: string
+    nombre: string
+    apellido: string
+    celular: string
+    email: string
+    observacion: string
+    archivo: TDataStream
+  }
 }
 
 type TAndeResponse = {
@@ -230,7 +240,7 @@ type TAffiliate = {
   edad: number | null
   aporte: string | null
   tipoContrato: string
-  email: string
+  email: string | null
   emailLaboral: string
   celulares: string | null
 }

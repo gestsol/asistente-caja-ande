@@ -81,6 +81,10 @@ type TStore = {
     type: TDocType
     docList: TDocList
   }
+  entryTable: {
+    description: string
+    observation: string
+  }
 }
 
 type TDocList = TAndeResponse['facturaCabecera'] &

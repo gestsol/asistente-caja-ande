@@ -13,14 +13,13 @@ export const getDatePrevious = (time: number): Date => {
   return new Date(date)
 }
 
+// TODO: verificar si esto se va a usar despues
 // export const getCurrentPeriod = (): string => {
 //   const dateISO = new Date().toISOString()
 //   const date = dateISO.split('T')[0]
 //   const decomposedDate = date.split('-')
-
 //   decomposedDate.pop()
 //   const period = decomposedDate.join('')
-
 //   return period
 // }
 

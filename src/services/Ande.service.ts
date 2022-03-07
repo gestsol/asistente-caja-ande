@@ -39,7 +39,10 @@ export class AndeService extends HttpClient {
 
       default:
         console.error('ERROR-SERVICE-ANDE:', err)
-        return '❌ Error al ejecutar la acción requerida, intente nuevamente'
+        return `
+        ❌ Error al ejecutar la acción requerida, reporte esta falla a soporte técnico
+        Lamentamos los incovenientes causados 😓
+        `
     }
   }
 
@@ -413,6 +416,29 @@ export class AndeService extends HttpClient {
       } as unknown) as R
     } catch (error) {
       return this.errorMessageHandler(error, 'No se pudo guardar la ubicación')
+    }
+  }
+
+  // ENTRY TABLE _______________________________________________________________________________________________________
+
+  public async uploadFile<R = { uploaded: boolean }>(body: TAndeBody['mesaentrada']): Promise<R | string> {
+    try {
+      const formData = new FormData()
+
+      for (const key in body) {
+        const value = body[key]
+        formData.append(key, value)
+      }
+
+      const { data } = await this.http.post<R>('/mesaentrada', formData, {
+        headers: formData.getHeaders()
+      })
+
+      return ({
+        uploaded: typeof data === 'string' && data === ''
+      } as unknown) as R
+    } catch (error) {
+      return this.errorMessageHandler(error, 'No se pudo guardar el archivo correctamente')
     }
   }
 }

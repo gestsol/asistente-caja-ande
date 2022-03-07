@@ -56,3 +56,7 @@ export const convertMessageInFullname = (message: string): string => {
   const [name, _, lastname] = message.split(' ')
   return convertMessageInUppercase(`${name} ${lastname}`)
 }
+
+export const convertPhoneInLocal = (phone: string): string => {
+  return phone.replace('+595', '0')
+}

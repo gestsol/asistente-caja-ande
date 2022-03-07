@@ -1,7 +1,7 @@
 import { Controller } from '~CLASS/Controller'
 import { HomeController } from '~CONTROLLERS/Home.controller'
 import { MainController } from '~CONTROLLERS/Main.controller'
-import { convertMessageInArray } from '~UTILS/message.util'
+import { convertMessageInArray, convertPhoneInLocal } from '~UTILS/message.util'
 import { isNumber } from '~UTILS/validation.util'
 import { MENU_HOME } from '~ENTITIES/consts'
 
@@ -57,8 +57,9 @@ export class LoginController extends Controller {
           let [nroCedula, nroAfiliado, nroCelular] = convertMessageInArray(this.message).filter(item => isNumber(item))
 
           if (isParaguay) {
-            //  Para realizar el inicio de sesión, el prefijo internacional +595 debe ses reemplazado por un cero
-            nroCelular = this.data.phone.replace('+595', '0')
+            // Para realizar el inicio de sesión, el prefijo internacional +595 de Paraguay
+            // debe ses reemplazado por un cero
+            nroCelular = convertPhoneInLocal(this.data.phone)
           }
 
           if (nroCedula || nroAfiliado || nroCelular) {
