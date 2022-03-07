@@ -1,13 +1,12 @@
 import { getConfig } from '~UTILS/config.util'
 
-export function botDebug(title: string, message: string | object): void {
+export function botDebug(title: string, message: string, payload?: object | Array<object>): void {
   if (getConfig().debug) {
     const time = new Date().toISOString().split('T')[1] as string
     const hour = time.split('.')[0]
-    const isPayload = typeof message === 'object'
 
-    console.log(`[${hour}] | ${prepareTitle(title)} | ${isPayload ? '' : message}`)
-    if (isPayload) console.log(message)
+    console.log(`[${hour}] | ${prepareTitle(title)} | ${message}`)
+    if (payload) console.table(payload)
   }
 }
 

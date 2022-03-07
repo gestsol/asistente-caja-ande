@@ -5,10 +5,10 @@ import { AndeService } from '~SERVICES/Ande.service'
 
 export class SessionService {
   private wassi?: WassiService
-  private timer?: NodeJS.Timeout
 
   constructor() {
     this.startDatabase()
+    this.autoLogout()
   }
 
   public async login(phone: string): Promise<void> {
@@ -19,33 +19,33 @@ export class SessionService {
     if (session) {
       // Transferir los datos de la sesion a variables super globales
       // para tener facil acceso a ellas dentro de los controladores
-      ANDE = session.ande
       TREE_LEVEL = session.treeLevel
       TREE_STEP = session.treeStep
+      ANDE = session.ande
       STORE = session.store
 
       // Se reinicia el temporizador del cierre de sesión
-      this.timer?.refresh()
+      this.refreshTimer(phone)
     } else {
       const isAdmin = getConfig().adminPhomeList.includes(phone)
+      let date = ''
 
       if (isAdmin) {
         // Nueva sesión para usuario ADMIN
         const loginData = await new AndeService().login(getConfig().affiliate)
 
         // Inicializacion de valores globales para usuario ADMIN
-        global.TREE_LEVEL = 'HOME'
-        global.TREE_OPTION = ''
-        global.TREE_STEP = ''
-        global.ANDE = {
+        TREE_LEVEL = 'HOME'
+        TREE_STEP = ''
+        ANDE = {
           affiliate: loginData!.afiliado,
           token: loginData!.token
         }
-        global.STORE = {} as TStore
+        STORE = {} as TStore
       } else {
         // Nueva sesión para usuario normal
         this.initGlobalValues()
-        this.autoLogout(phone)
+        date = new Date().toISOString()
       }
 
       // Crear nueva sesión
@@ -53,25 +53,49 @@ export class SessionService {
         phone,
         treeLevel: TREE_LEVEL,
         treeStep: TREE_STEP,
+        date,
         ande: ANDE,
         store: STORE
       })
 
-      botDebug('SESSION', 'session started')
-      if (!isAdmin) await this.notifySession(phone, 'Sesión iniciada ✅')
+      if (!isAdmin) {
+        botDebug('SESSION', 'session started')
+        await this.notifySession(phone, '✅ Sesión iniciada')
+      }
     }
   }
 
-  public autoLogout(phone: string): void {
-    this.timer = setTimeout(async () => {
-      this.startDatabase()
+  public autoLogout(): void {
+    setInterval(async () => {
+      const currentTime = new Date().getTime()
 
-      botDebug('SESSION', 'session ended')
-      await this.notifySession(phone, 'Sesión finalizada 🕒')
-    }, 1000 * 60 * getConfig().timerSessionMin)
+      const { timerSessionMin } = getConfig()
+      // Convertir timerSessionMin en milisegundos
+      const sessionTime = timerSessionMin * 60_000
+      let sessionLogout: TSession | null = null
+
+      SESSIONS = SESSIONS.filter(session => {
+        const rest = currentTime - new Date(session.date).getTime()
+
+        if (rest >= sessionTime) {
+          sessionLogout = session
+          return false
+        } else return true
+      })
+
+      if (sessionLogout) {
+        botDebug('SESSION', 'session ended')
+        await this.notifySession((sessionLogout as TSession).phone, '🕒 Sesión finalizada')
+      }
+    }, 1000 * 60 * 1)
   }
 
-  public static update(phone: string): void {
+  public refreshTimer(phone: string) {
+    const date = new Date().toISOString()
+    SessionService.update(phone, date)
+  }
+
+  public static update(phone: string, dateUpdated?: string): void {
     const session = SessionService.getSession(phone)
 
     if (session) {
@@ -81,24 +105,25 @@ export class SessionService {
         phone,
         treeLevel: TREE_LEVEL,
         treeStep: TREE_STEP,
+        date: dateUpdated || session.date,
         ande: ANDE,
         store: STORE
       }
 
-      TREE_LEVEL = session.treeLevel
-      TREE_STEP = session.treeStep
-      ANDE = session.ande
-
       // Actualizar sesión
       SESSIONS = [...sessions, sessionUpdated]
 
-      const sessionDebug = JSON.stringify({
+      const sessionDebug = {
         phone: sessionUpdated.phone,
         treeLevel: sessionUpdated.treeLevel,
-        treeStep: sessionUpdated.treeStep
-      })
+        treeStep: sessionUpdated.treeStep,
+        date: sessionUpdated.date
+      }
 
-      botDebug('SESSION', `session updated: ${sessionDebug}\n`)
+      if (!dateUpdated) {
+        botDebug('SESSION', 'session updated', sessionDebug)
+        console.log()
+      }
     }
   }
 
