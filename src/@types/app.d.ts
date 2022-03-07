@@ -11,7 +11,6 @@ type TConfig = {
     apiUrl: string
   }
   modeAPP: 'API' | 'BOT'
-  timerSessionMin: number
   messageSession: boolean
   adminPhomeList: Array<string>
   affiliate: {
@@ -49,7 +48,6 @@ type TSession = {
   phone: string
   treeLevel: TLevel
   treeStep: TStep
-  date: string
   ande: TAnde
   store: TStore
 }

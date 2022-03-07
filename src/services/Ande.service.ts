@@ -22,12 +22,17 @@ export class AndeService extends HttpClient {
     this.typeLending = STORE.lending?.type || 'paralelo'
   }
 
-  private errorMessageHandler(error: unknown | TAndeError | Error, message?: string): string {
+  private errorMessageHandler(error: unknown | TAndeError | Error, message?: string) {
     const err = error as TAndeError & Error
 
     switch (err.codigo) {
       case 404:
         return `😔 ${message}`
+
+      case 401:
+        TREE_LEVEL = 'LOGIN'
+        TREE_STEP = 'STEP_1'
+        return '🕒 Sesión finalizada, vuelva a ingresar sus datos para iniciar sesión'
 
       case 500:
         return `⚠️ ${err.mensaje}`

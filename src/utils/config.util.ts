@@ -25,7 +25,6 @@ export const getConfig = (): TConfig => {
       apiUrl: (ENV.ANDE_API_URL as string) || ''
     },
     modeAPP: (ENV.MODE_APP as any) || 'BOT',
-    timerSessionMin: Number(ENV.TIMER_SESSION_MIN) || 5,
     messageSession: ENV.MESSAGE_SESSION === 'true' ? true : false,
     adminPhomeList: (ENV.ADMIN_PHONE_LIST as string)?.split(',') || [],
     affiliate: {

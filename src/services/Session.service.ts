@@ -3,17 +3,13 @@ import { botDebug } from '~UTILS/debug.util'
 import { getConfig } from '~UTILS/config.util'
 import { AndeService } from '~SERVICES/Ande.service'
 
-export class SessionService {
-  private wassi?: WassiService
-
+export class SessionService extends WassiService {
   constructor() {
+    super()
     this.startDatabase()
-    this.autoLogout()
   }
 
   public async login(phone: string): Promise<void> {
-    if (!this.wassi) this.wassi = new WassiService()
-
     const session = SessionService.getSession(phone)
 
     if (session) {
@@ -23,12 +19,8 @@ export class SessionService {
       TREE_STEP = session.treeStep
       ANDE = session.ande
       STORE = session.store
-
-      // Se reinicia el temporizador del cierre de sesión
-      this.refreshTimer(phone)
     } else {
       const isAdmin = getConfig().adminPhomeList.includes(phone)
-      let date = ''
 
       if (isAdmin) {
         // Nueva sesión para usuario ADMIN
@@ -45,7 +37,6 @@ export class SessionService {
       } else {
         // Nueva sesión para usuario normal
         this.initGlobalValues()
-        date = new Date().toISOString()
       }
 
       // Crear nueva sesión
@@ -53,46 +44,17 @@ export class SessionService {
         phone,
         treeLevel: TREE_LEVEL,
         treeStep: TREE_STEP,
-        date,
         ande: ANDE,
         store: STORE
       })
 
       if (!isAdmin) {
         botDebug('SESSION', 'session started')
-        await this.notifySession(phone, '✅ Sesión iniciada')
+        if (getConfig().messageSession) {
+          await this.sendMessage({ phone, message: '✅ Sesión iniciada' })
+        }
       }
     }
-  }
-
-  public autoLogout(): void {
-    setInterval(async () => {
-      const currentTime = new Date().getTime()
-
-      const { timerSessionMin } = getConfig()
-      // Convertir timerSessionMin en milisegundos
-      const sessionTime = timerSessionMin * 60_000
-      let sessionLogout: TSession | null = null
-
-      SESSIONS = SESSIONS.filter(session => {
-        const rest = currentTime - new Date(session.date).getTime()
-
-        if (rest >= sessionTime) {
-          sessionLogout = session
-          return false
-        } else return true
-      })
-
-      if (sessionLogout) {
-        botDebug('SESSION', 'session ended')
-        await this.notifySession((sessionLogout as TSession).phone, '🕒 Sesión finalizada')
-      }
-    }, 1000 * 60 * 1)
-  }
-
-  public refreshTimer(phone: string) {
-    const date = new Date().toISOString()
-    SessionService.update(phone, date)
   }
 
   public static update(phone: string, dateUpdated?: string): void {
@@ -105,7 +67,6 @@ export class SessionService {
         phone,
         treeLevel: TREE_LEVEL,
         treeStep: TREE_STEP,
-        date: dateUpdated || session.date,
         ande: ANDE,
         store: STORE
       }
@@ -116,8 +77,7 @@ export class SessionService {
       const sessionDebug = {
         phone: sessionUpdated.phone,
         treeLevel: sessionUpdated.treeLevel,
-        treeStep: sessionUpdated.treeStep,
-        date: sessionUpdated.date
+        treeStep: sessionUpdated.treeStep
       }
 
       if (!dateUpdated) {
@@ -146,11 +106,5 @@ export class SessionService {
   private static getSession(phone: string): TSession | null {
     const session = SESSIONS.find(session => session.phone === phone)
     return session || null
-  }
-
-  private async notifySession(phone: string, message: string): Promise<void> {
-    if (getConfig().messageSession) {
-      await this.wassi!.sendMessage({ phone, message })
-    }
   }
 }

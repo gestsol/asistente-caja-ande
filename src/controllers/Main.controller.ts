@@ -26,7 +26,10 @@ export class MainController extends Controller {
           switch (this.message) {
             case '1':
               TREE_STEP = ''
-              new LoginController(this.data)
+              new LoginController({
+                ...this.data,
+                message: 'menu'
+              })
               break
 
             case '2':
