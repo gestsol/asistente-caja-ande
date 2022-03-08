@@ -1,6 +1,6 @@
 import { Controller } from '~CLASS/Controller'
 import { HomeController } from '~CONTROLLERS/Home.controller'
-import { getDatePrevious, getDateFromPeriod, getPeriodFromMessage } from '~UTILS/date.util'
+import { getPeriodFromMessage } from '~UTILS/date.util'
 import { messageOptionInvalid } from '~UTILS/message.util'
 import { MENU_HOME } from '~ENTITIES/consts'
 
@@ -69,17 +69,13 @@ export class DownloadController extends Controller {
             // Obtener documentos de los ultimos 12 meses
             if (this.message === '12') {
               const { type, docList } = STORE.download
-              const months12 = 31_557_600_000 // 12 meses en milisegundos
-              const months12Time = getDatePrevious(months12).getTime()
 
-              // Se filtra los documentos con fechas de los ultimos 12 meses
-              const docLastMonth12 = docList.filter(
-                ({ periodo }) => getDateFromPeriod(periodo).getTime() >= months12Time
-              )
+              // Se filtran los documentos por los 12 últimos
+              const docLast12 = docList.filter((_, i) => i < 12)
 
               // Se ejcutan todas las peticiones en paralelo haciendo uso de "Promise.allSettled"
               const fileList = await Promise.allSettled(
-                docLastMonth12.map(async ({ periodo, nroFactura }) => {
+                docLast12.map(async ({ periodo, nroFactura }) => {
                   return this.andeService.getDoc(type, {
                     periodo,
                     nroFactura

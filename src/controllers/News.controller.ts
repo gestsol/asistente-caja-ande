@@ -9,7 +9,7 @@ export class NewsController extends Controller {
 
     const options = `
     (141) Fecha de pago de haberes
-    (142) Noticias destacadas de la CAJA`
+    (142) Enlaces de interés y noticias`
 
     switch (this.message) {
       case 'menu':

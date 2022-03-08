@@ -14,16 +14,16 @@ type TAndeBody = {
     montoSolicitado: number
     formaCobro: number
     idCuentaBancaria: number
-    nroCuentaBancaria: null | number
-    idBanco: null | number
+    nroCuentaBancaria: number | null
+    idBanco: number | null
     cumpleRequisitos: number
   }
   solicitudcreditoExtraordinario: {
     monto: number
     origen: number
     tipoDesembolso: number
-    codBanco: number
-    nroCtaBancaria: number
+    codBanco: number | null
+    nroCtaBancaria: number | null
   }
   solicitudtc: {
     esAdicional: number
@@ -142,7 +142,37 @@ type TAndeResponse = {
     amortizacionPendiente: number
     limiteNormal: number
   }>
-  solicitudtc: any // TODO: Determinar respuesta correcta
+  solicitudcredito: {
+    nroExpediente: number
+    fechaSolicitud: null
+    montoSolicitado: null
+    ubicacion: null
+    origen: null
+    tipoPrestamo: null
+    cumpleRequisito: null
+    plazo: null
+    importeCuota: null
+    tasaInteres: null
+    tasaSeguro: null
+    cantidadDestino: null
+    motivo: null
+    sistemaCalculo: null
+    observaciones: null
+    frecuenciaPago: null
+    tipoGarantia: null
+    tipoDesembolso: null
+    periodoDescuento: null
+    parteDeDiferido: null
+    fueraDelPlan: null
+    saleDelPlan: null
+    modalidad: null
+    fechaSituacion: null
+    listaDestinoCredito: null
+    nroTelefono: null
+    correoElectronico: null
+    formaCobro: null
+    afiliadoDatosBasicos: null
+  }
   montocuota: {
     totalCuota: number
   }

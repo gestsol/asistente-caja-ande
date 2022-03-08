@@ -163,7 +163,9 @@ export class AndeService extends HttpClient {
     }
   }
 
-  public async createCredit<R = object>(body: TAndeBody['solicitudcredito']): Promise<R | string> {
+  public async createCredit<R = TAndeResponse['solicitudcredito']>(
+    body: TAndeBody['solicitudcredito']
+  ): Promise<R | string> {
     let endpoint = '/solicitudcredito'
 
     switch (this.typeLending) {
@@ -235,7 +237,8 @@ export class AndeService extends HttpClient {
     }
   }
 
-  public async createCreditCard<R = TAndeResponse['solicitudtc']>(body: TAndeBody['solicitudtc']): Promise<R | string> {
+  // TODO: determinar tipo de respuesta correcta
+  public async createCreditCard<R = any>(body: TAndeBody['solicitudtc']): Promise<R | string> {
     try {
       const { data } = await this.http.post<R>(`/solicitudtc/${this.nroAffiliate}`, body)
 

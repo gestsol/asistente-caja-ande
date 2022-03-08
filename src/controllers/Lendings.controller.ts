@@ -269,10 +269,35 @@ export class LendingsController extends Controller {
               const payMethod = STORE.lending.payMethodList.find((_, index) => index === payMethodSelected - 1)
 
               if (payMethod) {
-                TREE_STEP = 'STEP_5'
-                STORE.lending.payMethod = payMethod
+                if (payMethod.descripcion === 'CHEQUE') {
+                  const { amount } = STORE.lending
 
-                response = 'Por favor indica tu número de cuenta del banco'
+                  const creditResponse = await this.andeService.createCreditExtra({
+                    monto: amount,
+                    origen: 3,
+                    tipoDesembolso: payMethod.codigo,
+                    codBanco: null,
+                    nroCtaBancaria: null
+                  })
+
+                  if (typeof creditResponse === 'object') {
+                    response = `
+                    ✅ Solicitud de préstamo generada exitosamente
+
+                    ${MENU_HOME}
+                    `
+                  } else {
+                    response = `
+                    ${creditResponse}
+
+                    ${MENU_HOME}
+                    `
+                  }
+                } else {
+                  TREE_STEP = 'STEP_5'
+                  STORE.lending.payMethod = payMethod
+                  response = 'Por favor indica tu número de cuenta del banco'
+                }
               } else response = messageOptionInvalid()
               break
 
@@ -287,7 +312,7 @@ export class LendingsController extends Controller {
                     const { type, deadline, amount, payMethod } = STORE.lending
                     let creditResponse = ''
 
-                    if (type === 'extraordinario' || payMethod.descripcion === 'CHEQUE') {
+                    if (type === 'extraordinario') {
                       creditResponse = await this.andeService.createCreditExtra({
                         monto: amount,
                         origen: 3,
@@ -308,11 +333,8 @@ export class LendingsController extends Controller {
                     }
 
                     if (typeof creditResponse === 'object') {
-                      // TODO: Determinar respuesta en la peticion y despues eliminar este log
-                      console.log('LINEA DE CREDITO:', creditResponse)
-
                       response = `
-                      ✅ Prestamo generado exitosamente
+                      ✅ Solicitud de préstamo generada exitosamente
 
                       ${MENU_HOME}
                       `
