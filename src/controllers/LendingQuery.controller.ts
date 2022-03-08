@@ -1,6 +1,6 @@
 import { Controller } from '~CLASS/Controller'
 import { HomeController } from '~CONTROLLERS/Home.controller'
-import { messageOptionInvalid } from '~UTILS/message.util'
+import { convertInGuarani, messageOptionInvalid } from '~UTILS/message.util'
 import { MENU_HOME } from '~ENTITIES/consts'
 
 export class LendingQuery extends Controller {
@@ -34,7 +34,7 @@ export class LendingQuery extends Controller {
           response = `
           Total de cuotas de créditos vigentes:
 
-          ${fee.totalCuota}
+          ${convertInGuarani(fee.totalCuota)}
 
           ${MENU_HOME}
           `
@@ -99,12 +99,12 @@ export class LendingQuery extends Controller {
             Descuento del mes:
 
             *Préstamo*
-            Total reclamo: ${monthDiscount.totalReclamoPrestamo}
-            Total pago: ${monthDiscount.totalPagoPrestamo}
+            Total reclamo: ${convertInGuarani(monthDiscount.totalReclamoPrestamo)}
+            Total pago: ${convertInGuarani(monthDiscount.totalPagoPrestamo)}
 
             *Seguro*
-            Total reclamo: ${monthDiscount.totalReclamoSeguro}
-            Total pago: ${monthDiscount.totalPagoSeguro}
+            Total reclamo: ${convertInGuarani(monthDiscount.totalReclamoSeguro)}
+            Total pago: ${convertInGuarani(monthDiscount.totalPagoSeguro)}
 
             ${MENU_HOME}
             `
@@ -159,7 +159,7 @@ export class LendingQuery extends Controller {
           Último pago de tesorería:
 
           Fecha: ${treasuryPayment.fecha}
-          Importe: ${treasuryPayment.importe}
+          Importe: ${convertInGuarani(treasuryPayment.importe)}
 
           ${MENU_HOME}
           `

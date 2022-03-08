@@ -1,6 +1,6 @@
 import { Controller } from '~CLASS/Controller'
 import { HomeController } from '~CONTROLLERS/Home.controller'
-import { convertArrayInMessage, messageOptionInvalid } from '~UTILS/message.util'
+import { convertArrayInMessage, convertInGuarani, messageOptionInvalid } from '~UTILS/message.util'
 import { isNumber } from '~UTILS/validation.util'
 import { MENU_HOME } from '~ENTITIES/consts'
 
@@ -98,8 +98,8 @@ export class CreditCardController extends Controller {
           const creditCardList = convertArrayInMessage(STORE.creditCard.tcList, item => {
             return `
             *Tarjeta:* ${item.nroTarjeta}
-            *Saldo disponible:* ${item.disponible}
-            *Deuda total:* ${item.pagoMinimoPendiente}`
+            *Saldo disponible:* ${convertInGuarani(item.disponible)}
+            *Deuda total:* ${convertInGuarani(item.pagoMinimoPendiente)}`
           })
 
           response = `
@@ -128,7 +128,7 @@ export class CreditCardController extends Controller {
 
             return `
             *Tarjeta:* ${item.nroTarjeta}
-            *Pago Mínimo:* ${item.pagoMinimo}
+            *Pago Mínimo:* ${convertInGuarani(item.pagoMinimo)}
             *Fecha Vto:* ${dateVto}`
             // TODO: Falta Fecha cierre: ${ ?? }
           })
@@ -189,9 +189,10 @@ export class CreditCardController extends Controller {
 
               TREE_STEP = 'STEP_2'
               STORE.creditCard.amount = amount
+              const amountTotal = convertInGuarani(amount)
 
               response = `
-              Se ha ingresado una solicitud para tarjeta de crédito con un monto máximo de ${amount} guaraníes.
+              Se ha ingresado una solicitud para tarjeta de crédito con un monto máximo de ${amountTotal} guaraníes.
 
               (C) Confirmo
               (R) Rechazo
@@ -324,12 +325,14 @@ export class CreditCardController extends Controller {
   }
 
   private getMessageAmount(): string {
+    const amountTotal = convertInGuarani(STORE.creditCard.creditLine.lineaCreditoMaximoCRE)
+
     return `
-    Tenes disponible ${STORE.creditCard.creditLine.lineaCreditoMaximoCRE} guaraníes para tu tarjeta de crédito.
+    Tenes disponible ${amountTotal} guaraníes para tu tarjeta de crédito.
     ¿Deseas solicitarla con el monto máximo?
 
     (M) Quiero el monto máximo
-    (    ) Escriba el monto que desea (debe ser menor a su monto disponible)`
+    (    ) Escriba el monto que desea (debe ser menor a su monto disponible y no debe tener puntos o decimales)`
   }
 
   private initStore(): void {

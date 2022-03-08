@@ -60,3 +60,12 @@ export const convertMessageInFullname = (message: string): string => {
 export const convertPhoneInLocal = (phone: string): string => {
   return phone.replace('+595', '0')
 }
+
+export const convertInGuarani = (message: string | number): string => {
+  const amount = Number(message)
+
+  return new Intl.NumberFormat('es-PY', {
+    style: 'currency',
+    currency: 'PYG'
+  }).format(amount)
+}

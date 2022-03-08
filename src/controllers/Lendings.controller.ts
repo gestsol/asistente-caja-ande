@@ -1,6 +1,7 @@
 import { Controller } from '~CLASS/Controller'
 import { HomeController } from '~CONTROLLERS/Home.controller'
-import { convertArrayInMessage, messageOptionInvalid } from '~UTILS/message.util'
+import { convertArrayInMessage, convertInGuarani, messageOptionInvalid } from '~UTILS/message.util'
+import { isNumber } from '~UTILS/validation.util'
 import { MENU_HOME } from '~ENTITIES/consts'
 
 export class LendingsController extends Controller {
@@ -84,7 +85,7 @@ export class LendingsController extends Controller {
               return `
               (${i + 1})
               *Plazo*: ${item.plazo}
-              *Monto*: ${item.monto}
+              *Monto*: ${convertInGuarani(item.monto)}
               `
             })
 
@@ -113,7 +114,7 @@ export class LendingsController extends Controller {
               return `
               (${i + 1})
               *Plazo*: ${item.plazo}
-              *Monto*: ${item.monto}
+              *Monto*: ${convertInGuarani(item.monto)}
               `
             })
 
@@ -142,7 +143,7 @@ export class LendingsController extends Controller {
               return `
               (${i + 1})
               *Plazo*: ${item.plazo}
-              *Monto*: ${item.monto}
+              *Monto*: ${convertInGuarani(item.monto)}
               `
             })
 
@@ -171,7 +172,7 @@ export class LendingsController extends Controller {
               return `
               *(${i + 1})*
               Plazo: ${item.plazo}
-              Monto: ${item.monto}
+              Monto: ${convertInGuarani(item.monto)}
               `
             })
 
@@ -202,9 +203,9 @@ export class LendingsController extends Controller {
         default:
           switch (TREE_STEP) {
             case 'STEP_2':
-              const deadlineSelected = Number(this.message)
+              const deadlineSelected = isNumber(this.message)
 
-              if (!isNaN(deadlineSelected)) {
+              if (deadlineSelected) {
                 const deadline = STORE.lending.deadlineList.find((_, index) => index === deadlineSelected - 1)!
 
                 if (deadline) {
@@ -219,9 +220,11 @@ export class LendingsController extends Controller {
               break
 
             case 'STEP_3':
-              if (this.message === 'L' || !isNaN(Number(this.message))) {
+              const amountMinor = isNumber(this.message)
+
+              if (this.message === 'L' || amountMinor) {
                 let { monto, plazo } = STORE.lending.deadline
-                monto = this.message === 'L' ? monto : Number(this.message)
+                monto = this.message === 'L' ? monto : amountMinor!
 
                 const calculeResponse = await this.andeService.calculateLending(monto, plazo)
 
@@ -302,7 +305,7 @@ export class LendingsController extends Controller {
               break
 
             case 'STEP_5':
-              if (!isNaN(Number(this.message))) {
+              if (isNumber(this.message)) {
                 const bankAccountList = await this.andeService.getBankAccountList()
 
                 if (bankAccountList) {
@@ -353,11 +356,7 @@ export class LendingsController extends Controller {
                     `
                   }
                 } else response = 'Error al buscar las cuentas asociadas, por favor intentelo nuevamente'
-
-                break
-              }
-
-              response = messageOptionInvalid()
+              } else response = 'Número incorrecto, debe ingresar un número de cuenta valido'
               break
 
             default:
