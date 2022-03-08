@@ -60,7 +60,8 @@ export class AndeService extends HttpClient {
   // }
 
   public async login<R = TAndeResponse['autenticar']>(body: TAndeBody['autenticar']): Promise<R | null> {
-    const urlEncoded = qsStringify(body) // convertir datos en formato x-www-form-urlencoded
+    // convertir datos en formato x-www-form-urlencoded
+    const urlEncoded = qsStringify(body)
 
     try {
       const { data } = await this.http.post<R>('/autenticar', urlEncoded, {

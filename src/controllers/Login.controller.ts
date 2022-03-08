@@ -20,20 +20,19 @@ export class LoginController extends Controller {
     switch (this.message) {
       case 'menu':
         TREE_LEVEL = 'LOGIN'
-        TREE_STEP = 'STEP_1'
 
-        ANDE = {} as any
+        this.initStore()
 
         response = `
         Hola! soy el asistente virtual de los afiliados de la CAJA 🤓
         Nuestra caja, tu futuro!`
 
         if (isParaguay) {
+          TREE_STEP = 'STEP_1'
           response += `
-          Por favor envíanos tu número de CI y número de afiliado separados por los espacios que desee
-
-          *Ejemplo*: 1234567 12345`
+          Por favor envíanos tu número de CI para ayudarte`
         } else {
+          TREE_STEP = 'STEP_2'
           response += `
           Por favor envíanos tu número de CI, número de afiliado y número de celular separados por los espacios que desee
 
@@ -48,54 +47,81 @@ export class LoginController extends Controller {
       case '0':
         TREE_LEVEL = 'MAIN'
         TREE_STEP = ''
+
+        this.initStore()
+
         new MainController(this.data)
         break
 
       default:
-        if (TREE_STEP === 'STEP_1') {
-          // Convertimos en array el mensaje y verificamos que cada dato sea un número
-          let [nroCedula, nroAfiliado, nroCelular] = convertMessageInArray(this.message).filter(item => isNumber(item))
+        switch (TREE_STEP) {
+          case 'STEP_1':
+            if (isNumber(this.message)) {
+              TREE_STEP = 'STEP_2'
+              STORE.login.ci = this.message
 
-          if (isParaguay) {
-            // Para realizar el inicio de sesión, el prefijo internacional +595 de Paraguay
-            // debe ses reemplazado por un cero
-            nroCelular = convertPhoneInLocal(this.data.phone)
-          }
+              response = 'Envíanos tu número de afiliado'
+            } else response = '⚠️ Número Invalido, por favor envie un número de CI correcto'
+            break
 
-          if (nroCedula || nroAfiliado || nroCelular) {
-            const data = await this.andeService.login({
-              nroCedula,
-              nroAfiliado,
-              nroCelular
-            })
+          case 'STEP_2':
+            let nroCedula = '',
+              nroAfiliado = '',
+              nroCelular = ''
 
-            if (data) {
-              // Guardar los datos del afiliado
-              ANDE = {
-                affiliate: data.afiliado,
-                token: data.token
+            if (isParaguay) {
+              if (isNumber(this.message)) {
+                nroCedula = STORE.login.ci
+                nroAfiliado = this.message
+
+                // Para realizar el inicio de sesión, el prefijo internacional +595 de Paraguay
+                // debe ses reemplazado por un cero
+                nroCelular = convertPhoneInLocal(this.data.phone)
+              } else {
+                response = '⚠️ Número Invalido, por favor envie un número de afiliado correcto'
+                break
               }
+            } else {
+              // Convertimos en array el mensaje y verificamos que cada dato sea un número
+              ;[nroCedula, nroAfiliado, nroCelular] = convertMessageInArray(this.message).filter(item => isNumber(item))
+            }
 
-              new HomeController({
-                ...this.data,
-                message: 'menu'
+            if (nroCedula || nroAfiliado || nroCelular) {
+              const data = await this.andeService.login({
+                nroCedula,
+                nroAfiliado,
+                nroCelular
               })
 
-              break
+              if (data) {
+                // Guardar los datos del afiliado
+                ANDE = {
+                  affiliate: data.afiliado,
+                  token: data.token
+                }
+
+                new HomeController({
+                  ...this.data,
+                  message: 'menu'
+                })
+              }
             }
-          }
 
-          response = `
-          ⚠️ Usuario invalido, verifique que los datos sean correctos e intente de nuevo
+            TREE_STEP = 'STEP_1'
+            response = `
+            ⚠️ Usuario invalido, verifique que los datos sean correctos e intente de nuevo
 
-          ${MENU_HOME}
-          `
-          break
+            ${MENU_HOME}
+            `
+            break
         }
-
-        break
     }
 
     return this.sendMessage(response)
+  }
+
+  private initStore(): void {
+    ANDE = {} as any
+    STORE = { login: {} } as any
   }
 }

@@ -58,6 +58,9 @@ type TAnde = null | {
 }
 
 type TStore = {
+  login: {
+    ci: string
+  }
   lending: {
     type: TTypeLending
     deadlineList: TDeadline[]
