@@ -33,10 +33,10 @@ export class WassiService extends HttpClient {
 
   public async uploadFile<R = TWassiResponse['files']>(
     { filename, expiration = '10m', permission = 'public' }: TWassiBody['files'],
-    binary: TDataStream
+    stream: TDataStream
   ): Promise<R | []> {
     try {
-      const { data } = await this.http.post('/files', binary, {
+      const { data } = await this.http.post('/files', stream, {
         headers: { 'Content-Type': 'application/pdf' },
         params: {
           filename,

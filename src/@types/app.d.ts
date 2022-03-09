@@ -94,6 +94,13 @@ type TDocList = TAndeResponse['facturaCabecera'] &
   TAndeResponse['extractoCabecera'] &
   TAndeResponse['liquidacionhaberCabecera']
 
+type TFile =
+  | {
+      filename: string
+      stream: TDataStream
+    }
+  | string
+
 type TLevel =
   | 'MAIN'
   | 'MESA'

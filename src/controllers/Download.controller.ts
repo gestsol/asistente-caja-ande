@@ -68,13 +68,15 @@ export class DownloadController extends Controller {
           case 'STEP_1':
             // Obtener documentos de los ultimos 12 meses
             if (this.message === '12') {
+              await this.sendMessage('⏳ Espere un momento por favor mientras se buscan los archivos')
+
               const { type, docList } = STORE.download
 
               // Se filtran los documentos por los 12 últimos
               const docLast12 = docList.filter((_, i) => i < 12)
 
               // Se ejcutan todas las peticiones en paralelo haciendo uso de "Promise.allSettled"
-              const fileList = await Promise.allSettled(
+              const fileListSettledResult = await Promise.allSettled(
                 docLast12.map(async ({ periodo, nroFactura }) => {
                   return this.andeService.getDoc(type, {
                     periodo,
@@ -83,24 +85,19 @@ export class DownloadController extends Controller {
                 })
               )
 
-              for await (const file of fileList) {
+              // Se preparan los archivos obtenidos transformando los datos de tipo "SettledResult" a "TFile"
+              const fileList: TFile[] = fileListSettledResult.map(file => {
                 // Todas las promesas seran resueltas incluso si hay error
                 // debido a que el servicio "Ande.service" captura cualquier error
                 if (file.status === 'fulfilled') {
-                  if (typeof file.value === 'object') {
-                    const { filename, pdf } = file.value
-                    await this.sendFile(filename, pdf)
-                  } else {
-                    await this.sendMessage(`
-                    ${file.value}
+                  return typeof file.value === 'object'
+                    ? { filename: file.value.filename, stream: file.value.pdf }
+                    : file.value
+                } else return {} as TFile
+              })
 
-                    ${MENU_HOME}
-                    `)
-                  }
-                }
-
-                response = 'OK'
-              }
+              await this.sendFiles(fileList)
+              response = 'OK'
               break
             }
 
@@ -118,7 +115,12 @@ export class DownloadController extends Controller {
                 })
 
                 if (typeof file === 'object') {
-                  await this.sendFile(file.filename, file.pdf)
+                  await this.sendFiles([
+                    {
+                      filename: file.filename,
+                      stream: file.pdf
+                    }
+                  ])
                   response = 'OK'
                 } else {
                   response = `
@@ -164,7 +166,7 @@ export class DownloadController extends Controller {
       ${responseTitle}
 
       (12) Los últimos *12 meses*
-      (    ) Ingrese mes y año, ejemplo: *02-2010*
+      () Ingrese mes y año, ejemplo: *02-2010*
       `
     } else {
       return `

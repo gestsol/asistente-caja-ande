@@ -74,33 +74,40 @@ export class Controller {
     return response ? true : false
   }
 
-  protected async sendFile(filename: string, file: TDataStream): Promise<void> {
+  protected async sendFiles(files: TFile[]): Promise<void> {
     switch (getConfig().modeAPP) {
       case 'BOT':
-        const [fileData] = await this.wassiService.uploadFile({ filename }, file)
+        for await (const file of files) {
+          if (typeof file === 'object') {
+            const [fileData] = await this.wassiService.uploadFile({ filename: file.filename }, file.stream)
 
-        if (fileData) {
-          const wassiResponse = await this.wassiService.sendFile({
-            phone: this.data.phone,
-            media: { file: fileData.id }
-          })
+            if (fileData) {
+              const wassiResponse = await this.wassiService.sendFile({
+                phone: this.data.phone,
+                media: { file: fileData.id }
+              })
 
-          if (wassiResponse) {
-            const {
-              media: { file },
-              status
-            } = wassiResponse
+              if (wassiResponse) {
+                const {
+                  media: { file },
+                  status
+                } = wassiResponse
 
-            botDebug('WASSI-OUT', `${getConfig().nroBot} -> (File in ${status}) ${file}`)
-          }
+                botDebug('WASSI-OUT', `${getConfig().nroBot} -> (File in ${status}) ${file}`)
+              }
+            } else await this.sendMessage('⚠️ Error al obtener el documento')
+          } else await this.sendMessage(file)
         }
+
         break
 
       case 'API':
         if (!this.data.res.headersSent) {
           this.data.res.json({
             status: 'OK',
-            file: file.setEncoding('utf-8').read()
+            files: files.map(file => {
+              return typeof file === 'object' ? file.filename : file
+            })
           })
         }
         break
