@@ -41,6 +41,7 @@ type TAndeBody = {
     nroFactura?: string
   }
   ubicacion: {
+    domicilio: string
     ubicacionLatitud: string
     ubicacionLongitud: string
   }

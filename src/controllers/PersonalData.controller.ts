@@ -87,9 +87,10 @@ export class PersonalDataController extends Controller {
             const isLocation = this.data.dataType === 'location'
 
             if (isLocation && this.data.location) {
-              const { latitude, longitude } = this.data.location
+              const { address, latitude, longitude } = this.data.location
 
               const location = await this.andeService.saveLocation({
+                domicilio: address,
                 ubicacionLatitud: latitude.toString(),
                 ubicacionLongitud: longitude.toString()
               })
