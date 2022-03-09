@@ -1,7 +1,6 @@
 import { AndeService } from '~SERVICES/Ande.service'
 import { WassiService } from '~SERVICES/Wassi.service'
 import { SessionService } from '~SERVICES/Session.service'
-import { botDebug } from '~UTILS/debug.util'
 import { messageFormatter } from '~UTILS/message.util'
 import { getConfig } from '~UTILS/config.util'
 
@@ -26,10 +25,6 @@ export class Controller {
   private async start(): Promise<void> {
     const response = await this.startDecisionTree()
 
-    if (response && !this.data.res.headersSent) {
-      this.data.res.end()
-    }
-
     if (response) {
       // Update session
       SessionService.update(this.data.phone)
@@ -47,17 +42,10 @@ export class Controller {
 
       switch (getConfig().modeAPP) {
         case 'BOT':
-          const wassiResponse = await this.wassiService.sendMessage({
+          await this.wassiService.sendMessage({
             phone: this.data.phone,
             message: _response
           })
-
-          if (wassiResponse) {
-            let { message, status } = wassiResponse
-            message = message.length < 60 ? message : message.substring(0, 60) + '...'
-
-            botDebug('WASSI-OUT', `${getConfig().nroBot} -> (Message in ${status}) ${message}`)
-          }
           break
 
         case 'API':
@@ -82,20 +70,11 @@ export class Controller {
             const [fileData] = await this.wassiService.uploadFile({ filename: file.filename }, file.stream)
 
             if (fileData) {
-              const wassiResponse = await this.wassiService.sendFile({
+              await this.wassiService.sendFile({
                 phone: this.data.phone,
                 media: { file: fileData.id }
               })
-
-              if (wassiResponse) {
-                const {
-                  media: { file },
-                  status
-                } = wassiResponse
-
-                botDebug('WASSI-OUT', `${getConfig().nroBot} -> (File in ${status}) ${file}`)
-              }
-            } else await this.sendMessage('⚠️ Error al obtener el documento')
+            } else await this.sendMessage(`⚠️ Error al obtener el archivo: ${file.filename}`)
           } else await this.sendMessage(file)
         }
 

@@ -8,13 +8,16 @@ export function sessionHandler(): Handler {
 
   return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const { fromNumber, body, type } = req.body.data as TWassiRequest['data']
+      const {
+        data: { fromNumber, body, type },
+        device: { phone }
+      } = req.body as TWassiRequest
 
       // Validar la data del body de la petición POST en modo API
       if (getConfig().modeAPP === 'API' && (!fromNumber || !body)) throw new Error('Body is incorrect')
 
       // Descartar el número del bot entre los usuarios que escriben
-      if (fromNumber === getConfig().nroBot) res.end()
+      if (fromNumber === phone) res.end()
       else {
         botDebug('WASSI-IN', `${fromNumber} -> ${body || type}`)
 

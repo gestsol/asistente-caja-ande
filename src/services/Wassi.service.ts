@@ -1,5 +1,6 @@
 import { HttpClient } from '~CLASS/HttpClient'
 import { getConfig } from '~UTILS/config.util'
+import { botDebug } from '~UTILS/debug.util'
 
 export class WassiService extends HttpClient {
   private device: string
@@ -23,6 +24,10 @@ export class WassiService extends HttpClient {
 
     try {
       const { data } = await this.http.post<R>('/messages', body)
+
+      let { message, status } = (data as unknown) as TWassiResponse['messages']['message']
+      message = message.length < 60 ? message : message.substring(0, 60) + '...'
+      botDebug('WASSI-OUT', `(Message in ${status}) ${message}`)
 
       return data
     } catch (_) {
@@ -62,6 +67,13 @@ export class WassiService extends HttpClient {
 
     try {
       const { data } = await this.http.post<R>('/messages', body)
+
+      const {
+        media: { file },
+        status
+      } = (data as unknown) as TWassiResponse['messages']['media']
+
+      botDebug('WASSI-OUT', `(File in ${status}) ${file}`)
 
       return data
     } catch (_) {

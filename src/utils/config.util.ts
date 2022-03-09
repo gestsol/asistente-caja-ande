@@ -14,7 +14,6 @@ export const getConfig = (): TConfig => {
 
   return {
     port: Number(ENV.PORT) || 3000,
-    nroBot: (ENV.NRO_BOT as string) || '',
     debug: ENV.DEBUG === 'true' ? true : false,
     wassi: {
       apiUrl: (ENV.WASSI_API_URL as string) || '',

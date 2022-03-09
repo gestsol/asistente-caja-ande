@@ -2,6 +2,7 @@ import { Router, Request, Response, NextFunction } from 'express'
 import { MainController } from '~CONTROLLERS/Main.controller'
 import { sessionHandler } from '~MIDDLEWARES'
 import { convertMessageInUppercase } from '~UTILS/message.util'
+import { getConfig } from '~UTILS/config.util'
 import { OPTIONS_HOME } from '~ENTITIES/consts'
 
 const router = Router()
@@ -29,6 +30,8 @@ router.post(
         res,
         menuHome: OPTIONS_HOME
       })
+
+      if (getConfig().modeAPP === 'BOT') res.end()
     } catch (error) {
       next(error)
     }
