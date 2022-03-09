@@ -36,12 +36,11 @@ export class LoginController extends Controller {
           response += `
           Por favor envíanos tu número de CI, número de afiliado y número de celular separados por los espacios que desee
 
-          *Ejemplo*: 1234567 12345 0123456789`
-        }
+          *Ejemplo*: 1234567 12345 0123456789
 
-        response += `
-        ${MENU_HOME}
-        `
+          ${MENU_HOME}
+          `
+        }
         break
 
       case '0':
@@ -105,6 +104,8 @@ export class LoginController extends Controller {
                   message: 'menu'
                 })
               }
+
+              break
             }
 
             TREE_STEP = 'STEP_1'
