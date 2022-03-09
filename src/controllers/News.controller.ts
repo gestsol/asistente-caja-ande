@@ -4,7 +4,7 @@ import { MENU_HOME } from '~ENTITIES/consts'
 import { convertArrayInMessage, messageOptionInvalid } from '~UTILS/message.util'
 
 export class NewsController extends Controller {
-  async startDecisionTree() {
+  async startDecisionTree(session: TSession) {
     let response = ''
 
     const options = `
@@ -13,8 +13,8 @@ export class NewsController extends Controller {
 
     switch (this.message) {
       case 'menu':
-        TREE_LEVEL = 'NEWS'
-        TREE_STEP = ''
+        session.treeLevel = 'NEWS'
+        session.treeStep = ''
 
         response = `
         Elige una de las siguientes opciones:
@@ -84,7 +84,7 @@ export class NewsController extends Controller {
         break
 
       case '0':
-        TREE_LEVEL = 'HOME'
+        session.treeLevel = 'HOME'
         new HomeController({
           ...this.data,
           message: 'menu'

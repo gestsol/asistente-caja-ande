@@ -4,15 +4,15 @@ import { convertMessageInFullname, convertPhoneInLocal } from '~UTILS/message.ut
 import { MENU_HOME } from '~ENTITIES/consts'
 
 export class EntryTable extends Controller {
-  async startDecisionTree() {
+  async startDecisionTree(session: TSession) {
     let response = ''
 
     switch (this.message) {
       case 'menu':
-        TREE_LEVEL = 'ENTRY_TABLE'
-        TREE_STEP = 'STEP_1'
+        session.treeLevel = 'ENTRY_TABLE'
+        session.treeStep = 'STEP_1'
 
-        this.initStore()
+        this.initStore(session)
 
         response = `
         En mesa de entrada podras guardar los archivos que desee
@@ -22,9 +22,9 @@ export class EntryTable extends Controller {
         break
 
       case '0':
-        TREE_LEVEL = 'HOME'
+        session.treeLevel = 'HOME'
 
-        this.initStore()
+        this.initStore(session)
 
         new HomeController({
           ...this.data,
@@ -33,27 +33,27 @@ export class EntryTable extends Controller {
         break
 
       default:
-        switch (TREE_STEP) {
+        switch (session.treeStep) {
           case 'STEP_1':
-            TREE_STEP = 'STEP_2'
-            STORE.entryTable.description = this.message
+            session.treeStep = 'STEP_2'
+            session.store.entryTable.description = this.message
             response = 'Ingrese una observación'
             break
 
           case 'STEP_2':
-            TREE_STEP = 'STEP_3'
-            STORE.entryTable.observation = this.message
+            session.treeStep = 'STEP_3'
+            session.store.entryTable.observation = this.message
             response = 'Ingrese el archivo que desea guardar'
             break
 
           case 'STEP_3':
-            const { description, observation } = STORE.entryTable
+            const { description, observation } = session.store.entryTable
 
             if (this.data.file?.id) {
               const fileWassi = await this.downloadFile(this.data.file?.id)
 
               if (fileWassi) {
-                const { nombre, nroCedula, email } = ANDE!.affiliate
+                const { nombre, nroCedula, email } = session.ande!.affiliate
                 const [name, lastname] = convertMessageInFullname(nombre).split(' ')
 
                 const file = await this.andeService.uploadFile({
@@ -100,7 +100,7 @@ export class EntryTable extends Controller {
     return this.sendMessage(response)
   }
 
-  private initStore(): void {
-    STORE = { entryTable: {} } as any
+  private initStore(session: TSession): void {
+    session.store = { entryTable: {} } as any
   }
 }

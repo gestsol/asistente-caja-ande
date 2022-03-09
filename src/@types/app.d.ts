@@ -39,6 +39,7 @@ type TDataController = {
   location: TWassiRequest['data']['location'] | null
   res: import('express').Response
   menuHome: string
+  session: TSession
 }
 
 type TEnv = 'development' | 'production'
@@ -121,13 +122,3 @@ type TTypeLending = 'paralelo' | 'cancelacion' | 'estudiantil' | 'extraordinario
 type TDocType = 'factura' | 'extracto' | 'liquidacionhaber'
 
 type TDataStream = import('http').IncomingMessage
-
-// DECLARATIONS ________________________________________________________________________________________________________
-
-// Base de datos temporal
-declare var SESSIONS: TSession[]
-declare var ANDE: TAnde
-declare var STORE: TStore
-
-declare var TREE_LEVEL: TLevel
-declare var TREE_STEP: TStep

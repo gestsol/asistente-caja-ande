@@ -6,7 +6,7 @@ import { MENU_HOME } from '~ENTITIES/consts'
 import { getConfig } from '~UTILS/config.util'
 
 export class DownloadController extends Controller {
-  async startDecisionTree() {
+  async startDecisionTree(session: TSession) {
     let response = ''
 
     const options = `
@@ -16,9 +16,9 @@ export class DownloadController extends Controller {
 
     switch (this.message) {
       case 'menu':
-        TREE_LEVEL = 'DOWNLOAD'
-        TREE_STEP = ''
-        this.initStore()
+        session.treeLevel = 'DOWNLOAD'
+        session.treeStep = ''
+        this.initStore(session)
 
         response = `
         Elige una de las siguientes opciones:
@@ -32,7 +32,8 @@ export class DownloadController extends Controller {
           'factura',
           `
           Revisa tus facturas 📊
-          ¿Qué querés revisar?`
+          ¿Qué querés revisar?`,
+          session
         )
         break
 
@@ -41,7 +42,8 @@ export class DownloadController extends Controller {
           'extracto',
           `
           Revisa tus préstamos 📊
-          ¿Qué querés revisar?`
+          ¿Qué querés revisar?`,
+          session
         )
         break
 
@@ -50,13 +52,14 @@ export class DownloadController extends Controller {
           'liquidacionhaber',
           `
           Revisa tus haberes 📊
-          ¿Qué querés revisar?`
+          ¿Qué querés revisar?`,
+          session
         )
         break
 
       case '0':
-        TREE_LEVEL = 'HOME'
-        this.initStore()
+        session.treeLevel = 'HOME'
+        this.initStore(session)
 
         new HomeController({
           ...this.data,
@@ -65,7 +68,7 @@ export class DownloadController extends Controller {
         break
 
       default:
-        switch (TREE_STEP) {
+        switch (session.treeStep) {
           case 'STEP_1':
             // Obtener documentos de los ultimos 12 meses
             if (this.message === '12') {
@@ -73,7 +76,7 @@ export class DownloadController extends Controller {
                 await this.sendMessage('⏳ Espere un momento por favor mientras se buscan los archivos')
               }
 
-              const { type, docList } = STORE.download
+              const { type, docList } = session.store.download
 
               // Se filtran los documentos por los 12 últimos
               const docLast12 = docList.filter((_, i) => i < 12)
@@ -108,7 +111,7 @@ export class DownloadController extends Controller {
 
             // Obtener documento del periodo ingresado
             if (periodo) {
-              const { type, docList } = STORE.download
+              const { type, docList } = session.store.download
               const doc = docList.find(doc => doc.periodo === periodo)
 
               if (doc) {
@@ -158,12 +161,12 @@ export class DownloadController extends Controller {
     return this.sendMessage(response)
   }
 
-  private async getDocListByType(type: TDocType, responseTitle: string): Promise<string> {
+  private async getDocListByType(type: TDocType, responseTitle: string, session: TSession): Promise<string> {
     const docs = await this.andeService.getDocList(type)
 
     if (typeof docs === 'object') {
-      TREE_STEP = 'STEP_1'
-      STORE.download.docList = docs
+      session.treeStep = 'STEP_1'
+      session.store.download.docList = docs
 
       return `
       ${responseTitle}
@@ -180,7 +183,7 @@ export class DownloadController extends Controller {
     }
   }
 
-  private initStore(): void {
-    STORE = { download: { body: {} } } as any
+  private initStore(session: TSession): void {
+    session.store = { download: { body: {} } } as any
   }
 }

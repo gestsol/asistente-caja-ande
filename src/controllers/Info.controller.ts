@@ -4,13 +4,13 @@ import { MENU_HOME } from '~ENTITIES/consts'
 import { convertArrayInMessage, messageOptionInvalid } from '~UTILS/message.util'
 
 export class InfoController extends Controller {
-  async startDecisionTree() {
+  async startDecisionTree(session: TSession) {
     let response = ''
 
     switch (this.message) {
       case 'menu':
-        TREE_LEVEL = 'LINKS'
-        TREE_STEP = ''
+        session.treeLevel = 'LINKS'
+        session.treeStep = ''
 
         const infoList = await this.andeService.getInfoList()
 
@@ -40,7 +40,7 @@ export class InfoController extends Controller {
         break
 
       case '0':
-        TREE_LEVEL = 'HOME'
+        session.treeLevel = 'HOME'
         new HomeController({
           ...this.data,
           message: 'menu'

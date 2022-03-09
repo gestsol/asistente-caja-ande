@@ -5,7 +5,7 @@ import { isNumber } from '~UTILS/validation.util'
 import { MENU_HOME } from '~ENTITIES/consts'
 
 export class CreditCardController extends Controller {
-  async startDecisionTree() {
+  async startDecisionTree(session: TSession) {
     let response = ''
 
     const options = `
@@ -18,15 +18,15 @@ export class CreditCardController extends Controller {
 
     switch (this.message) {
       case 'menu':
-        TREE_LEVEL = 'CREDIT_CARD'
-        TREE_STEP = ''
+        session.treeLevel = 'CREDIT_CARD'
+        session.treeStep = ''
 
-        this.initStore()
+        this.initStore(session)
 
-        const creditCards = STORE.creditCard?.tcList || (await this.andeService.getCreditCardList())
+        const creditCards = session.store.creditCard?.tcList || (await this.andeService.getCreditCardList())
 
         if (typeof creditCards === 'object') {
-          STORE.creditCard.tcList = creditCards
+          session.store.creditCard.tcList = creditCards
 
           response = `
           Elige una de las siguiente opciones:
@@ -43,17 +43,17 @@ export class CreditCardController extends Controller {
         break
 
       case '121':
-        const creditLine = STORE.creditCard?.creditLine || (await this.andeService.getCreditLine())
+        const creditLine = session.store.creditCard?.creditLine || (await this.andeService.getCreditLine())
 
         if (typeof creditLine === 'object') {
-          STORE.creditCard.creditLine = creditLine
+          session.store.creditCard.creditLine = creditLine
 
-          if (STORE.creditCard.tcList.length) {
+          if (session.store.creditCard.tcList.length) {
             const familyTypeList = await this.andeService.getFamilyTypeList()
 
             if (typeof familyTypeList === 'object') {
-              TREE_STEP = 'STEP_3'
-              STORE.creditCard.familyTypeList = familyTypeList
+              session.treeStep = 'STEP_3'
+              session.store.creditCard.familyTypeList = familyTypeList
 
               const familyTypes = convertArrayInMessage(familyTypeList, (item, i) => {
                 return `
@@ -76,13 +76,13 @@ export class CreditCardController extends Controller {
               `
             }
           } else {
-            TREE_STEP = 'STEP_1'
-            STORE.creditCard.ci = ANDE!.affiliate.nroCedula
-            STORE.creditCard.fullName = ANDE!.affiliate.nombre
-            STORE.creditCard.address = '' // TODO: obtener direccion del usuario afiliado
-            STORE.creditCard.phone = ANDE!.affiliate.celulares || ''
+            session.treeStep = 'STEP_1'
+            session.store.creditCard.ci = session.ande!.affiliate.nroCedula
+            session.store.creditCard.fullName = session.ande!.affiliate.nombre
+            session.store.creditCard.address = '' // TODO: obtener direccion del usuario afiliado
+            session.store.creditCard.phone = session.ande!.affiliate.celulares || ''
 
-            response = this.getMessageAmount()
+            response = this.getMessageAmount(session)
           }
         } else {
           response = `
@@ -94,8 +94,8 @@ export class CreditCardController extends Controller {
         break
 
       case '122':
-        if (STORE.creditCard.tcList.length) {
-          const creditCardList = convertArrayInMessage(STORE.creditCard.tcList, item => {
+        if (session.store.creditCard.tcList.length) {
+          const creditCardList = convertArrayInMessage(session.store.creditCard.tcList, item => {
             return `
             *Tarjeta:* ${item.nroTarjeta}
             *Saldo disponible:* ${convertInGuarani(item.disponible)}
@@ -118,8 +118,8 @@ export class CreditCardController extends Controller {
         break
 
       case '123':
-        if (STORE.creditCard.tcList.length) {
-          const creditCardList = convertArrayInMessage(STORE.creditCard.tcList, item => {
+        if (session.store.creditCard.tcList.length) {
+          const creditCardList = convertArrayInMessage(session.store.creditCard.tcList, item => {
             const fullDateVto = new Date(item.fechaVto).toLocaleString('es', {
               // Agregar la zona horaria de Paraguay
               timeZone: 'America/Asuncion'
@@ -148,8 +148,8 @@ export class CreditCardController extends Controller {
         break
 
       case '124':
-        if (STORE.creditCard.tcList.length) {
-          const creditCardList = convertArrayInMessage(STORE.creditCard.tcList, item => {
+        if (session.store.creditCard.tcList.length) {
+          const creditCardList = convertArrayInMessage(session.store.creditCard.tcList, item => {
             return `
             *Tarjeta:* ${item.nroTarjeta}
             *Estado:* ${item.estadoTarjeta.trim()}`
@@ -170,9 +170,9 @@ export class CreditCardController extends Controller {
         break
 
       case '0':
-        TREE_LEVEL = 'HOME'
+        session.treeLevel = 'HOME'
 
-        this.initStore()
+        this.initStore(session)
 
         new HomeController({
           ...this.data,
@@ -181,14 +181,14 @@ export class CreditCardController extends Controller {
         break
 
       default:
-        switch (TREE_STEP) {
+        switch (session.treeStep) {
           case 'STEP_1':
             if (this.message === 'M' || isNumber(this.message)) {
               const amount =
-                this.message === 'M' ? STORE.creditCard.creditLine.lineaCreditoMaximoCRE : Number(this.message)
+                this.message === 'M' ? session.store.creditCard.creditLine.lineaCreditoMaximoCRE : Number(this.message)
 
-              TREE_STEP = 'STEP_2'
-              STORE.creditCard.amount = amount
+              session.treeStep = 'STEP_2'
+              session.store.creditCard.amount = amount
               const amountTotal = convertInGuarani(amount)
 
               response = `
@@ -205,7 +205,7 @@ export class CreditCardController extends Controller {
 
           case 'STEP_2':
             if (this.message === 'C') {
-              const { tcList, familyType, amount, ci, fullName, address, phone } = STORE.creditCard
+              const { tcList, familyType, amount, ci, fullName, address, phone } = session.store.creditCard
 
               const creditCardResponse = await this.andeService.createCreditCard({
                 esAdicional: tcList.length ? 1 : 0,
@@ -237,7 +237,7 @@ export class CreditCardController extends Controller {
             }
 
             if (this.message === 'R') {
-              TREE_STEP = ''
+              session.treeStep = ''
               response = `
               ❌ Solicitud cancelada
 
@@ -253,11 +253,13 @@ export class CreditCardController extends Controller {
             const familyTypeSelected = isNumber(this.message)
 
             if (familyTypeSelected) {
-              const familyType = STORE.creditCard.familyTypeList!.find((_, index) => index === familyTypeSelected - 1)
+              const familyType = session.store.creditCard.familyTypeList!.find(
+                (_, index) => index === familyTypeSelected - 1
+              )
 
               if (familyType) {
-                TREE_STEP = 'STEP_4'
-                STORE.creditCard.familyType = familyType
+                session.treeStep = 'STEP_4'
+                session.store.creditCard.familyType = familyType
                 response = '¿Cuál es el nombre y apellido?'
                 break
               }
@@ -270,8 +272,8 @@ export class CreditCardController extends Controller {
             const [name, lastname] = this.message.split(' ')
 
             if (name && lastname) {
-              TREE_STEP = 'STEP_5'
-              STORE.creditCard.fullName = `${name} ${lastname}`
+              session.treeStep = 'STEP_5'
+              session.store.creditCard.fullName = `${name} ${lastname}`
               response = 'Indica el CI y número celular del adicional, colocalo separado por espacios'
             } else {
               response = `
@@ -286,9 +288,9 @@ export class CreditCardController extends Controller {
             const [ci, phone] = this.message.split(' ')
 
             if (ci && isNumber(ci) && phone) {
-              TREE_STEP = 'STEP_6'
-              STORE.creditCard.ci = Number(ci)
-              STORE.creditCard.phone = phone
+              session.treeStep = 'STEP_6'
+              session.store.creditCard.ci = Number(ci)
+              session.store.creditCard.phone = phone
               response = 'Indica su dirección'
             } else {
               response = `
@@ -302,9 +304,9 @@ export class CreditCardController extends Controller {
           case 'STEP_6':
             // TODO: evaluar esto
             if (this.message) {
-              TREE_STEP = 'STEP_1'
-              STORE.creditCard.address = this.message
-              response = this.getMessageAmount()
+              session.treeStep = 'STEP_1'
+              session.store.creditCard.address = this.message
+              response = this.getMessageAmount(session)
             } else {
               response = `
               Ingrese correctamente la dirección de la persona
@@ -324,8 +326,8 @@ export class CreditCardController extends Controller {
     return this.sendMessage(response)
   }
 
-  private getMessageAmount(): string {
-    const amountTotal = convertInGuarani(STORE.creditCard.creditLine.lineaCreditoMaximoCRE)
+  private getMessageAmount(session: TSession): string {
+    const amountTotal = convertInGuarani(session.store.creditCard.creditLine.lineaCreditoMaximoCRE)
 
     return `
     Tenes disponible ${amountTotal} guaraníes para tu tarjeta de crédito.
@@ -335,7 +337,7 @@ export class CreditCardController extends Controller {
     (    ) Escriba el monto que desea (debe ser menor a su monto disponible y no debe tener puntos o decimales)`
   }
 
-  private initStore(): void {
-    STORE = { creditCard: {} } as any
+  private initStore(session: TSession): void {
+    session.store = { creditCard: {} } as any
   }
 }

@@ -6,20 +6,23 @@ import FormData from 'form-data'
 export class AndeService extends HttpClient {
   private nroAffiliate: number
   private typeLending: TTypeLending
+  private session?: TSession
 
-  constructor() {
+  constructor(session?: TSession) {
     const { apiUrl } = getConfig().ande
+
     super({
       baseURL: apiUrl,
       defaultPath: '/cjppa/rest/chatbot',
       timeoutSecond: 60,
       headers: {
-        'X-token': ANDE?.token || ''
+        'X-token': session?.ande?.token || ''
       }
     })
 
-    this.nroAffiliate = ANDE?.affiliate?.codPersonalAnde || 0
-    this.typeLending = STORE.lending?.type || 'paralelo'
+    this.session = session
+    this.nroAffiliate = session?.ande?.affiliate?.codPersonalAnde || 0
+    this.typeLending = session?.store?.lending?.type || 'paralelo'
   }
 
   private errorMessageHandler(error: unknown | TAndeError | Error, message?: string) {
@@ -30,8 +33,8 @@ export class AndeService extends HttpClient {
         return `😔 ${message}`
 
       case 401:
-        TREE_LEVEL = 'LOGIN'
-        TREE_STEP = 'STEP_1'
+        this.session!.treeLevel = 'LOGIN'
+        this.session!.treeStep = 'STEP_1'
         return '🕒 Sesión finalizada, vuelva a ingresar sus datos para iniciar sesión'
 
       case 500:
@@ -82,7 +85,7 @@ export class AndeService extends HttpClient {
     type: TTypeLending,
     deadline: number = 0
   ): Promise<R | string> {
-    STORE.lending.type = type
+    this.session!.store.lending.type = type
 
     let endpoint = ''
 
@@ -356,7 +359,7 @@ export class AndeService extends HttpClient {
   // DOWNLOAD __________________________________________________________________________________________________________
 
   public async getDocList<R = TDocList>(docType: TDocType): Promise<R | string> {
-    STORE.download.type = docType
+    this.session!.store.download.type = docType
 
     try {
       const { data } = await this.http.get<R>(`/${docType}/cabecera/${this.nroAffiliate}`)

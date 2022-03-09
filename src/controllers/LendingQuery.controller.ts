@@ -4,7 +4,7 @@ import { convertInGuarani, messageOptionInvalid } from '~UTILS/message.util'
 import { MENU_HOME } from '~ENTITIES/consts'
 
 export class LendingQuery extends Controller {
-  async startDecisionTree() {
+  async startDecisionTree(session: TSession) {
     let response = ''
 
     const options = `
@@ -17,8 +17,8 @@ export class LendingQuery extends Controller {
 
     switch (this.message) {
       case 'menu':
-        TREE_LEVEL = 'LENDING_QUERY'
-        TREE_STEP = ''
+        session.treeLevel = 'LENDING_QUERY'
+        session.treeStep = ''
 
         response = `
         Elige una de las siguientes opciones:
@@ -173,7 +173,7 @@ export class LendingQuery extends Controller {
         break
 
       case '0':
-        TREE_LEVEL = 'HOME'
+        session.treeLevel = 'HOME'
         new HomeController({
           ...this.data,
           message: 'menu'

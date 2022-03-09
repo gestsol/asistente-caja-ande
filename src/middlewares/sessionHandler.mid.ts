@@ -4,7 +4,7 @@ import { getConfig } from '~UTILS/config.util'
 import { botDebug } from '~UTILS/debug.util'
 
 export function sessionHandler(): Handler {
-  const session = new SessionService()
+  const sessionService = new SessionService()
 
   return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
@@ -21,7 +21,10 @@ export function sessionHandler(): Handler {
       else {
         botDebug('WASSI-IN', `${fromNumber} -> ${body || type}`)
 
-        await session.login(fromNumber)
+        // Se crea una nueva sesión o se retorna la existente
+        const session = await sessionService.login(fromNumber)
+        req.app.set('session', session)
+
         next()
       }
     } catch (error) {

@@ -5,7 +5,7 @@ import { isNumber } from '~UTILS/validation.util'
 import { MENU_HOME } from '~ENTITIES/consts'
 
 export class LendingsController extends Controller {
-  async startDecisionTree() {
+  async startDecisionTree(session: TSession) {
     let response = ''
 
     const options = `
@@ -17,16 +17,16 @@ export class LendingsController extends Controller {
     (L) La totalidad
     (  ) Escriba un monto menor`
 
-    if (TREE_STEP === '') {
-      TREE_LEVEL = 'LENDINGS'
+    if (session.treeStep === '') {
+      session.treeLevel = 'LENDINGS'
 
       // TODO: analizar CI y verificar si posee credito asociado
-      const creditAproved = ANDE?.affiliate.nroCedula === 4627572
+      const creditAproved = session.ande?.affiliate.nroCedula === 4627572
 
       if (creditAproved) {
         switch (this.message) {
           case '0':
-            TREE_LEVEL = 'HOME'
+            session.treeLevel = 'HOME'
             new HomeController({
               ...this.data,
               message: 'menu'
@@ -43,7 +43,7 @@ export class LendingsController extends Controller {
 
           default:
             response = `
-            ${ANDE!.affiliate.nombre} felicidades 🎉
+            ${session.ande!.affiliate.nombre} felicidades 🎉
             Tenés un crédito Pre-Aprobado.
 
             (3) Más información del crédito pre aprobado
@@ -52,9 +52,9 @@ export class LendingsController extends Controller {
             break
         }
       } else {
-        TREE_STEP = 'STEP_1'
+        session.treeStep = 'STEP_1'
 
-        this.initStore()
+        this.initStore(session)
 
         response = `
         Elige una de las siguientes opciones:
@@ -78,8 +78,8 @@ export class LendingsController extends Controller {
           const deadlineStundentList = await this.andeService.getLendings('estudiantil')
 
           if (typeof deadlineStundentList === 'object') {
-            TREE_STEP = 'STEP_2'
-            STORE.lending.deadlineList = deadlineStundentList
+            session.treeStep = 'STEP_2'
+            session.store.lending.deadlineList = deadlineStundentList
 
             const lendingOptions = convertArrayInMessage(deadlineStundentList, (item, i) => {
               return `
@@ -107,8 +107,8 @@ export class LendingsController extends Controller {
           const deadlineExtraList = await this.andeService.getLendings('extraordinario')
 
           if (typeof deadlineExtraList === 'object') {
-            TREE_STEP = 'STEP_2'
-            STORE.lending.deadlineList = deadlineExtraList
+            session.treeStep = 'STEP_2'
+            session.store.lending.deadlineList = deadlineExtraList
 
             const lendingOptions = convertArrayInMessage(deadlineExtraList, (item, i) => {
               return `
@@ -136,8 +136,8 @@ export class LendingsController extends Controller {
           const deadlineList = await this.andeService.getLendings('paralelo')
 
           if (typeof deadlineList === 'object') {
-            TREE_STEP = 'STEP_2'
-            STORE.lending.deadlineList = deadlineList
+            session.treeStep = 'STEP_2'
+            session.store.lending.deadlineList = deadlineList
 
             const lendingOptions = convertArrayInMessage(deadlineList, (item, i) => {
               return `
@@ -165,8 +165,8 @@ export class LendingsController extends Controller {
           const deadlineCancelList = await this.andeService.getLendings('cancelacion')
 
           if (typeof deadlineCancelList === 'object') {
-            TREE_STEP = 'STEP_2'
-            STORE.lending.deadlineList = deadlineCancelList
+            session.treeStep = 'STEP_2'
+            session.store.lending.deadlineList = deadlineCancelList
 
             const lendingOptions = convertArrayInMessage(deadlineCancelList, (item, i) => {
               return `
@@ -191,8 +191,8 @@ export class LendingsController extends Controller {
           break
 
         case '0':
-          TREE_LEVEL = 'HOME'
-          this.initStore()
+          session.treeLevel = 'HOME'
+          this.initStore(session)
 
           new HomeController({
             ...this.data,
@@ -201,16 +201,16 @@ export class LendingsController extends Controller {
           break
 
         default:
-          switch (TREE_STEP) {
+          switch (session.treeStep) {
             case 'STEP_2':
               const deadlineSelected = isNumber(this.message)
 
               if (deadlineSelected) {
-                const deadline = STORE.lending.deadlineList.find((_, index) => index === deadlineSelected - 1)!
+                const deadline = session.store.lending.deadlineList.find((_, index) => index === deadlineSelected - 1)!
 
                 if (deadline) {
-                  TREE_STEP = 'STEP_3'
-                  STORE.lending.deadline = deadline
+                  session.treeStep = 'STEP_3'
+                  session.store.lending.deadline = deadline
                   response = subOptions
                   break
                 }
@@ -223,7 +223,7 @@ export class LendingsController extends Controller {
               const amountMinor = isNumber(this.message)
 
               if (this.message === 'L' || amountMinor) {
-                let { monto, plazo } = STORE.lending.deadline
+                let { monto, plazo } = session.store.lending.deadline
                 monto = this.message === 'L' ? monto : amountMinor!
 
                 const calculeResponse = await this.andeService.calculateLending(monto, plazo)
@@ -232,9 +232,9 @@ export class LendingsController extends Controller {
                   const paymentMethods = await this.andeService.getPaymentMethods()
 
                   if (paymentMethods) {
-                    TREE_STEP = 'STEP_4'
-                    STORE.lending.amount = monto
-                    STORE.lending.payMethodList = paymentMethods
+                    session.treeStep = 'STEP_4'
+                    session.store.lending.amount = monto
+                    session.store.lending.payMethodList = paymentMethods
 
                     const paymentOptions = convertArrayInMessage(
                       paymentMethods!,
@@ -269,11 +269,11 @@ export class LendingsController extends Controller {
             case 'STEP_4':
               const payMethodSelected = Number(this.message)
 
-              const payMethod = STORE.lending.payMethodList.find((_, index) => index === payMethodSelected - 1)
+              const payMethod = session.store.lending.payMethodList.find((_, index) => index === payMethodSelected - 1)
 
               if (payMethod) {
                 if (payMethod.descripcion === 'CHEQUE') {
-                  const { amount } = STORE.lending
+                  const { amount } = session.store.lending
 
                   const creditResponse = await this.andeService.createCreditExtra({
                     monto: amount,
@@ -297,8 +297,8 @@ export class LendingsController extends Controller {
                     `
                   }
                 } else {
-                  TREE_STEP = 'STEP_5'
-                  STORE.lending.payMethod = payMethod
+                  session.treeStep = 'STEP_5'
+                  session.store.lending.payMethod = payMethod
                   response = 'Por favor indica tu número de cuenta del banco'
                 }
               } else response = messageOptionInvalid()
@@ -312,7 +312,7 @@ export class LendingsController extends Controller {
                   const bankAccount = bankAccountList.find(account => account.id.nroCuentaBanco === this.message)
 
                   if (bankAccount) {
-                    const { type, deadline, amount, payMethod } = STORE.lending
+                    const { type, deadline, amount, payMethod } = session.store.lending
                     let creditResponse = ''
 
                     if (type === 'extraordinario') {
@@ -336,6 +336,7 @@ export class LendingsController extends Controller {
                     }
 
                     if (typeof creditResponse === 'object') {
+                      session.treeStep = 'STEP_1'
                       response = `
                       ✅ Solicitud de préstamo generada exitosamente
 
@@ -360,7 +361,7 @@ export class LendingsController extends Controller {
               break
 
             default:
-              response = TREE_STEP === 'STEP_1' ? messageOptionInvalid(options) : messageOptionInvalid()
+              response = session.treeStep === 'STEP_1' ? messageOptionInvalid(subOptions) : messageOptionInvalid()
               break
           }
           break
@@ -370,7 +371,7 @@ export class LendingsController extends Controller {
     return this.sendMessage(response)
   }
 
-  private initStore(): void {
-    STORE = { lending: {} } as any
+  private initStore(session: TSession): void {
+    session.store = { lending: {} } as any
   }
 }

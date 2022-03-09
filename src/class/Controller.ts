@@ -9,12 +9,10 @@ export class Controller {
   private wassiService: WassiService
   protected data: TDataController
   protected message: string
-
-  protected options: string = ''
-  protected menuHome: string = ''
+  protected menuHome: string
 
   constructor(data: TDataController) {
-    this.andeService = new AndeService()
+    this.andeService = new AndeService(data.session)
     this.wassiService = new WassiService()
     this.data = data
     this.message = data.message
@@ -23,16 +21,16 @@ export class Controller {
   }
 
   private async start(): Promise<void> {
-    const response = await this.startDecisionTree()
+    const response = await this.startDecisionTree(this.data.session)
 
     if (response) {
       // Update session
-      SessionService.update(this.data.phone)
+      SessionService.update(this.data.session)
     }
   }
 
   // Este metodo solo sirve como interface para overwrite en los controllers
-  protected async startDecisionTree(): Promise<any> {
+  protected async startDecisionTree(session: TSession): Promise<any> {
     return true
   }
 

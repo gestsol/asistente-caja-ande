@@ -12,17 +12,17 @@ import { EntryTable } from '~CONTROLLERS/EntryTable.controller'
 import { convertMessageInFullname, messageOptionInvalid } from '~UTILS/message.util'
 
 export class HomeController extends Controller {
-  async startDecisionTree() {
+  async startDecisionTree(session: TSession) {
     let response = ''
 
     const options = this.menuHome
 
     switch (this.message) {
       case 'menu':
-        TREE_LEVEL = 'HOME'
-        TREE_STEP = ''
+        session.treeLevel = 'HOME'
+        session.treeStep = ''
 
-        const fullName = convertMessageInFullname(ANDE!.affiliate.nombre)
+        const fullName = convertMessageInFullname(session.ande!.affiliate.nombre)
 
         response = `
         Bienvenido *${fullName}* en Caja Ande trabajamos para vos 🤓
@@ -89,18 +89,14 @@ export class HomeController extends Controller {
         break
 
       case '0':
-        TREE_LEVEL = 'MAIN'
+        session.treeLevel = 'MAIN'
         new MainController(this.data)
         break
 
       case '00':
-        TREE_LEVEL = 'MAIN'
-        TREE_STEP = 'STEP_1'
-
-        new MainController({
-          ...this.data,
-          message: '1'
-        })
+        session.treeLevel = 'MAIN'
+        session.treeStep = ''
+        response = 'Gracias por usar el Asistente Virtual de Caja Ande 👋'
         break
 
       default:

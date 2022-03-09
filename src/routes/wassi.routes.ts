@@ -15,7 +15,7 @@ router.post(
 
     try {
       new MainController({
-        phone: fromNumber,
+        phone: fromNumber, // TODO: remover despues porque ya se encuentra en session
         message: body ? convertMessageInUppercase(body) : '',
         dataType: type,
         file: media
@@ -28,7 +28,8 @@ router.post(
           : null,
         location: location || null,
         res,
-        menuHome: OPTIONS_HOME
+        menuHome: OPTIONS_HOME,
+        session: req.app.get('session') as TSession
       })
 
       if (getConfig().modeAPP === 'BOT') res.end()

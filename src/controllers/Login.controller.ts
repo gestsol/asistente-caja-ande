@@ -6,7 +6,7 @@ import { isNumber } from '~UTILS/validation.util'
 import { MENU_HOME } from '~ENTITIES/consts'
 
 export class LoginController extends Controller {
-  async startDecisionTree() {
+  async startDecisionTree(session: TSession) {
     let response = ''
 
     /*
@@ -19,20 +19,20 @@ export class LoginController extends Controller {
 
     switch (this.message) {
       case 'menu':
-        TREE_LEVEL = 'LOGIN'
+        session.treeLevel = 'LOGIN'
 
-        this.initStore()
+        this.initStore(session)
 
         response = `
         Hola! soy el asistente virtual de los afiliados de la CAJA 🤓
         Nuestra caja, tu futuro!`
 
         if (isParaguay) {
-          TREE_STEP = 'STEP_1'
+          session.treeStep = 'STEP_1'
           response += `
           Por favor envíanos tu número de CI para ayudarte`
         } else {
-          TREE_STEP = 'STEP_2'
+          session.treeStep = 'STEP_2'
           response += `
           Por favor envíanos tu número de CI, número de afiliado y número de celular separados por los espacios que desee
 
@@ -44,20 +44,20 @@ export class LoginController extends Controller {
         break
 
       case '0':
-        TREE_LEVEL = 'MAIN'
-        TREE_STEP = ''
+        session.treeLevel = 'MAIN'
+        session.treeStep = ''
 
-        this.initStore()
+        this.initStore(session)
 
         new MainController(this.data)
         break
 
       default:
-        switch (TREE_STEP) {
+        switch (session.treeStep) {
           case 'STEP_1':
             if (isNumber(this.message)) {
-              TREE_STEP = 'STEP_2'
-              STORE.login.ci = this.message
+              session.treeStep = 'STEP_2'
+              session.store.login.ci = this.message
 
               response = 'Envíanos tu número de afiliado'
             } else response = '⚠️ Número Invalido, por favor envie un número de CI correcto'
@@ -70,7 +70,7 @@ export class LoginController extends Controller {
 
             if (isParaguay) {
               if (isNumber(this.message)) {
-                nroCedula = STORE.login.ci
+                nroCedula = session.store.login.ci
                 nroAfiliado = this.message
 
                 // Para realizar el inicio de sesión, el prefijo internacional +595 de Paraguay
@@ -94,7 +94,7 @@ export class LoginController extends Controller {
 
               if (data) {
                 // Guardar los datos del afiliado
-                ANDE = {
+                session.ande = {
                   affiliate: data.afiliado,
                   token: data.token
                 }
@@ -108,7 +108,7 @@ export class LoginController extends Controller {
               break
             }
 
-            TREE_STEP = 'STEP_1'
+            session.treeStep = 'STEP_1'
             response = `
             ⚠️ Usuario invalido, verifique que los datos sean correctos e intente de nuevo
 
@@ -121,8 +121,8 @@ export class LoginController extends Controller {
     return this.sendMessage(response)
   }
 
-  private initStore(): void {
-    ANDE = {} as any
-    STORE = { login: {} } as any
+  private initStore(session: TSession): void {
+    session.ande = {} as any
+    session.store = { login: {} } as any
   }
 }

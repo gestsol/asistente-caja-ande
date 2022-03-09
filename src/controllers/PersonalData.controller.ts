@@ -4,7 +4,7 @@ import { MENU_HOME } from '~ENTITIES/consts'
 import { messageOptionInvalid } from '~UTILS/message.util'
 
 export class PersonalDataController extends Controller {
-  async startDecisionTree() {
+  async startDecisionTree(session: TSession) {
     let response = ''
 
     const options = `
@@ -13,8 +13,8 @@ export class PersonalDataController extends Controller {
 
     switch (this.message) {
       case 'menu':
-        TREE_LEVEL = 'PERSONAL_DATA'
-        TREE_STEP = ''
+        session.treeLevel = 'PERSONAL_DATA'
+        session.treeStep = ''
 
         response = `
         Elige una de las siguiente opciones:
@@ -24,7 +24,7 @@ export class PersonalDataController extends Controller {
         break
 
       case '151':
-        TREE_STEP = 'STEP_1'
+        session.treeStep = 'STEP_1'
         response = `
         Para comenzar con el reconocimiento facial tienes que cargar una foto.
         Debe ser una foto de color claro y no utilizar lentes de sol ni mascarillas 😬
@@ -32,7 +32,7 @@ export class PersonalDataController extends Controller {
         break
 
       case '152':
-        TREE_STEP = 'STEP_2'
+        session.treeStep = 'STEP_2'
         response = `
         Necesitamos saber tu domicilio, por favor envia tu dirección usando la función de *enviar ubicación de Whatsapp* 🗺️
         No olvides ubicar correctamente tu casa 🏡
@@ -40,7 +40,7 @@ export class PersonalDataController extends Controller {
         break
 
       case '0':
-        TREE_LEVEL = 'HOME'
+        session.treeLevel = 'HOME'
         new HomeController({
           ...this.data,
           message: 'menu'
@@ -48,7 +48,7 @@ export class PersonalDataController extends Controller {
         break
 
       default:
-        switch (TREE_STEP) {
+        switch (session.treeStep) {
           case 'STEP_1':
             const isImage = this.data.dataType === 'image'
 

@@ -13,19 +13,19 @@ import { LendingsController } from '~CONTROLLERS/Lendings.controller'
 import { messageOptionInvalid } from '~UTILS/message.util'
 
 export class MainController extends Controller {
-  async startDecisionTree() {
+  async startDecisionTree(session: TSession) {
     let response = ''
 
     const options = `
     (1) Acceso para afiliados de la CAJA
     (2) No afiliados`
 
-    switch (TREE_LEVEL) {
+    switch (session.treeLevel) {
       case 'MAIN':
-        if (TREE_STEP === 'STEP_1') {
+        if (session.treeStep === 'STEP_1') {
           switch (this.message) {
             case '1':
-              TREE_STEP = ''
+              session.treeStep = ''
               new LoginController({
                 ...this.data,
                 message: 'menu'
@@ -43,8 +43,8 @@ export class MainController extends Controller {
           break
         }
 
-        if (TREE_STEP === '' || this.message === 'menu') {
-          TREE_STEP = 'STEP_1'
+        if (session.treeStep === '' || this.message === 'menu') {
+          session.treeStep = 'STEP_1'
 
           response = `
           Hola 🤗 soy el Asistente Virtual de Caja Ande.
