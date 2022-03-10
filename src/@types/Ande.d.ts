@@ -13,7 +13,7 @@ type TAndeBody = {
     plazo: number
     montoSolicitado: number
     formaCobro: number
-    idCuentaBancaria: number
+    idCuentaBancaria: number | null
     nroCuentaBancaria: number | null
     idBanco: number | null
     cumpleRequisitos: number

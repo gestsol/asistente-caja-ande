@@ -87,24 +87,23 @@ export class AndeService extends HttpClient {
     deadline: number = 0
   ): Promise<R | string> {
     this.session!.store.lending.type = type
-
     let endpoint = ''
 
     switch (type) {
       case 'paralelo':
-        endpoint = `/lineacredito/${this.nroAffiliate}/plazo/${deadline}`
+        endpoint += `/lineacredito/${this.nroAffiliate}/plazo/${deadline}`
         break
 
       case 'cancelacion':
-        endpoint = `/lineacredito/cancelacion/${this.nroAffiliate}/plazo/${deadline}`
+        endpoint += `/lineacredito/cancelacion/${this.nroAffiliate}/plazo/${deadline}`
         break
 
       case 'estudiantil':
-        endpoint = `/lineacreditoestudiantil/${this.nroAffiliate}`
+        endpoint += `/lineacreditoestudiantil/${this.nroAffiliate}`
         break
 
       case 'extraordinario':
-        endpoint = `/lineacreditoextra/${this.nroAffiliate}`
+        endpoint += `/lineacreditoextra/${this.nroAffiliate}`
         break
     }
 
@@ -134,16 +133,32 @@ export class AndeService extends HttpClient {
   }
 
   public async calculateLending<R = TAndeResponse['calculo']>(amount: number, deadline: number): Promise<R | string> {
+    let endpoint = '/calculo'
+
+    switch (this.typeLending) {
+      case 'paralelo':
+        endpoint += `/${this.nroAffiliate}/monto/${amount}/plazo/${deadline}/cancelacion/0`
+        break
+
+      case 'cancelacion':
+        endpoint += `/${this.nroAffiliate}/monto/${amount}/plazo/${deadline}/cancelacion/1`
+        break
+
+      case 'estudiantil':
+        endpoint += `/estudiantil/${this.nroAffiliate}/monto/${amount}/plazo/${deadline}`
+        break
+
+      case 'extraordinario':
+        endpoint += `/${this.nroAffiliate}/monto/${amount}/plazo/${deadline}/cancelacion/0`
+        break
+    }
+
     try {
-      const { data } = await this.http.get<R>(
-        `/calculo/${this.nroAffiliate}/monto/${amount}/plazo/${deadline}/cancelacion/${
-          this.typeLending === 'cancelacion' ? 1 : 0
-        }`
-      )
+      const { data } = await this.http.get<R>(endpoint)
 
       return data
     } catch (error) {
-      return (error as TAndeError)?.mensaje || 'Monto invalido, intentelo nuevamente'
+      return this.errorMessageHandler(error, 'Monto invalido, intentelo nuevamente')
     }
   }
 
@@ -181,8 +196,8 @@ export class AndeService extends HttpClient {
         endpoint += `/${this.nroAffiliate}/cancelacion/1`
         break
 
-      default:
-        endpoint += `/${this.typeLending}/${this.nroAffiliate}`
+      case 'estudiantil':
+        endpoint += `/estudiantil/${this.nroAffiliate}`
         break
     }
 

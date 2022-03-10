@@ -64,7 +64,6 @@ type TStore = {
     deadlineList: TDeadline[]
     deadline: TDeadline
     payMethodList: TAndeResponse['formacobro']
-    payMethod: TAndeResponse['formacobro'][0]
     amount: number
   }
   creditCard: {

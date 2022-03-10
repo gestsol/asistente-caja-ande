@@ -273,18 +273,31 @@ export class LendingsController extends Controller {
 
               if (payMethod) {
                 if (payMethod.descripcion === 'CHEQUE') {
-                  const { amount } = session.store.lending
+                  const { type, deadline, amount } = session.store.lending
+                  let creditResponse: TAndeResponse['solicitudcredito'] | string = ''
 
-                  const creditResponse = await this.andeService.createCreditExtra({
-                    monto: amount,
-                    origen: 3,
-                    tipoDesembolso: payMethod.codigo,
-                    codBanco: null,
-                    nroCtaBancaria: null
-                  })
+                  if (type === 'extraordinario') {
+                    creditResponse = await this.andeService.createCreditExtra({
+                      monto: amount,
+                      origen: 3,
+                      tipoDesembolso: 0,
+                      codBanco: null,
+                      nroCtaBancaria: null
+                    })
+                  } else {
+                    creditResponse = await this.andeService.createCredit({
+                      plazo: deadline.plazo,
+                      montoSolicitado: amount,
+                      formaCobro: 0,
+                      idCuentaBancaria: null,
+                      nroCuentaBancaria: null,
+                      idBanco: null,
+                      cumpleRequisitos: 1
+                    })
+                  }
 
                   if (typeof creditResponse === 'object') {
-                    session.treeStep = ''
+                    session.treeStep = 'STEP_1'
                     response = `
                     ✅ Solicitud de préstamo generada exitosamente
 
@@ -299,7 +312,6 @@ export class LendingsController extends Controller {
                   }
                 } else {
                   session.treeStep = 'STEP_5'
-                  session.store.lending.payMethod = payMethod
                   response = 'Por favor indica tu número de cuenta del banco'
                 }
               } else response = messageOptionInvalid()
@@ -313,14 +325,14 @@ export class LendingsController extends Controller {
                   const bankAccount = bankAccountList.find(account => account.id.nroCuentaBanco === this.message)
 
                   if (bankAccount) {
-                    const { type, deadline, amount, payMethod } = session.store.lending
+                    const { type, deadline, amount } = session.store.lending
                     let creditResponse = ''
 
                     if (type === 'extraordinario') {
                       creditResponse = await this.andeService.createCreditExtra({
                         monto: amount,
                         origen: 3,
-                        tipoDesembolso: payMethod.codigo,
+                        tipoDesembolso: 1,
                         codBanco: bankAccount.id.codBanco,
                         nroCtaBancaria: Number(bankAccount.id.nroCuentaBanco)
                       })
@@ -328,7 +340,7 @@ export class LendingsController extends Controller {
                       creditResponse = await this.andeService.createCredit({
                         plazo: deadline.plazo,
                         montoSolicitado: amount,
-                        formaCobro: payMethod.codigo,
+                        formaCobro: 1,
                         idCuentaBancaria: bankAccount.idRegistro,
                         nroCuentaBancaria: Number(bankAccount.id.nroCuentaBanco),
                         idBanco: bankAccount.id.codBanco,
@@ -337,7 +349,7 @@ export class LendingsController extends Controller {
                     }
 
                     if (typeof creditResponse === 'object') {
-                      session.treeStep = ''
+                      session.treeStep = 'STEP_1'
                       response = `
                       ✅ Solicitud de préstamo generada exitosamente
 
