@@ -24,8 +24,7 @@ export const getConfig = (): TConfig => {
       apiUrl: (ENV.ANDE_API_URL as string) || ''
     },
     modeAPP: (ENV.MODE_APP as any) || 'BOT',
-    messageSession: ENV.MESSAGE_SESSION === 'true' ? true : false,
-    adminPhomeList: (ENV.ADMIN_PHONE_LIST as string)?.split(',') || [],
+    adminPhoneList: (ENV.ADMIN_PHONE_LIST as string)?.split(',') || [],
     affiliate: {
       nroCedula: (ENV.AFFILIATE_NRO_CEDULA as string) || '',
       nroAfiliado: (ENV.AFFILIATE_NRO as string) || '',

@@ -11,11 +11,10 @@ router.post(
   '/',
   sessionHandler(),
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    const { fromNumber, body, type, media, location } = req.body.data as TWassiRequest['data']
+    const { body, type, media, location } = req.body.data as TWassiRequest['data']
 
     try {
       new MainController({
-        phone: fromNumber, // TODO: remover despues porque ya se encuentra en session
         message: body ? convertMessageInUppercase(body) : '',
         dataType: type,
         file: media

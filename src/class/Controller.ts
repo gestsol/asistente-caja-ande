@@ -20,6 +20,10 @@ export class Controller {
     this.start()
   }
 
+  public get phone(): string {
+    return this.data.session.phone
+  }
+
   private async start(): Promise<void> {
     const response = await this.startDecisionTree(this.data.session)
 
@@ -41,7 +45,7 @@ export class Controller {
       switch (getConfig().modeAPP) {
         case 'BOT':
           await this.wassiService.sendMessage({
-            phone: this.data.phone,
+            phone: this.phone,
             message: _response
           })
           break
@@ -69,7 +73,7 @@ export class Controller {
 
             if (fileData) {
               await this.wassiService.sendFile({
-                phone: this.data.phone,
+                phone: this.phone,
                 media: { file: fileData.id }
               })
             } else await this.sendMessage(`⚠️ Error al obtener el archivo: ${file.filename}`)

@@ -1,4 +1,3 @@
-// import { WassiService } from '~SERVICES/Wassi.service'
 import { botDebug } from '~UTILS/debug.util'
 import { getConfig } from '~UTILS/config.util'
 import { AndeService } from '~SERVICES/Ande.service'
@@ -17,7 +16,7 @@ export class SessionService {
       // Se retorna la sesión existente
       return session
     } else {
-      const isAdmin = getConfig().adminPhomeList.includes(phone)
+      const isAdmin = getConfig().adminPhoneList.includes(phone)
       let session: TSession
 
       if (isAdmin) {
@@ -49,13 +48,6 @@ export class SessionService {
       // Agregar nueva sesión
       SessionService.sessions.push(session)
       return session
-
-      // if (!isAdmin) {
-      //   botDebug('SESSION', 'session started')
-      //   if (getConfig().messageSession) {
-      //     await this.sendMessage({ phone, message: '✅ Sesión iniciada' })
-      //   }
-      // }
     }
   }
 

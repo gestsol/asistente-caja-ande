@@ -35,6 +35,7 @@ export class AndeService extends HttpClient {
       case 401:
         this.session!.treeLevel = 'LOGIN'
         this.session!.treeStep = 'STEP_1'
+        this.session!.store = { login: {} } as any
         return '🕒 Sesión finalizada, vuelva a ingresar sus datos para iniciar sesión'
 
       case 500:
@@ -53,7 +54,7 @@ export class AndeService extends HttpClient {
   // public async nameFunction<R = any>(body: any): Promise<R | string> {
   //   try {
   //     const { data } = await this.http.METHOD<R>(
-  //       ``
+  //       ``, body, {}
   //     )
   //
   //     return data
@@ -194,9 +195,11 @@ export class AndeService extends HttpClient {
     }
   }
 
-  public async createCreditExtra<R = any>(body: TAndeBody['solicitudcreditoExtraordinario']): Promise<R | string> {
+  public async createCreditExtra<R = TAndeResponse['solicitudcredito']>(
+    body: TAndeBody['solicitudcreditoExtraordinario']
+  ): Promise<R | string> {
     try {
-      const { data } = await this.http.post<R>(`/solicitudcredito/extraordinario/${this.nroAffiliate}`)
+      const { data } = await this.http.post<R>(`/solicitudcredito/extraordinario/${this.nroAffiliate}`, body)
 
       return data
     } catch (error) {
@@ -240,12 +243,13 @@ export class AndeService extends HttpClient {
     }
   }
 
-  // TODO: determinar tipo de respuesta correcta
-  public async createCreditCard<R = any>(body: TAndeBody['solicitudtc']): Promise<R | string> {
+  public async createCreditCard<R = { created: boolean }>(body: TAndeBody['solicitudtc']): Promise<R | string> {
     try {
-      const { data } = await this.http.post<R>(`/solicitudtc/${this.nroAffiliate}`, body)
+      const { data } = await this.http.post<string>(`/solicitudtc/${this.nroAffiliate}`, body)
 
-      return data
+      return ({
+        created: typeof data === 'string' && data === ''
+      } as unknown) as R
     } catch (error) {
       return this.errorMessageHandler(error, 'No se pudo solicitud la tarjeta de credito')
     }

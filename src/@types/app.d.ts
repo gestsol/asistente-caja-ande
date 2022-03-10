@@ -10,8 +10,7 @@ type TConfig = {
     apiUrl: string
   }
   modeAPP: 'API' | 'BOT'
-  messageSession: boolean
-  adminPhomeList: Array<string>
+  adminPhoneList: Array<string>
   affiliate: {
     nroCedula: string
     nroAfiliado: string
@@ -27,7 +26,6 @@ type TConfigHttpClient = {
 }
 
 type TDataController = {
-  phone: string
   message: string
   dataType: TWassiRequest['data']['type']
   file: {

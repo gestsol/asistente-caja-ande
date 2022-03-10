@@ -219,7 +219,7 @@ export class CreditCardController extends Controller {
                 correo: null
               })
 
-              if (typeof creditCardResponse === 'object') {
+              if (typeof creditCardResponse === 'object' && creditCardResponse.created) {
                 response = `
                 ✅ Solicitud enviada
 

@@ -59,7 +59,7 @@ export class EntryTable extends Controller {
                 const file = await this.andeService.uploadFile({
                   nombre: name,
                   apellido: lastname,
-                  celular: convertPhoneInLocal(this.data.phone),
+                  celular: convertPhoneInLocal(this.phone),
                   nroCedula: nroCedula.toString(),
                   email: email || '',
                   descripcion: description,

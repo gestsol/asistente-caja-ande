@@ -15,7 +15,7 @@ export class LoginController extends Controller {
       +595-9-XX-XXXXXX
     */
     const regex = new RegExp(/\+(5959)[0-9]{8}$/)
-    const isParaguay = regex.test(this.data.phone)
+    const isParaguay = regex.test(this.phone)
 
     switch (this.message) {
       case 'menu':
@@ -75,7 +75,7 @@ export class LoginController extends Controller {
 
                 // Para realizar el inicio de sesión, el prefijo internacional +595 de Paraguay
                 // debe ses reemplazado por un cero
-                nroCelular = convertPhoneInLocal(this.data.phone)
+                nroCelular = convertPhoneInLocal(this.phone)
               } else {
                 response = '⚠️ Número Invalido, por favor envie un número de afiliado correcto'
                 break
@@ -103,14 +103,15 @@ export class LoginController extends Controller {
                   ...this.data,
                   message: 'menu'
                 })
-              }
 
-              break
+                break
+              }
             }
 
             session.treeStep = 'STEP_1'
             response = `
             ⚠️ Usuario invalido, verifique que los datos sean correctos e intente de nuevo
+            Por favor envíanos tu número de CI para ayudarte
 
             ${MENU_HOME}
             `

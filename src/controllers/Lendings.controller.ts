@@ -284,6 +284,7 @@ export class LendingsController extends Controller {
                   })
 
                   if (typeof creditResponse === 'object') {
+                    session.treeStep = ''
                     response = `
                     ✅ Solicitud de préstamo generada exitosamente
 
@@ -336,7 +337,7 @@ export class LendingsController extends Controller {
                     }
 
                     if (typeof creditResponse === 'object') {
-                      session.treeStep = 'STEP_1'
+                      session.treeStep = ''
                       response = `
                       ✅ Solicitud de préstamo generada exitosamente
 
@@ -361,7 +362,7 @@ export class LendingsController extends Controller {
               break
 
             default:
-              response = session.treeStep === 'STEP_1' ? messageOptionInvalid(subOptions) : messageOptionInvalid()
+              response = messageOptionInvalid()
               break
           }
           break
