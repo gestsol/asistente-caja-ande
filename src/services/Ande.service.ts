@@ -133,6 +133,8 @@ export class AndeService extends HttpClient {
   }
 
   public async calculateLending<R = TAndeResponse['calculo']>(amount: number, deadline: number): Promise<R | string> {
+    console.log(amount, deadline)
+
     let endpoint = '/calculo'
 
     switch (this.typeLending) {
@@ -155,6 +157,7 @@ export class AndeService extends HttpClient {
 
     try {
       const { data } = await this.http.get<R>(endpoint)
+      console.log(data)
 
       return data
     } catch (error) {
@@ -162,29 +165,33 @@ export class AndeService extends HttpClient {
     }
   }
 
-  public async getPaymentMethods<R = TAndeResponse['formacobro']>(): Promise<R | null> {
+  public async getPaymentMethods<R = TAndeResponse['formacobro']>(): Promise<R | string> {
     try {
       const { data } = await this.http.get<R>(`/formacobroptmo`)
 
       return data
     } catch (error) {
-      return null
+      return this.errorMessageHandler(error, 'No hay metodos de pago disponibles 😔')
     }
   }
 
-  public async getBankAccountList<R = TAndeResponse['cuentas']>(): Promise<R | null> {
+  public async getBankAccountList<R = TAndeResponse['cuentas']>(): Promise<R | [] | string> {
     try {
       const { data } = await this.http.get<R>(`/cuentas/${this.nroAffiliate}`)
 
       return data
     } catch (error) {
-      return null
+      const errorAnde = error as TAndeError
+
+      return errorAnde?.codigo === 404 ? [] : this.errorMessageHandler(error, 'Error al buscar las cuentas asociadas')
     }
   }
 
   public async createCredit<R = TAndeResponse['solicitudcredito']>(
     body: TAndeBody['solicitudcredito']
   ): Promise<R | string> {
+    console.log(body)
+
     let endpoint = '/solicitudcredito'
 
     switch (this.typeLending) {
@@ -213,6 +220,8 @@ export class AndeService extends HttpClient {
   public async createCreditExtra<R = TAndeResponse['solicitudcredito']>(
     body: TAndeBody['solicitudcreditoExtraordinario']
   ): Promise<R | string> {
+    console.log(body)
+
     try {
       const { data } = await this.http.post<R>(`/solicitudcredito/extraordinario/${this.nroAffiliate}`, body)
 

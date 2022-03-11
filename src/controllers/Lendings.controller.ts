@@ -13,10 +13,6 @@ export class LendingsController extends Controller {
     (113) Préstamo estudiantil 📚
     (114) Préstamo extraordinario 💰`
 
-    const subOptions = `
-    (L) La totalidad
-    (  ) Escriba un monto menor`
-
     if (session.treeStep === '') {
       session.treeLevel = 'LENDINGS'
 
@@ -205,71 +201,93 @@ export class LendingsController extends Controller {
             case 'STEP_2':
               const deadlineSelected = isNumber(this.message)
 
-              if (deadlineSelected) {
-                const deadline = session.store.lending.deadlineList.find((_, index) => index === deadlineSelected - 1)!
+              const deadline = deadlineSelected
+                ? session.store.lending.deadlineList.find((_, index) => index === deadlineSelected - 1)!
+                : null
 
-                if (deadline) {
-                  session.treeStep = 'STEP_3'
-                  session.store.lending.deadline = deadline
-                  response = subOptions
-                  break
-                }
-              }
+              if (deadline) {
+                session.treeStep = 'STEP_3'
+                session.store.lending.deadline = deadline
 
-              response = messageOptionInvalid()
+                response = `
+                (L) La totalidad
+                (  ) Escriba un monto menor
+                `
+              } else response = messageOptionInvalid()
               break
 
             case 'STEP_3':
+              const {
+                deadline: { monto, plazo },
+                type
+              } = session.store.lending
+
               const amountMinor = isNumber(this.message)
 
-              if (this.message === 'L' || amountMinor) {
-                let { monto, plazo } = session.store.lending.deadline
-                monto = this.message === 'L' ? monto : amountMinor!
+              if (this.message !== 'L' && !amountMinor) {
+                response = messageOptionInvalid()
+                break
+              }
 
-                const calculeResponse = await this.andeService.calculateLending(monto, plazo)
+              if (amountMinor && amountMinor > monto) {
+                response = `
+                ⚠️ Monto incorrecto, debe ser menor al monto del plazo seleccionado: ${convertInGuarani(monto)}
+                `
+                break
+              }
 
-                if (typeof calculeResponse === 'object') {
-                  const paymentMethods = await this.andeService.getPaymentMethods()
+              const amountSelected = this.message === 'L' ? monto : amountMinor!
 
-                  if (paymentMethods) {
-                    session.treeStep = 'STEP_4'
-                    session.store.lending.amount = monto
-                    session.store.lending.payMethodList = paymentMethods
+              const calculeResponse =
+                type === 'extraordinario'
+                  ? ({ montoCuota: 0 } as TAndeResponse['calculo'])
+                  : await this.andeService.calculateLending(amountSelected, plazo)
 
-                    const paymentOptions = convertArrayInMessage(
-                      paymentMethods!,
-                      (item, i) => `
-                      (${i + 1}) ${item.descripcion}`
-                    )
+              if (typeof calculeResponse === 'object') {
+                const paymentMethods = await this.andeService.getPaymentMethods()
+                const fee = calculeResponse.montoCuota
 
-                    response = `
-                    ¿Cómo querés realizar el pago de tu préstamo?
-                    ${paymentOptions}
-                    ${MENU_HOME}
-                    `
-                  } else {
-                    response = `
-                    No hay métodos de pago disponibles 😔
-                    ${MENU_HOME}
-                    `
-                  }
+                if (typeof paymentMethods === 'object') {
+                  session.treeStep = 'STEP_4'
+                  session.store.lending.amount = amountSelected
+                  session.store.lending.fee = fee
+                  session.store.lending.payMethodList = paymentMethods
+
+                  const paymentOptions = convertArrayInMessage(
+                    paymentMethods!,
+                    (item, i) => `\n(${i + 1}) ${item.descripcion}`
+                  )
+
+                  response = fee > 0 ? `La cuota del prestamo seleccionado es de ${convertInGuarani(fee)}` : ''
+
+                  response += `
+
+                  ¿Cómo querés realizar el pago de tu préstamo?
+                  ${paymentOptions}
+                  ${MENU_HOME}
+                  `
                 } else {
                   response = `
-                  ${calculeResponse}
+                  ${paymentMethods}
 
                   ${MENU_HOME}
                   `
                 }
-                break
-              }
+              } else {
+                response = `
+                ${calculeResponse}
 
-              response = messageOptionInvalid()
+                ${MENU_HOME}
+                `
+              }
               break
 
             case 'STEP_4':
-              const payMethodSelected = Number(this.message)
+              const payMethodSelected = isNumber(this.message)
 
-              const payMethod = session.store.lending.payMethodList.find((_, index) => index === payMethodSelected - 1)
+              const payMethod = payMethodSelected
+                ? session.store.lending.payMethodList.find((_, index) => index === payMethodSelected - 1)
+                : null
 
               if (payMethod) {
                 if (payMethod.descripcion === 'CHEQUE') {
@@ -292,7 +310,7 @@ export class LendingsController extends Controller {
                       idCuentaBancaria: null,
                       nroCuentaBancaria: null,
                       idBanco: null,
-                      cumpleRequisitos: 1
+                      cumpleRequisitos: 1 // Valor estático
                     })
                   }
 
@@ -311,65 +329,83 @@ export class LendingsController extends Controller {
                     `
                   }
                 } else {
-                  session.treeStep = 'STEP_5'
-                  response = 'Por favor indica tu número de cuenta del banco'
-                }
-              } else response = messageOptionInvalid()
-              break
+                  const bankAccountList = await this.andeService.getBankAccountList()
 
-            case 'STEP_5':
-              if (isNumber(this.message)) {
-                const bankAccountList = await this.andeService.getBankAccountList()
+                  if (typeof bankAccountList === 'object') {
+                    if (bankAccountList.length) {
+                      session.treeStep = 'STEP_5'
+                      session.store.lending.bankAccountList = bankAccountList
 
-                if (bankAccountList) {
-                  const bankAccount = bankAccountList.find(account => account.id.nroCuentaBanco === this.message)
-
-                  if (bankAccount) {
-                    const { type, deadline, amount } = session.store.lending
-                    let creditResponse = ''
-
-                    if (type === 'extraordinario') {
-                      creditResponse = await this.andeService.createCreditExtra({
-                        monto: amount,
-                        origen: 3,
-                        tipoDesembolso: 1,
-                        codBanco: bankAccount.id.codBanco,
-                        nroCtaBancaria: Number(bankAccount.id.nroCuentaBanco)
-                      })
-                    } else {
-                      creditResponse = await this.andeService.createCredit({
-                        plazo: deadline.plazo,
-                        montoSolicitado: amount,
-                        formaCobro: 1,
-                        idCuentaBancaria: bankAccount.idRegistro,
-                        nroCuentaBancaria: Number(bankAccount.id.nroCuentaBanco),
-                        idBanco: bankAccount.id.codBanco,
-                        cumpleRequisitos: 1
-                      })
-                    }
-
-                    if (typeof creditResponse === 'object') {
-                      session.treeStep = 'STEP_1'
-                      response = `
-                      ✅ Solicitud de préstamo generada exitosamente
-
-                      ${MENU_HOME}
-                      `
+                      response = 'Por favor indica tu número de cuenta del banco'
                     } else {
                       response = `
-                      ${creditResponse}
+                      No puede usar este metodo porque no posee una cuenta bancaria 😔
+                      Seleccione otro metodo por favor
 
                       ${MENU_HOME}
                       `
                     }
                   } else {
                     response = `
-                    No tiene ninguna cuenta bancaria asociada a este número ${this.message}, verifique los datos e intente nuevamente
+                    ${bankAccountList}
 
                     ${MENU_HOME}
                     `
                   }
-                } else response = 'Error al buscar las cuentas asociadas, por favor intentelo nuevamente'
+                }
+              } else response = messageOptionInvalid()
+              break
+
+            case 'STEP_5':
+              if (isNumber(this.message)) {
+                const { bankAccountList, type, deadline, amount } = session.store.lending
+
+                const bankAccount = bankAccountList.find(account => account.id.nroCuentaBanco === this.message)
+
+                if (bankAccount) {
+                  let creditResponse = ''
+
+                  if (type === 'extraordinario') {
+                    creditResponse = await this.andeService.createCreditExtra({
+                      monto: amount,
+                      origen: 3, // Valor estático
+                      tipoDesembolso: 1,
+                      codBanco: bankAccount.id.codBanco,
+                      nroCtaBancaria: Number(bankAccount.id.nroCuentaBanco)
+                    })
+                  } else {
+                    creditResponse = await this.andeService.createCredit({
+                      plazo: deadline.plazo,
+                      montoSolicitado: amount,
+                      formaCobro: 1,
+                      idCuentaBancaria: bankAccount.idRegistro,
+                      nroCuentaBancaria: Number(bankAccount.id.nroCuentaBanco),
+                      idBanco: bankAccount.id.codBanco,
+                      cumpleRequisitos: 1 // Valor estático
+                    })
+                  }
+
+                  if (typeof creditResponse === 'object') {
+                    session.treeStep = 'STEP_1'
+                    response = `
+                    ✅ Solicitud de préstamo generada exitosamente
+
+                    ${MENU_HOME}
+                    `
+                  } else {
+                    response = `
+                    ${creditResponse}
+
+                    ${MENU_HOME}
+                    `
+                  }
+                } else {
+                  response = `
+                  No tiene ninguna cuenta bancaria asociada a este número ${this.message}, verifique los datos e intente nuevamente
+
+                  ${MENU_HOME}
+                  `
+                }
               } else response = 'Número incorrecto, debe ingresar un número de cuenta valido'
               break
 
