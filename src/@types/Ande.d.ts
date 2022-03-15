@@ -54,6 +54,8 @@ type TAndeBody = {
     email: string
     observacion: string
     archivo: TDataStream
+    extension: string
+    filename: string
   }
 }
 

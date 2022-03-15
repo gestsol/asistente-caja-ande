@@ -34,7 +34,7 @@ export class PersonalDataController extends Controller {
       case '152':
         session.treeStep = 'STEP_2'
         response = `
-        Necesitamos saber tu domicilio, por favor envia tu dirección usando la función de *enviar ubicación de Whatsapp* 🗺️
+        Necesitamos saber tu domicilio, por favor envia tu dirección usando la función de *enviar ubicación de WhatsApp* 🗺️
         No olvides ubicar correctamente tu casa 🏡
         `
         break
@@ -50,14 +50,14 @@ export class PersonalDataController extends Controller {
       default:
         switch (session.treeStep) {
           case 'STEP_1':
-            const isImage = this.data.dataType === 'image'
+            const { dataType, file } = this.data
 
             // Validación basica de la imagen que se quiere subir
-            if (isImage && this.data.file) {
-              const image = await this.downloadFile(this.data.file.id)
+            if (dataType === 'image' && file) {
+              const fileWassi = await this.downloadFile(file.id)
 
-              if (image) {
-                const photo = await this.andeService.uploadPhoto(image)
+              if (fileWassi) {
+                const photo = await this.andeService.uploadPhoto(fileWassi.stream, file.extension)
 
                 if (typeof photo === 'object' && photo.uploaded) {
                   response = `
@@ -80,7 +80,6 @@ export class PersonalDataController extends Controller {
                 `
               }
             } else response = 'El archivo enviado es incorrecto, por favor revisa que sea una imagen correcta'
-
             break
 
           case 'STEP_2':
@@ -110,7 +109,7 @@ export class PersonalDataController extends Controller {
               }
             } else
               response =
-                'La ubicación es incorrecta, por favor envianos tu dirección usando la función de *enviar ubicación de Whatsapp* 🗺️'
+                'La ubicación es incorrecta, por favor envianos tu dirección usando la función de *enviar ubicación de WhatsApp* 🗺️'
             break
 
           default:

@@ -1,3 +1,4 @@
+import { AxiosResponseHeaders } from 'axios'
 import { MENU_HOME } from '~ENTITIES/consts'
 import { isNumber } from '~UTILS/validation.util'
 
@@ -68,4 +69,10 @@ export const convertInGuarani = (message: string | number): string => {
     style: 'currency',
     currency: 'PYG'
   }).format(amount)
+}
+
+export const getNameFromHeaders = (headers: AxiosResponseHeaders): string => {
+  // Se obtiene el nombre del archivo por medio del header: "content-disposition",
+  // que tiene el siguiente formato: "attachment; filename=<FILE_NAME>.<EXTENSION>"
+  return headers['content-disposition'].split('=')[1].split('.')[0]
 }

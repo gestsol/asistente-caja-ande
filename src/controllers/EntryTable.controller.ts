@@ -48,15 +48,16 @@ export class EntryTable extends Controller {
 
           case 'STEP_3':
             const { description, observation } = session.store.entryTable
+            const { file } = this.data
 
-            if (this.data.file?.id) {
-              const fileWassi = await this.downloadFile(this.data.file?.id)
+            if (file) {
+              const fileWassi = await this.downloadFile(file.id)
 
               if (fileWassi) {
                 const { nombre, nroCedula, email } = session.ande!.affiliate
                 const [name, lastname] = convertMessageInFullname(nombre).split(' ')
 
-                const file = await this.andeService.uploadFile({
+                const fileResponse = await this.andeService.uploadFile({
                   nombre: name,
                   apellido: lastname,
                   celular: convertPhoneInLocal(this.phone),
@@ -64,10 +65,12 @@ export class EntryTable extends Controller {
                   email: email || '',
                   descripcion: description,
                   observacion: observation,
-                  archivo: fileWassi
+                  archivo: fileWassi.stream,
+                  extension: file.extension,
+                  filename: fileWassi.filename
                 })
 
-                if (typeof file === 'object' && file.uploaded) {
+                if (typeof fileResponse === 'object' && fileResponse.uploaded) {
                   response = `
                   ✅ Su archivo ha sido guardado correctamente
 
@@ -75,7 +78,7 @@ export class EntryTable extends Controller {
                   `
                 } else {
                   response = `
-                  ${file}
+                  ${fileResponse}
 
                   ${MENU_HOME}
                   `
@@ -87,13 +90,9 @@ export class EntryTable extends Controller {
                 ${MENU_HOME}
                 `
               }
-
-              break
             } else response = 'El archivo enviado es incorrecto, por favor revisa que el documento sea correcto'
-
             break
         }
-
         break
     }
 

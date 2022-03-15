@@ -18,6 +18,7 @@ export class DownloadController extends Controller {
       case 'menu':
         session.treeLevel = 'DOWNLOAD'
         session.treeStep = ''
+
         this.initStore(session)
 
         response = `
@@ -30,8 +31,7 @@ export class DownloadController extends Controller {
       case '161':
         response = await this.getDocListByType(
           'factura',
-          `
-          Revisa tus facturas 📊
+          `Revisa tus facturas 📊
           ¿Qué querés revisar?`,
           session
         )
@@ -40,8 +40,7 @@ export class DownloadController extends Controller {
       case '162':
         response = await this.getDocListByType(
           'extracto',
-          `
-          Revisa tus préstamos 📊
+          `Revisa tus préstamos 📊
           ¿Qué querés revisar?`,
           session
         )
@@ -50,8 +49,7 @@ export class DownloadController extends Controller {
       case '163':
         response = await this.getDocListByType(
           'liquidacionhaber',
-          `
-          Revisa tus haberes 📊
+          `Revisa tus haberes 📊
           ¿Qué querés revisar?`,
           session
         )
@@ -104,51 +102,51 @@ export class DownloadController extends Controller {
 
               await this.sendFiles(fileList)
               response = 'OK'
-              break
-            }
 
-            const periodo = getPeriodFromMessage(this.message)
+              // Obtener documento del periodo ingresado
+            } else {
+              const periodo = getPeriodFromMessage(this.message)
 
-            // Obtener documento del periodo ingresado
-            if (periodo) {
-              const { type, docList } = session.store.download
-              const doc = docList.find(doc => doc.periodo === periodo)
+              if (periodo) {
+                const { type, docList } = session.store.download
+                const doc = docList.find(doc => doc.periodo === periodo)
 
-              if (doc) {
-                const file = await this.andeService.getDoc(type, {
-                  periodo,
-                  nroFactura: doc?.nroFactura
-                })
+                if (doc) {
+                  const file = await this.andeService.getDoc(type, {
+                    periodo,
+                    nroFactura: doc?.nroFactura
+                  })
 
-                if (typeof file === 'object') {
-                  await this.sendFiles([
-                    {
-                      filename: file.filename,
-                      stream: file.pdf
-                    }
-                  ])
-                  response = 'OK'
+                  if (typeof file === 'object') {
+                    await this.sendFiles([
+                      {
+                        filename: file.filename,
+                        stream: file.pdf
+                      }
+                    ])
+
+                    response = 'OK'
+                  } else {
+                    response = `
+                    ${file}
+
+                    ${MENU_HOME}
+                    `
+                  }
                 } else {
                   response = `
-                  ${file}
+                  No existe una factura del periodo ingresado, intente con otro mes y año
 
                   ${MENU_HOME}
                   `
                 }
               } else {
                 response = `
-                No existe una factura del periodo ingresado, intente con otro mes y año
+                El formato de mes y año son invalidos, intente de nuevo
 
                 ${MENU_HOME}
                 `
               }
-              break
-            } else {
-              response = `
-              El formato de mes y año son invalidos, intente de nuevo
-
-              ${MENU_HOME}
-              `
             }
             break
 

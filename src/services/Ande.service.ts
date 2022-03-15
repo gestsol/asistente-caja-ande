@@ -1,7 +1,8 @@
-import { HttpClient } from 'class/HttpClient'
-import { getConfig } from '~UTILS/config.util'
 import { stringify as qsStringify } from 'qs'
 import FormData from 'form-data'
+import { HttpClient } from '~CLASS/HttpClient'
+import { getConfig } from '~UTILS/config.util'
+import { getNameFromHeaders } from '~UTILS/message.util'
 
 export class AndeService extends HttpClient {
   private nroAffiliate: number
@@ -54,12 +55,12 @@ export class AndeService extends HttpClient {
   // public async nameFunction<R = any>(body: any): Promise<R | string> {
   //   try {
   //     const { data } = await this.http.METHOD<R>(
-  //       ``, body, {}
+  //       ``, body, { headers: {} }
   //     )
   //
   //     return data
   //   } catch (error) {
-  //      return this.errorMessageHandler(error, 'message...')
+  //      return this.errorMessageHandler(error, 'error message...')
   //   }
   // }
 
@@ -413,9 +414,7 @@ export class AndeService extends HttpClient {
       )
 
       return {
-        // Se obtiene el nombre del documento por medio del header,
-        // el cual tiene el siguiente formato "attachment; filename=<FILE_NAME>.pdf"
-        filename: headers['content-disposition'].split('=')[1].split('.')[0],
+        filename: getNameFromHeaders(headers),
         pdf: data
       }
     } catch (error) {
@@ -425,10 +424,13 @@ export class AndeService extends HttpClient {
 
   // PERSONAL DATA _____________________________________________________________________________________________________
 
-  public async uploadPhoto<R = { uploaded: boolean }>(file: TDataStream): Promise<R | string> {
+  public async uploadPhoto<R = { uploaded: boolean }>(file: TDataStream, extension: string): Promise<R | string> {
+    console.log(extension)
+
     try {
       const formData = new FormData()
       formData.append('foto', file)
+      formData.append('extension', extension)
 
       const { data } = await this.http.post<string>(`/foto/${this.nroAffiliate}`, formData, {
         headers: formData.getHeaders()
@@ -457,6 +459,8 @@ export class AndeService extends HttpClient {
   // ENTRY TABLE _______________________________________________________________________________________________________
 
   public async uploadFile<R = { uploaded: boolean }>(body: TAndeBody['mesaentrada']): Promise<R | string> {
+    console.log(body.extension, body.filename)
+
     try {
       const formData = new FormData()
 

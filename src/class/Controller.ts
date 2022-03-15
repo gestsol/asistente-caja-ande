@@ -92,7 +92,7 @@ export class Controller {
     }
   }
 
-  protected async downloadFile(id: string): Promise<TDataStream | null> {
+  protected async downloadFile(id: string) {
     return await this.wassiService.downloadFile(id)
   }
 }

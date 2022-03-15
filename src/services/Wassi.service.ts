@@ -1,6 +1,7 @@
 import { HttpClient } from '~CLASS/HttpClient'
 import { getConfig } from '~UTILS/config.util'
 import { botDebug } from '~UTILS/debug.util'
+import { getNameFromHeaders } from '~UTILS/message.util'
 
 export class WassiService extends HttpClient {
   private device: string
@@ -83,13 +84,16 @@ export class WassiService extends HttpClient {
     }
   }
 
-  public async downloadFile<R = TDataStream>(fileId: string): Promise<R | null> {
+  public async downloadFile<R = TDataStream>(fileId: string): Promise<{ filename: string; stream: R } | null> {
     try {
-      const { data } = await this.http.get<R>(`/io/${this.device}/files/${fileId}/download`, {
+      const { headers, data } = await this.http.get<R>(`/io/${this.device}/files/${fileId}/download`, {
         responseType: 'stream'
       })
 
-      return data
+      return {
+        filename: getNameFromHeaders(headers),
+        stream: data
+      }
     } catch (error) {
       return null
     }
