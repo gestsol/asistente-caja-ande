@@ -3,7 +3,6 @@ import { MainController } from '~CONTROLLERS/Main.controller'
 import { sessionHandler } from '~MIDDLEWARES'
 import { convertMessageInUppercase } from '~UTILS/message.util'
 import { getConfig } from '~UTILS/config.util'
-import { OPTIONS_HOME } from '~ENTITIES/consts'
 
 const router = Router()
 
@@ -27,7 +26,6 @@ router.post(
           : null,
         location: location || null,
         res,
-        menuHome: OPTIONS_HOME,
         session: req.app.get('session') as TSession
       })
 

@@ -24,7 +24,6 @@ export class LoginController extends Controller {
         this.initStore(session)
 
         response = `
-        Hola! soy el asistente virtual de los afiliados de la CAJA 🤓
         Nuestra caja, tu futuro!`
 
         if (isParaguay) {

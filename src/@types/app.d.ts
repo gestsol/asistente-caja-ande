@@ -36,7 +36,6 @@ type TDataController = {
   } | null
   location: TWassiRequest['data']['location'] | null
   res: import('express').Response
-  menuHome: string
   session: TSession
 }
 

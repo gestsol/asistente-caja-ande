@@ -8,14 +8,21 @@ import { DownloadController } from '~CONTROLLERS/Download.controller'
 import { LendingsController } from '~CONTROLLERS/Lendings.controller'
 import { InfoController } from '~CONTROLLERS/Info.controller'
 import { EntryTable } from '~CONTROLLERS/EntryTable.controller'
-
 import { convertMessageInFullname, messageOptionInvalid } from '~UTILS/message.util'
 
 export class HomeController extends Controller {
   async startDecisionTree(session: TSession) {
     let response = ''
 
-    const options = this.menuHome
+    const options = `
+    (11) Préstamos 💰
+    (12) Tarjetas de crédito 💳
+    (13) Consultas sobre préstamos 🧐
+    (14) Noticias e informaciones del mes 📱
+    (15) Datos personales 😊
+    (16) Descargas 🤗
+    (17) Información varias 😄
+    (18) Mesa de entrada`
 
     switch (this.message) {
       case 'menu':

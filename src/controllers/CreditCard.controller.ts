@@ -9,7 +9,7 @@ export class CreditCardController extends Controller {
     let response = ''
 
     const options = `
-    (121) Tarjeta de crédito 💳
+    (121) Nueva Tarjeta de crédito 💳
     (122) Deuda total y disponibilidad de tarjeta de crédito
     (123) Monto y vencimiento de tu tarjeta
     (124) Situación actual de tu tarjeta de crédito`

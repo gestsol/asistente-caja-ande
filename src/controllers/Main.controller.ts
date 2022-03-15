@@ -62,6 +62,10 @@ export class MainController extends Controller {
         new HomeController(this.data)
         break
 
+      case 'LENDINGS':
+        new LendingsController(this.data)
+        break
+
       case 'CREDIT_CARD':
         new CreditCardController(this.data)
         break
@@ -88,10 +92,6 @@ export class MainController extends Controller {
 
       case 'ENTRY_TABLE':
         new EntryTable(this.data)
-        break
-
-      case 'LENDINGS':
-        new LendingsController(this.data)
         break
     }
 

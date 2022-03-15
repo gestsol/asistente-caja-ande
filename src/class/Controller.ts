@@ -9,14 +9,12 @@ export class Controller {
   private wassiService: WassiService
   protected data: TDataController
   protected message: string
-  protected menuHome: string
 
   constructor(data: TDataController) {
     this.andeService = new AndeService(data.session)
     this.wassiService = new WassiService()
     this.data = data
     this.message = data.message
-    this.menuHome = data.menuHome
     this.start()
   }
 
@@ -34,7 +32,7 @@ export class Controller {
   }
 
   // Este metodo solo sirve como interface para overwrite en los controllers
-  protected async startDecisionTree(session: TSession): Promise<any> {
+  protected async startDecisionTree(session: TSession): Promise<boolean> {
     return true
   }
 
@@ -79,7 +77,6 @@ export class Controller {
             } else await this.sendMessage(`⚠️ Error al obtener el archivo: ${file.filename}`)
           } else await this.sendMessage(file)
         }
-
         break
 
       case 'API':
