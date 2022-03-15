@@ -339,7 +339,7 @@ export class LendingsController extends Controller {
                       response = 'Por favor indica tu número de cuenta del banco'
                     } else {
                       response = `
-                      No puede usar este metodo porque no posee una cuenta bancaria 😔
+                      No puede usar este metodo de pago porque no posee una cuenta bancaria 😔
                       Seleccione otro metodo por favor
 
                       ${MENU_HOME}

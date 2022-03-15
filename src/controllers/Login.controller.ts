@@ -23,8 +23,7 @@ export class LoginController extends Controller {
 
         this.initStore(session)
 
-        response = `
-        Nuestra caja, tu futuro!`
+        response = 'Nuestra caja, tu futuro!\n'
 
         if (isParaguay) {
           session.treeStep = 'STEP_1'
@@ -84,7 +83,7 @@ export class LoginController extends Controller {
               ;[nroCedula, nroAfiliado, nroCelular] = convertMessageInArray(this.message).filter(item => isNumber(item))
             }
 
-            if (nroCedula || nroAfiliado || nroCelular) {
+            if (nroCedula && nroAfiliado && nroCelular) {
               const data = await this.andeService.login({
                 nroCedula,
                 nroAfiliado,
@@ -102,18 +101,15 @@ export class LoginController extends Controller {
                   ...this.data,
                   message: 'menu'
                 })
+              } else {
+                response = `
+                ⚠️ Usuario invalido, verifique que los datos sean correctos e intente de nuevo
+                Por favor envíanos tu número de CI para ayudarte
 
-                break
+                ${MENU_HOME}
+                `
               }
-            }
-
-            session.treeStep = 'STEP_1'
-            response = `
-            ⚠️ Usuario invalido, verifique que los datos sean correctos e intente de nuevo
-            Por favor envíanos tu número de CI para ayudarte
-
-            ${MENU_HOME}
-            `
+            } else response = '⚠️ Formato incorrecto, verifique que los datos sean correctos e intente de nuevo'
             break
         }
     }
