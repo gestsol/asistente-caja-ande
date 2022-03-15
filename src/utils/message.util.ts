@@ -71,8 +71,9 @@ export const convertInGuarani = (message: string | number): string => {
   }).format(amount)
 }
 
-export const getNameFromHeaders = (headers: AxiosResponseHeaders): string => {
+export const getNameFromHeaders = (headers: AxiosResponseHeaders): string | null => {
   // Se obtiene el nombre del archivo por medio del header: "content-disposition",
   // que tiene el siguiente formato: "attachment; filename=<FILE_NAME>.<EXTENSION>"
-  return headers['content-disposition'].split('=')[1].split('.')[0]
+  const disposition = headers['content-disposition']
+  return disposition ? disposition.split('=')[1].split('.')[0] : null
 }

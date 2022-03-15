@@ -33,6 +33,7 @@ type TDataController = {
     size: number
     mime: string
     extension: string
+    filename: string
   } | null
   location: TWassiRequest['data']['location'] | null
   res: import('express').Response

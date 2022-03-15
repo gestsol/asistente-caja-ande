@@ -134,8 +134,6 @@ export class AndeService extends HttpClient {
   }
 
   public async calculateLending<R = TAndeResponse['calculo']>(amount: number, deadline: number): Promise<R | string> {
-    console.log(amount, deadline)
-
     let endpoint = '/calculo'
 
     switch (this.typeLending) {
@@ -158,7 +156,6 @@ export class AndeService extends HttpClient {
 
     try {
       const { data } = await this.http.get<R>(endpoint)
-      console.log(data)
 
       return data
     } catch (error) {
@@ -191,8 +188,6 @@ export class AndeService extends HttpClient {
   public async createCredit<R = TAndeResponse['solicitudcredito']>(
     body: TAndeBody['solicitudcredito']
   ): Promise<R | string> {
-    console.log(body)
-
     let endpoint = '/solicitudcredito'
 
     switch (this.typeLending) {
@@ -221,8 +216,6 @@ export class AndeService extends HttpClient {
   public async createCreditExtra<R = TAndeResponse['solicitudcredito']>(
     body: TAndeBody['solicitudcreditoExtraordinario']
   ): Promise<R | string> {
-    console.log(body)
-
     try {
       const { data } = await this.http.post<R>(`/solicitudcredito/extraordinario/${this.nroAffiliate}`, body)
 
@@ -403,6 +396,8 @@ export class AndeService extends HttpClient {
     docType: TDocType,
     { periodo, nroFactura }: TAndeBody['facturaPdf']
   ): Promise<{ filename: string; pdf: R } | string> {
+    const filenameDefault = `${docType}_${periodo}`
+
     try {
       const { headers, data } = await this.http.get<R>(
         `/${docType}/pdf/${this.nroAffiliate}/${periodo}${docType === 'factura' ? `/${nroFactura}` : ''}`,
@@ -414,19 +409,17 @@ export class AndeService extends HttpClient {
       )
 
       return {
-        filename: getNameFromHeaders(headers),
+        filename: getNameFromHeaders(headers) || filenameDefault,
         pdf: data
       }
     } catch (error) {
-      return this.errorMessageHandler(error, `No se pudo obtener el documento: ${docType}_${periodo}`)
+      return this.errorMessageHandler(error, `No se pudo obtener el documento: ${filenameDefault}`)
     }
   }
 
   // PERSONAL DATA _____________________________________________________________________________________________________
 
   public async uploadPhoto<R = { uploaded: boolean }>(file: TDataStream, extension: string): Promise<R | string> {
-    console.log(extension)
-
     try {
       const formData = new FormData()
       formData.append('foto', file)
@@ -459,8 +452,6 @@ export class AndeService extends HttpClient {
   // ENTRY TABLE _______________________________________________________________________________________________________
 
   public async uploadFile<R = { uploaded: boolean }>(body: TAndeBody['mesaentrada']): Promise<R | string> {
-    console.log(body.extension, body.filename)
-
     try {
       const formData = new FormData()
 

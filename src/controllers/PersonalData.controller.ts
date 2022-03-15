@@ -54,10 +54,10 @@ export class PersonalDataController extends Controller {
 
             // Validación basica de la imagen que se quiere subir
             if (dataType === 'image' && file) {
-              const fileWassi = await this.downloadFile(file.id)
+              const stream = await this.downloadFile(file.id)
 
-              if (fileWassi) {
-                const photo = await this.andeService.uploadPhoto(fileWassi.stream, file.extension)
+              if (stream) {
+                const photo = await this.andeService.uploadPhoto(stream, file.extension)
 
                 if (typeof photo === 'object' && photo.uploaded) {
                   response = `

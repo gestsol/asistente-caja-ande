@@ -51,9 +51,9 @@ export class EntryTable extends Controller {
             const { file } = this.data
 
             if (file) {
-              const fileWassi = await this.downloadFile(file.id)
+              const stream = await this.downloadFile(file.id)
 
-              if (fileWassi) {
+              if (stream) {
                 const { nombre, nroCedula, email } = session.ande!.affiliate
                 const [name, lastname] = convertMessageInFullname(nombre).split(' ')
 
@@ -65,9 +65,9 @@ export class EntryTable extends Controller {
                   email: email || '',
                   descripcion: description,
                   observacion: observation,
-                  archivo: fileWassi.stream,
+                  archivo: stream,
                   extension: file.extension,
-                  filename: fileWassi.filename
+                  filename: file.filename
                 })
 
                 if (typeof fileResponse === 'object' && fileResponse.uploaded) {

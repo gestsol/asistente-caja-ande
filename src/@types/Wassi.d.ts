@@ -156,6 +156,7 @@ type TWassiRequest = {
       size: number
       mime: string
       extension: string
+      filename?: string
       createdAt: string
       expiresAt: string
       meta: {
