@@ -11,11 +11,7 @@ type TConfig = {
   }
   modeAPP: 'API' | 'BOT'
   adminPhoneList: Array<string>
-  affiliate: {
-    nroCedula: string
-    nroAfiliado: string
-    nroCelular: string
-  }
+  loginData: string
 }
 
 type TConfigHttpClient = {
@@ -84,8 +80,13 @@ type TStore = {
     docList: TDocList
   }
   entryTable: {
+    ci: string
+    name: string
+    lastname: string
+    email: string
     description: string
     observation: string
+    filename: string
   }
 }
 
@@ -114,7 +115,7 @@ type TLevel =
   | 'ENTRY_TABLE'
   | 'LENDINGS'
 
-type TStep = '' | 'STEP_1' | 'STEP_2' | 'STEP_3' | 'STEP_4' | 'STEP_5' | 'STEP_6'
+type TStep = '' | 'STEP_1' | 'STEP_2' | 'STEP_3' | 'STEP_4' | 'STEP_5' | 'STEP_6' | 'STEP_7'
 
 type TTypeLending = 'paralelo' | 'cancelacion' | 'estudiantil' | 'extraordinario'
 

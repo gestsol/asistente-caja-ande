@@ -21,7 +21,13 @@ export class SessionService {
 
       if (isAdmin) {
         // Nueva sesión para usuario ADMIN
-        const loginData = await new AndeService().login(getConfig().affiliate)
+        const [nroCedula, nroAfiliado, nroCelular] = getConfig().loginData.split(' ')
+
+        const loginData = await new AndeService().login({
+          nroCedula,
+          nroAfiliado,
+          nroCelular
+        })
 
         // Se crea una sesión especial para usuario ADMIN
         session = {
@@ -56,19 +62,21 @@ export class SessionService {
     const session = SessionService.getSession(phone)
 
     if (session) {
-      // TODO: cambiar a un for normal
-      const sessions = SessionService.sessions.filter(session => session.phone !== phone)
+      let sessionsDebug: Partial<TSession>[] = []
 
-      // Actualizar sesión
-      SessionService.sessions = [...sessions, sessionUpdated]
+      SessionService.sessions.forEach(session => {
+        if (session.phone === phone) {
+          session = sessionUpdated
+        }
 
-      const sessionsDebug = SessionService.sessions.map(session => ({
-        phone: session.phone,
-        treeLevel: session.treeLevel,
-        treeStep: session.treeStep
-      }))
+        sessionsDebug.push({
+          phone: session.phone,
+          treeLevel: session.treeLevel,
+          treeStep: session.treeStep
+        })
+      })
 
-      botDebug('SESSION', 'session updated', sessionsDebug)
+      botDebug('SESSIONS', 'updated', sessionsDebug)
       console.log()
     }
   }

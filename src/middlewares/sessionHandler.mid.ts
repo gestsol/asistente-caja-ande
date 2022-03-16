@@ -14,7 +14,9 @@ export function sessionHandler(): Handler {
       } = req.body as TWassiRequest
 
       // Validar la data del body de la petición POST en modo API
-      if (getConfig().modeAPP === 'API' && (!fromNumber || !body)) throw new Error('Body is incorrect')
+      if (getConfig().modeAPP === 'API' && (!fromNumber || (type === 'text' && !body))) {
+        throw new Error('Body is incorrect')
+      }
 
       // Descartar el número del bot entre los usuarios que escriben
       if (fromNumber === phone) res.end()

@@ -25,10 +25,6 @@ export const getConfig = (): TConfig => {
     },
     modeAPP: (ENV.MODE_APP as any) || 'BOT',
     adminPhoneList: (ENV.ADMIN_PHONE_LIST as string)?.split(',') || [],
-    affiliate: {
-      nroCedula: (ENV.AFFILIATE_NRO_CEDULA as string) || '',
-      nroAfiliado: (ENV.AFFILIATE_NRO as string) || '',
-      nroCelular: (ENV.AFFILIATE_NRO_CELULAR as string) || ''
-    }
+    loginData: (ENV.LOGIN_DATA as string) || ''
   }
 }
