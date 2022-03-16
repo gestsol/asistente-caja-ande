@@ -118,7 +118,6 @@ export class LoginController extends Controller {
   }
 
   private initStore(session: TSession): void {
-    session.ande = {} as any
     session.store = { login: {} } as any
   }
 }

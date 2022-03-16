@@ -7,7 +7,7 @@ import { getNameFromHeaders } from '~UTILS/message.util'
 export class AndeService extends HttpClient {
   private nroAffiliate: number
   private typeLending: TTypeLending
-  private session?: TSession
+  private session: TSession
 
   constructor(session?: TSession) {
     const { apiUrl } = getConfig().ande
@@ -15,13 +15,13 @@ export class AndeService extends HttpClient {
     super({
       baseURL: apiUrl,
       defaultPath: '/cjppa/rest/chatbot',
-      timeoutSecond: 60,
+      timeoutSecond: 30,
       headers: {
         'X-token': session?.ande?.token || ''
       }
     })
 
-    this.session = session
+    this.session = session || ({} as TSession)
     this.nroAffiliate = session?.ande?.affiliate?.codPersonalAnde || 0
     this.typeLending = session?.store?.lending?.type || 'paralelo'
   }
@@ -34,11 +34,11 @@ export class AndeService extends HttpClient {
         return `😔 ${message}`
 
       case 401:
-        this.session!.treeLevel = 'LOGIN'
-        this.session!.treeStep = 'STEP_1'
-        this.session!.ande = null
-        this.session!.store = {} as any
-        return '🕒 Sesión finalizada, vuelva a ingresar sus datos para iniciar sesión'
+        this.session.treeLevel = 'LOGIN'
+        this.session.treeStep = 'STEP_1'
+        this.session.ande = null
+        this.session.store = { login: {} } as any
+        return '🕒 Sesión finalizada, vuelva a ingresar sus datos para iniciar sesión de nuevo'
 
       case 500:
         return `⚠️ ${err.mensaje}`
@@ -88,7 +88,7 @@ export class AndeService extends HttpClient {
     type: TTypeLending,
     deadline: number = 0
   ): Promise<R | string> {
-    this.session!.store.lending.type = type
+    this.session.store.lending.type = type
     let endpoint = ''
 
     switch (type) {
@@ -382,7 +382,7 @@ export class AndeService extends HttpClient {
   // DOWNLOAD __________________________________________________________________________________________________________
 
   public async getDocList<R = TDocList>(docType: TDocType): Promise<R | string> {
-    this.session!.store.download.type = docType
+    this.session.store.download.type = docType
 
     try {
       const { data } = await this.http.get<R>(`/${docType}/cabecera/${this.nroAffiliate}`)
@@ -452,7 +452,10 @@ export class AndeService extends HttpClient {
 
   // ENTRY TABLE _______________________________________________________________________________________________________
 
-  public async uploadFile<R = { uploaded: boolean }>(body: TAndeBody['mesaentrada']): Promise<R | string> {
+  public async uploadFile<R = { uploaded: boolean }>(
+    body: TAndeBody['mesaentrada'],
+    notAffiliate: boolean
+  ): Promise<R | string> {
     try {
       const formData = new FormData()
 
@@ -461,7 +464,7 @@ export class AndeService extends HttpClient {
         formData.append(key, value)
       }
 
-      const { data } = await this.http.post<R>('/mesaentrada', formData, {
+      const { data } = await this.http.post<R>(`/mesaentrada/${notAffiliate ? 'noafil' : ''}`, formData, {
         headers: formData.getHeaders()
       })
 

@@ -5,8 +5,8 @@ import { messageFormatter } from '~UTILS/message.util'
 import { getConfig } from '~UTILS/config.util'
 
 export class Controller {
-  protected andeService: AndeService
   private wassiService: WassiService
+  protected andeService: AndeService
   protected data: TDataController
   protected message: string
 

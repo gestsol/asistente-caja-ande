@@ -129,15 +129,18 @@ export class EntryTableController extends Controller {
                   }
                 }
 
-                const fileResponse = await this.andeService.uploadFile({
-                  ...fileAnde,
-                  celular: phone,
-                  descripcion: description,
-                  observacion: observation,
-                  archivo: stream,
-                  extension: file.extension,
-                  filename
-                })
+                const fileResponse = await this.andeService.uploadFile(
+                  {
+                    ...fileAnde,
+                    celular: phone,
+                    descripcion: description,
+                    observacion: observation,
+                    archivo: stream,
+                    extension: file.extension,
+                    filename
+                  },
+                  session.ande === null
+                )
 
                 if (typeof fileResponse === 'object' && fileResponse.uploaded) {
                   response = `

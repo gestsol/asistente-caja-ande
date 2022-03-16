@@ -38,7 +38,7 @@ export class SessionService {
             affiliate: loginData!.afiliado,
             token: loginData!.token
           },
-          store: {} as TStore
+          store: {} as any
         }
       } else {
         // Se crear una sesión general
@@ -47,7 +47,7 @@ export class SessionService {
           treeLevel: 'MAIN',
           treeStep: '',
           ande: null,
-          store: {} as TStore
+          store: {} as any
         }
       }
 

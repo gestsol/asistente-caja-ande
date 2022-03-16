@@ -42,11 +42,11 @@ type TSession = {
   phone: string
   treeLevel: TLevel
   treeStep: TStep
-  ande: TAnde
+  ande: TAnde | null
   store: TStore
 }
 
-type TAnde = null | {
+type TAnde = {
   affiliate: TAffiliate
   token: string
 }
