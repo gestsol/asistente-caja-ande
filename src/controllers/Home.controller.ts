@@ -1,13 +1,12 @@
 import { Controller } from '~CLASS/Controller'
 import { CreditCardController } from '~CONTROLLERS/CreditCard.controller'
 import { LendingQuery } from '~CONTROLLERS/LendingQuery.controller'
-import { MainController } from '~CONTROLLERS/Main.controller'
 import { NewsController } from '~CONTROLLERS/News.controller'
 import { PersonalDataController } from '~CONTROLLERS/PersonalData.controller'
 import { DownloadController } from '~CONTROLLERS/Download.controller'
 import { LendingsController } from '~CONTROLLERS/Lendings.controller'
 import { InfoController } from '~CONTROLLERS/Info.controller'
-import { EntryTable } from '~CONTROLLERS/EntryTable.controller'
+import { EntryTableController } from '~CONTROLLERS/EntryTable.controller'
 import { convertMessageInFullname, messageOptionInvalid } from '~UTILS/message.util'
 
 export class HomeController extends Controller {
@@ -22,7 +21,8 @@ export class HomeController extends Controller {
     (15) Datos personales 😊
     (16) Descargas 🤗
     (17) Información varias 😄
-    (18) Mesa de entrada`
+    (18) Mesa de entrada
+    (00) Cerrar Sesión ↩️`
 
     switch (this.message) {
       case 'menu':
@@ -35,7 +35,6 @@ export class HomeController extends Controller {
         Bienvenido *${fullName}* en Caja Ande trabajamos para vos 🤓
         Revisa las opciones que tenemos desponible:
         ${options}
-        (00) Cerrar Sesión ↩️
         `
         break
 
@@ -89,25 +88,25 @@ export class HomeController extends Controller {
         break
 
       case '18':
-        new EntryTable({
+        new EntryTableController({
           ...this.data,
           message: 'menu'
         })
         break
 
-      case '0':
-        session.treeLevel = 'MAIN'
-        new MainController(this.data)
-        break
-
       case '00':
         session.treeLevel = 'MAIN'
         session.treeStep = ''
+        session.ande = null
+        session.store = {} as any
         response = 'Gracias por usar el Asistente Virtual de Caja Ande 👋'
         break
 
       default:
-        response = messageOptionInvalid(options)
+        response = `
+        ❌ Opción invalida, las opciones disponibles son:
+        ${options}
+        `
         break
     }
 

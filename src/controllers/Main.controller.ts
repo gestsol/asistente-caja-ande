@@ -7,7 +7,7 @@ import { NewsController } from '~CONTROLLERS/News.controller'
 import { PersonalDataController } from '~CONTROLLERS/PersonalData.controller'
 import { DownloadController } from '~CONTROLLERS/Download.controller'
 import { InfoController } from '~CONTROLLERS/Info.controller'
-import { EntryTable } from '~CONTROLLERS/EntryTable.controller'
+import { EntryTableController } from '~CONTROLLERS/EntryTable.controller'
 import { LendingsController } from '~CONTROLLERS/Lendings.controller'
 
 import { messageOptionInvalid } from '~UTILS/message.util'
@@ -22,28 +22,7 @@ export class MainController extends Controller {
 
     switch (session.treeLevel) {
       case 'MAIN':
-        if (session.treeStep === 'STEP_1') {
-          switch (this.message) {
-            case '1':
-              session.treeStep = ''
-              new LoginController({
-                ...this.data,
-                message: 'menu'
-              })
-              break
-
-            case '2':
-              response = 'Mesa de Entrada'
-              break
-
-            default:
-              response = messageOptionInvalid(options)
-              break
-          }
-          break
-        }
-
-        if (session.treeStep === '' || this.message === 'menu') {
+        if (session.treeStep === '') {
           session.treeStep = 'STEP_1'
 
           response = `
@@ -51,6 +30,30 @@ export class MainController extends Controller {
           Selecciona una opción para poder ayudarte:
           ${options}
           `
+        } else if (session.treeStep === 'STEP_1') {
+          switch (this.message) {
+            case '1':
+              session.treeStep = ''
+
+              new LoginController({
+                ...this.data,
+                message: 'menu'
+              })
+              break
+
+            case '2':
+              session.treeStep = ''
+
+              new EntryTableController({
+                ...this.data,
+                message: 'menu'
+              })
+              break
+
+            default:
+              response = messageOptionInvalid(options)
+              break
+          }
         }
         break
 
@@ -91,7 +94,7 @@ export class MainController extends Controller {
         break
 
       case 'ENTRY_TABLE':
-        new EntryTable(this.data)
+        new EntryTableController(this.data)
         break
     }
 
