@@ -11,7 +11,7 @@ export class DownloadController extends Controller {
 
     const options = `
     (161) Facturas
-    (162) Exatractos
+    (162) Extractos
     (163) Liquidación mensual de haberes`
 
     switch (this.message) {
