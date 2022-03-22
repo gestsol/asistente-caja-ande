@@ -23,8 +23,10 @@ export function sessionHandler(): Handler {
       else {
         botDebug('WASSI-IN', `${fromNumber} -> ${body || type}`)
 
+        const displayName = req.body.data.chat?.contact?.displayName || ''
+
         // Se crea una nueva sesión o se retorna la existente
-        const session = await sessionService.login(fromNumber)
+        const session = await sessionService.login({ phone: fromNumber, name: displayName })
         req.app.set('session', session)
 
         next()

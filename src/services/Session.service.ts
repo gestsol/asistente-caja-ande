@@ -9,7 +9,7 @@ export class SessionService {
     this.startDatabase()
   }
 
-  public async login(phone: string): Promise<TSession> {
+  public async login({ phone, name }: { phone: string; name: string }): Promise<TSession> {
     const session = SessionService.getSession(phone)
 
     if (session) {
@@ -32,6 +32,7 @@ export class SessionService {
         // Se crea una sesión especial para usuario ADMIN
         session = {
           phone,
+          name,
           treeLevel: 'HOME',
           treeStep: '',
           ande: {
@@ -44,6 +45,7 @@ export class SessionService {
         // Se crear una sesión general
         session = {
           phone,
+          name,
           treeLevel: 'MAIN',
           treeStep: '',
           ande: null,
@@ -71,6 +73,7 @@ export class SessionService {
 
         sessionsDebug.push({
           phone: session.phone,
+          name: session.name,
           treeLevel: session.treeLevel,
           treeStep: session.treeStep
         })

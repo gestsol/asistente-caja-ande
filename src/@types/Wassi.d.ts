@@ -138,7 +138,7 @@ type TWassiRequest = {
       stats: object
       labels: Array<any>
       owner: object
-      contact: object
+      contact: { displayName: string }
     }
     location?: {
       latitude: number

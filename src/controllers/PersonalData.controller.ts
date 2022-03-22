@@ -8,7 +8,7 @@ export class PersonalDataController extends Controller {
     let response = ''
 
     const options = `
-    (151) Cargar una foto (Reconocimiento facial)
+    (151) Cargar una foto (Subir documento/imagen)
     (152) Cargar domicilio (Envío de ubicación)`
 
     switch (this.message) {
@@ -79,7 +79,7 @@ export class PersonalDataController extends Controller {
                 ${MENU_HOME}
                 `
               }
-            } else response = 'El archivo enviado es incorrecto, por favor revisa que sea una imagen correcta'
+            } else response = 'El archivo enviado es invalido, por favor revisa que sea una imagen correcta'
             break
 
           case 'STEP_2':

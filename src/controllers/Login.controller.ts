@@ -3,6 +3,7 @@ import { HomeController } from '~CONTROLLERS/Home.controller'
 import { MainController } from '~CONTROLLERS/Main.controller'
 import { convertMessageInArray, convertPhoneInLocal } from '~UTILS/message.util'
 import { isNumber } from '~UTILS/validation.util'
+import { getConfig } from '~UTILS/config.util'
 import { MENU_HOME } from '~ENTITIES/consts'
 
 export class LoginController extends Controller {
@@ -102,9 +103,11 @@ export class LoginController extends Controller {
                   message: 'menu'
                 })
               } else {
+                if (isParaguay) session.treeStep = 'STEP_1'
+
                 response = `
-                ⚠️ Usuario invalido, verifique que los datos sean correctos e intente de nuevo
-                Por favor envíanos tu número de CI para ayudarte
+                ⚠️ Información incorrecta o insuficiente para acceder al servicio.
+                Contacte al *${getConfig().supportPhone}* para mayor información
 
                 ${MENU_HOME}
                 `

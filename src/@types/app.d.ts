@@ -11,6 +11,7 @@ type TConfig = {
   }
   modeAPP: 'API' | 'BOT'
   adminPhoneList: Array<string>
+  supportPhone: string
   loginData: string
 }
 
@@ -40,6 +41,7 @@ type TEnv = 'development' | 'production'
 
 type TSession = {
   phone: string
+  name: string
   treeLevel: TLevel
   treeStep: TStep
   ande: TAnde | null

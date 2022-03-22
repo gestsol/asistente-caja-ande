@@ -36,8 +36,11 @@ export class AndeService extends HttpClient {
       case 401:
         this.session.treeLevel = 'LOGIN'
         this.session.treeStep = 'STEP_1'
+
+        // Reiniciar la sessión del usuario
         this.session.ande = null
         this.session.store = { login: {} } as any
+
         return '🕒 Sesión finalizada, vuelva a ingresar sus datos para iniciar sesión de nuevo'
 
       case 500:
