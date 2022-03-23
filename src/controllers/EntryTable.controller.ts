@@ -143,11 +143,14 @@ export class EntryTableController extends Controller {
                 )
 
                 if (typeof fileResponse === 'object' && fileResponse.uploaded) {
-                  response = `
-                  ✅ Su archivo ha sido guardado correctamente
+                  if (session.ande) {
+                    session.treeLevel = 'HOME'
+                  } else {
+                    session.treeLevel = 'MAIN'
+                    session.treeStep = ''
+                  }
 
-                  ${MENU_HOME}
-                  `
+                  response = '✅ Su archivo ha sido guardado correctamente.'
                 } else {
                   response = `
                   ${fileResponse}

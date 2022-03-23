@@ -7,7 +7,7 @@ import { DownloadController } from '~CONTROLLERS/Download.controller'
 import { LendingsController } from '~CONTROLLERS/Lendings.controller'
 import { InfoController } from '~CONTROLLERS/Info.controller'
 import { EntryTableController } from '~CONTROLLERS/EntryTable.controller'
-import { convertMessageInFullname, messageOptionInvalid } from '~UTILS/message.util'
+import { convertMessageInFullname } from '~UTILS/message.util'
 
 export class HomeController extends Controller {
   async startDecisionTree(session: TSession) {
@@ -103,10 +103,20 @@ export class HomeController extends Controller {
         break
 
       default:
-        response = `
-        ❌ Opción invalida, las opciones disponibles son:
-        ${options}
-        `
+        if (session.treeStep === 'STEP_8') {
+          const fullName = convertMessageInFullname(session.ande!.affiliate.nombre)
+
+          response = `
+          Bienvenido *${fullName}* en Caja Ande trabajamos para vos 🤓
+          Revisa las opciones que tenemos desponible:
+          ${options}
+          `
+        } else {
+          response = `
+          ❌ Opción invalida, las opciones disponibles son:
+          ${options}
+          `
+        }
         break
     }
 
