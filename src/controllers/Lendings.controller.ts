@@ -64,8 +64,8 @@ export class LendingsController extends Controller {
           response = `
           Préstamo especial ✨
 
-          (A) Préstamos en paralelo
-          (B) Prétamos con cancelación
+          (A) En paralelo
+          (B) Cancelando todos los préstamos vigentes
           ${MENU_HOME}
           `
           break
@@ -211,7 +211,7 @@ export class LendingsController extends Controller {
 
                 response = `
                 (L) La totalidad
-                (  ) Escriba un monto menor
+                (  ) Escriba un monto menor a solicitar
                 `
               } else response = messageOptionInvalid()
               break
@@ -253,8 +253,9 @@ export class LendingsController extends Controller {
                   session.store.lending.fee = fee
                   session.store.lending.payMethodList = paymentMethods
 
+                  // TODO: Cambiar en la API la descripcion para transferencia
                   const paymentOptions = convertArrayInMessage(
-                    paymentMethods!,
+                    paymentMethods,
                     (item, i) => `\n(${i + 1}) ${item.descripcion}`
                   )
 
@@ -262,7 +263,7 @@ export class LendingsController extends Controller {
 
                   response += `
 
-                  ¿Cómo querés realizar el pago de tu préstamo?
+                  ¿Cómo quieres cobrar tu préstamo?
                   ${paymentOptions}
                   ${MENU_HOME}
                   `
@@ -336,7 +337,7 @@ export class LendingsController extends Controller {
                       session.treeStep = 'STEP_5'
                       session.store.lending.bankAccountList = bankAccountList
 
-                      response = 'Por favor indica tu número de cuenta del banco'
+                      response = 'Por favor indica tu número de cuenta del banco Itaú'
                     } else {
                       response = `
                       No puede usar este metodo de pago porque no posee una cuenta bancaria 😔
@@ -389,6 +390,7 @@ export class LendingsController extends Controller {
                     session.treeStep = 'STEP_1'
                     response = `
                     ✅ Solicitud de préstamo generada exitosamente
+                    Estará sujeto de aprobación
 
                     ${MENU_HOME}
                     `

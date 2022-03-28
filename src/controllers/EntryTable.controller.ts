@@ -14,11 +14,11 @@ export class EntryTableController extends Controller {
         session.treeLevel = 'ENTRY_TABLE'
         this.initStore(session)
 
-        response = 'En mesa de entrada podras guardar los archivos que desee\n\n'
+        response = 'En mesa de entrada podrás presentar un documento digital\n\n'
 
         if (session.ande) {
           session.treeStep = 'STEP_5'
-          response += 'Ingrese una descripción para el archivo'
+          response += 'Ingrese una descripción para el documento'
         } else {
           session.treeStep = 'STEP_1'
           response += 'Ingrese CI'
@@ -69,7 +69,7 @@ export class EntryTableController extends Controller {
             if (isEmail(email)) {
               session.treeStep = 'STEP_5'
               session.store.entryTable.email = email
-              response = 'Ingrese una descripción para el archivo'
+              response = 'Ingrese una descripción para el documento'
             } else response = '⚠️ Correo invalido, debe tener el siguiente formato: *example@email.com*'
             break
 
@@ -82,13 +82,13 @@ export class EntryTableController extends Controller {
           case 'STEP_6':
             session.treeStep = 'STEP_7'
             session.store.entryTable.observation = this.message
-            response = 'Ingrese nombre del archivo'
+            response = 'Ingrese nombre del documento'
             break
 
           case 'STEP_7':
             session.treeStep = 'STEP_8'
             session.store.entryTable.filename = this.message
-            response = 'Ingrese el archivo que desea guardar'
+            response = 'Ingrese el documento que desea guardar'
             break
 
           case 'STEP_8':
@@ -150,7 +150,7 @@ export class EntryTableController extends Controller {
                     session.treeStep = ''
                   }
 
-                  response = '✅ Su archivo ha sido guardado correctamente.'
+                  response = '✅ Su documento ha sido guardado correctamente.'
                 } else {
                   response = `
                   ${fileResponse}
@@ -165,7 +165,7 @@ export class EntryTableController extends Controller {
                 ${MENU_HOME}
                 `
               }
-            } else response = 'El archivo enviado es incorrecto, por favor revisa que el documento sea correcto'
+            } else response = 'El documento enviado es incorrecto, por favor revisa que sea correcto'
             break
         }
         break

@@ -71,7 +71,7 @@ export class DownloadController extends Controller {
             // Obtener documentos de los ultimos 12 meses
             if (this.message === '12') {
               if (getConfig().modeAPP === 'BOT') {
-                await this.sendMessage('⏳ Espere un momento por favor mientras se buscan los archivos')
+                await this.sendMessage('⏳ Procesando tu pedido')
               }
 
               const { type, docList } = session.store.download

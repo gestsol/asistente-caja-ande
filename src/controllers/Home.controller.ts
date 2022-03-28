@@ -20,7 +20,7 @@ export class HomeController extends Controller {
     (14) Noticias e informaciones del mes 📱
     (15) Datos personales 😊
     (16) Descargas 🤗
-    (17) Información varias 😄
+    (17) Informaciones varias 😄
     (18) Mesa de entrada
     (00) Cerrar Sesión ↩️`
 
@@ -32,7 +32,7 @@ export class HomeController extends Controller {
         const fullName = convertMessageInFullname(session.ande!.affiliate.nombre)
 
         response = `
-        Bienvenido *${fullName}* en Caja Ande trabajamos para vos 🤓
+        Bienvenido *${fullName}* en CAJA ANDE trabajamos para vos 🤓
         Revisa las opciones que tenemos desponible:
         ${options}
         `
@@ -107,7 +107,7 @@ export class HomeController extends Controller {
           const fullName = convertMessageInFullname(session.ande!.affiliate.nombre)
 
           response = `
-          Bienvenido *${fullName}* en Caja Ande trabajamos para vos 🤓
+          Bienvenido *${fullName}* en CAJA ANDE trabajamos para vos 🤓
           Revisa las opciones que tenemos desponible:
           ${options}
           `

@@ -26,7 +26,7 @@ export class WassiService extends HttpClient {
       const { data } = await this.http.post<R>('/messages', body)
 
       let { message, status } = (data as unknown) as TWassiResponse['messages']['message']
-      message = message.split('\n')[0] + '...'
+      message = message.search(/\n/) > -1 ? message.split('\n')[0] + '...' : message
 
       botDebug('WASSI-OUT', `(Message in ${status}) ${message}`)
 

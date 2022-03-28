@@ -24,7 +24,7 @@ export class LoginController extends Controller {
 
         this.initStore(session)
 
-        response = 'Nuestra Caja, tu futuro!\n'
+        response = 'Nuestra CAJA, tu futuro!\n'
 
         if (isParaguay) {
           session.treeStep = 'STEP_1'

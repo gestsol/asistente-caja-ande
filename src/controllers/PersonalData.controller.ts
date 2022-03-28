@@ -61,7 +61,7 @@ export class PersonalDataController extends Controller {
 
                 if (typeof photo === 'object' && photo.uploaded) {
                   response = `
-                  ✅ Su fotografía ha sido guardada correctamente
+                  ✅ Tu fotografía ha sido guardada correctamente
 
                   ${MENU_HOME}
                   `
@@ -96,7 +96,7 @@ export class PersonalDataController extends Controller {
 
               if (typeof location === 'object' && location.saved) {
                 response = `
-                ✅ Su ubicación ha sido guardada correctamente
+                ✅ Tu ubicación ha sido guardada correctamente
 
                 ${MENU_HOME}
                 `
