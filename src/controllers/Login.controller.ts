@@ -2,20 +2,14 @@ import { Controller } from '~CLASS/Controller'
 import { HomeController } from '~CONTROLLERS/Home.controller'
 import { MainController } from '~CONTROLLERS/Main.controller'
 import { convertMessageInArray, convertPhoneInLocal } from '~UTILS/message.util'
-import { isNumber } from '~UTILS/validation.util'
+import { isNumber, isPhoneParaguay } from '~UTILS/validation.util'
 import { getConfig } from '~UTILS/config.util'
 
 export class LoginController extends Controller {
   async startDecisionTree(session: TSession) {
     let response = ''
 
-    /*
-      Formato insternacional de celular en Paraguay
-      (codigo_país)-(9)-(nro_operador)-(6_digitos)
-      +595-9-XX-XXXXXX
-    */
-    const regex = new RegExp(/\+(5959)[0-9]{8}$/)
-    const isParaguay = regex.test(this.phone)
+    const isParaguay = isPhoneParaguay(this.phone)
 
     switch (this.message) {
       case 'menu':

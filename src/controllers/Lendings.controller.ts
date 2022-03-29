@@ -78,7 +78,8 @@ export class LendingsController extends Controller {
             return `
             (${i + 1})
             *Plazo*: ${item.plazo}
-            *Monto*: ${convertInGuarani(item.monto)}`
+            *Monto*: ${convertInGuarani(item.monto)}
+            `
           })
 
           response = `
@@ -98,7 +99,8 @@ export class LendingsController extends Controller {
             return `
             (${i + 1})
             *Plazo*: ${item.plazo}
-            *Monto*: ${convertInGuarani(item.monto)}`
+            *Monto*: ${convertInGuarani(item.monto)}
+            `
           })
 
           response = `
@@ -130,7 +132,8 @@ export class LendingsController extends Controller {
                   return `
                   (${i + 1})
                   *Plazo*: ${item.plazo}
-                  *Monto*: ${convertInGuarani(item.monto)}`
+                  *Monto*: ${convertInGuarani(item.monto)}
+                  `
                 })
 
                 response = `
@@ -148,7 +151,8 @@ export class LendingsController extends Controller {
                   return `
                   (${i + 1})
                   *Plazo*: ${item.plazo}
-                  *Monto*: ${convertInGuarani(item.monto)}`
+                  *Monto*: ${convertInGuarani(item.monto)}
+                  `
                 })
 
                 response = `

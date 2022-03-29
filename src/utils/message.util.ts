@@ -10,7 +10,13 @@ export const messageOptionInvalid = (options?: string): string => {
 
 export const messageMenuHome = (response: string): string => {
   // Si la respuesta tiene el símbolo "_" al final entonces no se agrega el menú
-  return response.at(-1) !== '_' ? `${response}\n\n${MENU_HOME}` : response.substring(0, response.search(/\_/))
+  if (response.at(-1) === '_') return response.substring(0, response.length - 1)
+
+  // Si la respuesta contiene un salto de linea "\n" al final entonces se elimina
+  if (response.at(-1) === '\n') response = response.substring(0, response.length - 1)
+
+  // Agregar menu al final de la respuesta
+  return `${response}\n\n${MENU_HOME}`
 }
 
 export const messageFormatter = (message: string): string => {

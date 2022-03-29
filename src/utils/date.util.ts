@@ -13,19 +13,9 @@ export const getDatePrevious = (time: number): Date => {
   return new Date(date)
 }
 
-// TODO: verificar si esto se va a usar despues
-// export const getCurrentPeriod = (): string => {
-//   const dateISO = new Date().toISOString()
-//   const date = dateISO.split('T')[0]
-//   const decomposedDate = date.split('-')
-//   decomposedDate.pop()
-//   const period = decomposedDate.join('')
-//   return period
-// }
-
 export const getPeriodFromMessage = (message: string): string | null => {
   // Verificar que el parametro "message" tiene este formato: "09-2021"
-  const regex = new RegExp(/[0-9]{2}-[0-9]{4}/)
+  const regex = new RegExp(/^[0-9]{2}-[0-9]{4}$/)
 
   if (regex.test(message)) {
     const decomposedDate = message.split('-')

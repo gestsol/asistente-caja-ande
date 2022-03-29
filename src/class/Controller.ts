@@ -38,8 +38,8 @@ export class Controller {
 
   protected async sendMessage(response: string): Promise<boolean> {
     if (response && response !== 'OK') {
-      let _response = messageMenuHome(response)
-      _response = messageFormatter(_response)
+      let _response = messageFormatter(response)
+      _response = messageMenuHome(_response)
 
       switch (getConfig().modeAPP) {
         case 'BOT':
