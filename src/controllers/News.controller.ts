@@ -24,18 +24,10 @@ export class NewsController extends Controller {
         const paymentDate = await this.andeService.getPaymentDate()
 
         if (typeof paymentDate === 'object') {
-          const { codigo, mensaje } = paymentDate
+          response = `
+          No te olvides de tus fechas de cobro! 😇
 
-          if (codigo === 200 && mensaje) response = mensaje
-          else {
-            // TODO: Verificar que tipo de dato llega cuando hay una fecha de cobro
-            console.log(paymentDate)
-
-            response = `
-            No te olvides de tus fechas de cobro! 😇
-
-            ${JSON.stringify(paymentDate)}`
-          }
+          *Fecha*: ${paymentDate.mensaje}`
         } else response = paymentDate
         break
 

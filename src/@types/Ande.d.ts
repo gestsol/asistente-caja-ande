@@ -187,9 +187,8 @@ type TAndeResponse = {
     fecha: string
   }
   fechacobro: {
-    // TODO: Determinar respuesta cuando exista una fecha de cobro
-    mensaje?: string
-    codigo?: number
+    mensaje: string
+    codigo: number
   }
   enlaces: Array<{
     codigo: number
