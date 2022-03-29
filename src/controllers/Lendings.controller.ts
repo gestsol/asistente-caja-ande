@@ -68,45 +68,19 @@ export class LendingsController extends Controller {
         break
 
       case '113':
-        const deadlineStundentList = await this.andeService.getLendings('estudiantil')
-
-        if (typeof deadlineStundentList === 'object') {
-          session.treeStep = 'STEP_2'
-          session.store.lending.deadlineList = deadlineStundentList
-
-          const lendingOptions = convertArrayInMessage(deadlineStundentList, (item, i) => {
-            return `
-            (${i + 1})
-            *Plazo*: ${item.plazo}
-            *Monto*: ${convertInGuarani(item.monto)}
-            `
-          })
-
-          response = `
-          Opciones de plazo para préstamo estudiantil:
-          ${lendingOptions}`
-        } else response = deadlineStundentList
+        response = await this.getDeadlineList(
+          'estudiantil',
+          'Opciones de plazo para préstamo estudiantil:    ',
+          session
+        )
         break
 
       case '114':
-        const deadlineExtraList = await this.andeService.getLendings('extraordinario')
-
-        if (typeof deadlineExtraList === 'object') {
-          session.treeStep = 'STEP_2'
-          session.store.lending.deadlineList = deadlineExtraList
-
-          const lendingOptions = convertArrayInMessage(deadlineExtraList, (item, i) => {
-            return `
-            (${i + 1})
-            *Plazo*: ${item.plazo}
-            *Monto*: ${convertInGuarani(item.monto)}
-            `
-          })
-
-          response = `
-          Opciones de plazo para préstamo extraordinario:
-          ${lendingOptions}`
-        } else response = deadlineExtraList
+        response = await this.getDeadlineList(
+          'extraordinario',
+          'Opciones de plazo para préstamo extraordinario:',
+          session
+        )
         break
 
       case '0':
@@ -122,43 +96,17 @@ export class LendingsController extends Controller {
         switch (session.treeStep) {
           case 'STEP_1':
             if (this.message === 'A') {
-              const deadlineList = await this.andeService.getLendings('paralelo')
-
-              if (typeof deadlineList === 'object') {
-                session.treeStep = 'STEP_2'
-                session.store.lending.deadlineList = deadlineList
-
-                const lendingOptions = convertArrayInMessage(deadlineList, (item, i) => {
-                  return `
-                  (${i + 1})
-                  *Plazo*: ${item.plazo}
-                  *Monto*: ${convertInGuarani(item.monto)}
-                  `
-                })
-
-                response = `
-                Opciones de plazo para préstamo en paralelo:
-                ${lendingOptions}`
-              } else response = deadlineList
+              response = await this.getDeadlineList(
+                'paralelo',
+                'Opciones de plazo para préstamo en paralelo: ',
+                session
+              )
             } else if (this.message === 'B') {
-              const deadlineCancelList = await this.andeService.getLendings('cancelacion')
-
-              if (typeof deadlineCancelList === 'object') {
-                session.treeStep = 'STEP_2'
-                session.store.lending.deadlineList = deadlineCancelList
-
-                const lendingOptions = convertArrayInMessage(deadlineCancelList, (item, i) => {
-                  return `
-                  (${i + 1})
-                  *Plazo*: ${item.plazo}
-                  *Monto*: ${convertInGuarani(item.monto)}
-                  `
-                })
-
-                response = `
-                Opciones de plazo para préstamo con cancelación:
-                ${lendingOptions}`
-              } else response = deadlineCancelList
+              response = await this.getDeadlineList(
+                'cancelacion',
+                'Opciones de plazo para préstamo con cancelación: ',
+                session
+              )
             } else response = messageOptionInvalid()
             break
 
@@ -333,6 +281,37 @@ export class LendingsController extends Controller {
     }
 
     return this.sendMessage(response)
+  }
+
+  private async getDeadlineList(type: TTypeLending, responseTitle: string, session: TSession): Promise<string> {
+    const deadlineList = await this.andeService.getLendings(type)
+
+    if (typeof deadlineList === 'object') {
+      session.treeStep = 'STEP_2'
+      session.store.lending.deadlineList = deadlineList
+
+      const lendingOptions = convertArrayInMessage(deadlineList, (item, i) => {
+        const amountCancel =
+          type === 'cancelacion' ? `\n*Saldo a Cancelar*: ${convertInGuarani(item.saldoCancelar)}` : ''
+
+        const dataExtra =
+          type === 'extraordinario'
+            ? `
+              *Saldo a Cancelar*: ${convertInGuarani(item.saldoCancelar)}
+              *Monto Neto a Retirar*: ${convertInGuarani(item.montoNetoRetirar!)}`
+            : `
+              *Tasa de Interés*: ${item.tasaInteres}%
+              *Importe de Cuota*:  ${convertInGuarani(item.cuota!)}`
+
+        return `
+        (${i + 1})
+        *Plazo*: ${item.plazo} ${item.plazo === 1 ? 'mes' : 'meses'}
+        *Monto*: ${convertInGuarani(item.monto)}${amountCancel}${dataExtra}
+        `
+      })
+
+      return `${responseTitle}\n${lendingOptions}`
+    } else return deadlineList
   }
 
   private initStore(session: TSession): void {

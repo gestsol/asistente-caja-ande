@@ -78,6 +78,8 @@ type TAndeResponse = {
     banco: string
     numeroCuentaBancaria: string
     codInstitucion: number
+    saldoTotalCancelar: number
+    netoRetirar: number
     totalSaldos: number
   }
   formacobro: Array<{
@@ -294,6 +296,9 @@ type TMenuOption = {
 
 type TDeadline = {
   plazo: number
-  tasaInteres: number
+  tasaInteres?: number
   monto: number
+  cuota?: number
+  saldoCancelar: number
+  montoNetoRetirar?: number
 }

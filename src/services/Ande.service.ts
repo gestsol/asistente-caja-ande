@@ -119,13 +119,19 @@ export class AndeService extends HttpClient {
 
       if (Array.isArray(data)) dataWrapper = data
       else {
-        const { plazoPrestamo, interesIPC, montoMaximo } = data as TAndeResponse['lineacreditoextra']
+        const {
+          plazoPrestamo,
+          montoMaximo,
+          saldoTotalCancelar,
+          netoRetirar
+        } = data as TAndeResponse['lineacreditoextra']
 
         dataWrapper = [
           {
             plazo: plazoPrestamo,
-            tasaInteres: interesIPC,
-            monto: montoMaximo
+            monto: montoMaximo,
+            saldoCancelar: saldoTotalCancelar,
+            montoNetoRetirar: netoRetirar
           }
         ]
       }
