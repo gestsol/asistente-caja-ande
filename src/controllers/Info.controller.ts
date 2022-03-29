@@ -1,6 +1,5 @@
 import { Controller } from '~CLASS/Controller'
 import { HomeController } from '~CONTROLLERS/Home.controller'
-import { MENU_HOME } from '~ENTITIES/consts'
 import { convertArrayInMessage, messageOptionInvalid } from '~UTILS/message.util'
 
 export class InfoController extends Controller {
@@ -19,27 +18,18 @@ export class InfoController extends Controller {
             const enabledInfoList = infoList.filter(info => info.estado)
 
             const infoOptions = convertArrayInMessage(enabledInfoList, item => {
-              return `*${item.nombre}:* ${item.descripcion}\n`
+              return `*${item.nombre}:* ${item.descripcion}`
             })
 
             response = `
             Información
 
-            ${infoOptions}
-            ${MENU_HOME}
-            `
+            ${infoOptions}`
           }
-        } else {
-          response = `
-          ${infoList}
-
-          ${MENU_HOME}
-          `
-        }
+        } else response = infoList
         break
 
       case '0':
-        session.treeLevel = 'HOME'
         new HomeController({
           ...this.data,
           message: 'menu'

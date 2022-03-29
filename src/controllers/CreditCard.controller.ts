@@ -2,7 +2,6 @@ import { Controller } from '~CLASS/Controller'
 import { HomeController } from '~CONTROLLERS/Home.controller'
 import { convertArrayInMessage, convertInGuarani, messageOptionInvalid } from '~UTILS/message.util'
 import { isNumber } from '~UTILS/validation.util'
-import { MENU_HOME } from '~ENTITIES/consts'
 
 export class CreditCardController extends Controller {
   async startDecisionTree(session: TSession) {
@@ -30,16 +29,8 @@ export class CreditCardController extends Controller {
 
           response = `
           Elige una de las siguiente opciones:
-          ${options}
-          ${MENU_HOME}
-          `
-        } else {
-          response = `
-          ${creditCards}
-
-          ${MENU_HOME}
-          `
-        }
+          ${options}`
+        } else response = creditCards
         break
 
       case '121':
@@ -64,17 +55,8 @@ export class CreditCardController extends Controller {
               Ya dispones de tarjeta de crédito con la CAJA 🤓
               ¿Para quién es la tarjeta nueva?
 
-              ${familyTypes}
-
-              ${MENU_HOME}
-              `
-            } else {
-              response = `
-              ${familyTypeList}
-
-              ${MENU_HOME}
-              `
-            }
+              ${familyTypes}`
+            } else response = familyTypeList
           } else {
             session.treeStep = 'STEP_1'
             session.store.creditCard.ci = session.ande!.affiliate.nroCedula
@@ -84,13 +66,7 @@ export class CreditCardController extends Controller {
 
             response = this.getMessageAmount(session)
           }
-        } else {
-          response = `
-          ${creditLine}
-
-          ${MENU_HOME}
-          `
-        }
+        } else response = creditLine
         break
 
       case '122':
@@ -105,16 +81,8 @@ export class CreditCardController extends Controller {
           response = `
           Nunca fue tan sencillo tener esta información en la comodidad de tu celular 😎
           ${creditCardList}
-
-          ${MENU_HOME}
           `
-        } else {
-          response = `
-          ${defaultError}
-
-          ${MENU_HOME}
-          `
-        }
+        } else response = defaultError
         break
 
       case '123':
@@ -135,16 +103,8 @@ export class CreditCardController extends Controller {
 
           response = `
           Revisa aquí la fecha de vencimiento de tu tarjeta de crédito
-          ${creditCardList}
-          ${MENU_HOME}
-          `
-        } else {
-          response = `
-          ${defaultError}
-
-          ${MENU_HOME}
-          `
-        }
+          ${creditCardList}`
+        } else response = defaultError
         break
 
       case '124':
@@ -155,23 +115,11 @@ export class CreditCardController extends Controller {
             *Estado:* ${item.estadoTarjeta.trim()}`
           })
 
-          response = `
-          ${creditCardList}
-
-          ${MENU_HOME}
-          `
-        } else {
-          response = `
-          ${defaultError}
-
-          ${MENU_HOME}
-          `
-        }
+          response = creditCardList
+        } else response = defaultError
         break
 
       case '0':
-        session.treeLevel = 'HOME'
-
         this.initStore(session)
 
         new HomeController({
@@ -195,8 +143,7 @@ export class CreditCardController extends Controller {
               Se ha ingresado una solicitud para tarjeta de crédito con un monto máximo de ${amountTotal} guaraníes.
 
               (C) Confirmo
-              (R) Rechazo
-              `
+              (R) Rechazo`
               break
             }
 
@@ -219,34 +166,11 @@ export class CreditCardController extends Controller {
                 correo: null
               })
 
-              if (typeof creditCardResponse === 'object' && creditCardResponse.created) {
-                response = `
-                ✅ Solicitud enviada
-
-                ${MENU_HOME}
-                `
-                break
-              } else {
-                response = `
-                ${creditCardResponse}
-
-                ${MENU_HOME}
-                `
-                break
-              }
-            }
-
-            if (this.message === 'R') {
+              response = typeof creditCardResponse === 'object' ? '✅ Solicitud enviada' : creditCardResponse
+            } else if (this.message === 'R') {
               session.treeStep = ''
-              response = `
-              ❌ Solicitud cancelada
-
-              ${MENU_HOME}
-              `
-              break
-            }
-
-            response = messageOptionInvalid()
+              response = '❌ Solicitud cancelada'
+            } else response = messageOptionInvalid()
             break
 
           case 'STEP_3':
@@ -275,13 +199,7 @@ export class CreditCardController extends Controller {
               session.treeStep = 'STEP_5'
               session.store.creditCard.fullName = `${name} ${lastname}`
               response = 'Indica el CI y número celular del adicional, colocalo separado por espacios'
-            } else {
-              response = `
-              Ingrese correctamente el nombre y apellido de la persona
-
-              ${MENU_HOME}
-              `
-            }
+            } else response = 'Ingrese correctamente el nombre y apellido de la persona'
             break
 
           case 'STEP_5':
@@ -292,28 +210,16 @@ export class CreditCardController extends Controller {
               session.store.creditCard.ci = Number(ci)
               session.store.creditCard.phone = phone
               response = 'Indica su dirección'
-            } else {
-              response = `
-              Ingrese correctamente el CI y celular de la persona
-
-              ${MENU_HOME}
-              `
-            }
+            } else response = 'Ingrese correctamente el CI y celular de la persona'
             break
 
           case 'STEP_6':
-            // TODO: evaluar esto
+            // TODO: enviar direccion con la funcion de ubicacion de whatsapp ?
             if (this.message) {
               session.treeStep = 'STEP_1'
               session.store.creditCard.address = this.message
               response = this.getMessageAmount(session)
-            } else {
-              response = `
-              Ingrese correctamente la dirección de la persona
-
-              ${MENU_HOME}
-              `
-            }
+            } else response = 'Ingrese correctamente la dirección de la persona'
             break
 
           default:

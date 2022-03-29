@@ -1,7 +1,6 @@
 import { Controller } from '~CLASS/Controller'
 import { HomeController } from '~CONTROLLERS/Home.controller'
 import { convertInGuarani, messageOptionInvalid } from '~UTILS/message.util'
-import { MENU_HOME } from '~ENTITIES/consts'
 
 export class LendingQuery extends Controller {
   async startDecisionTree(session: TSession) {
@@ -22,9 +21,7 @@ export class LendingQuery extends Controller {
 
         response = `
         Elige una de las siguientes opciones:
-        ${options}
-        ${MENU_HOME}
-        `
+        ${options}`
         break
 
       case '131':
@@ -34,17 +31,8 @@ export class LendingQuery extends Controller {
           response = `
           Total de cuotas de créditos vigentes:
 
-          ${convertInGuarani(fee.totalCuota)}
-
-          ${MENU_HOME}
-          `
-        } else {
-          response = `
-          ${fee}
-
-          ${MENU_HOME}
-          `
-        }
+          ${convertInGuarani(fee.totalCuota)}`
+        } else response = fee
         break
 
       case '132':
@@ -54,17 +42,8 @@ export class LendingQuery extends Controller {
           response = `
           Situación de crédito solicitado:
 
-          ${situationLending.situacion}
-
-          ${MENU_HOME}
-          `
-        } else {
-          response = `
-          ${situationLending}
-
-          ${MENU_HOME}
-          `
-        }
+          ${situationLending.situacion}`
+        } else response = situationLending
         break
 
       case '133':
@@ -75,17 +54,8 @@ export class LendingQuery extends Controller {
           Fecha de cierre mensual de préstamos:
 
           *Periodo*: ${closingDate.periodo}
-          *Fecha*: ${closingDate.fecha}
-
-          ${MENU_HOME}
-          `
-        } else {
-          response = `
-          ${closingDate}
-
-          ${MENU_HOME}
-          `
-        }
+          *Fecha*: ${closingDate.fecha}`
+        } else response = closingDate
         break
 
       case '134':
@@ -104,24 +74,9 @@ export class LendingQuery extends Controller {
 
             *Seguro*
             Total reclamo: ${convertInGuarani(monthDiscount.totalReclamoSeguro)}
-            Total pago: ${convertInGuarani(monthDiscount.totalPagoSeguro)}
-
-            ${MENU_HOME}
-            `
-          } else {
-            response = `
-            ${monthDiscount}
-
-            ${MENU_HOME}
-            `
-          }
-        } else {
-          response = `
-          ${clainList}
-
-          ${MENU_HOME}
-          `
-        }
+            Total pago: ${convertInGuarani(monthDiscount.totalPagoSeguro)}`
+          } else response = monthDiscount
+        } else response = clainList
         break
 
       case '135':
@@ -137,18 +92,8 @@ export class LendingQuery extends Controller {
           Fecha Resolución: ${restFee.fechaResolucion}
           Periodo Desde: ${restFee.periodoDesde}
           Periodo Hasta: ${restFee.periodoHasta}
-          Fecha de autorización: ${restFee.fechaAutorizacion}
-
-          ${MENU_HOME}
-          `
-        } else {
-          response = `
-          ${restFee}
-
-          ${MENU_HOME}
-          `
-        }
-
+          Fecha de autorización: ${restFee.fechaAutorizacion}`
+        } else response = restFee
         break
 
       case '136':
@@ -159,21 +104,11 @@ export class LendingQuery extends Controller {
           Último pago de tesorería:
 
           Fecha: ${treasuryPayment.fecha}
-          Importe: ${convertInGuarani(treasuryPayment.importe)}
-
-          ${MENU_HOME}
-          `
-        } else {
-          response = `
-          ${treasuryPayment}
-
-          ${MENU_HOME}
-          `
-        }
+          Importe: ${convertInGuarani(treasuryPayment.importe)}`
+        } else response = treasuryPayment
         break
 
       case '0':
-        session.treeLevel = 'HOME'
         new HomeController({
           ...this.data,
           message: 'menu'

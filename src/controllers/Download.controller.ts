@@ -2,7 +2,6 @@ import { Controller } from '~CLASS/Controller'
 import { HomeController } from '~CONTROLLERS/Home.controller'
 import { getPeriodFromMessage } from '~UTILS/date.util'
 import { messageOptionInvalid } from '~UTILS/message.util'
-import { MENU_HOME } from '~ENTITIES/consts'
 import { getConfig } from '~UTILS/config.util'
 
 export class DownloadController extends Controller {
@@ -23,9 +22,7 @@ export class DownloadController extends Controller {
 
         response = `
         Elige una de las siguientes opciones:
-        ${options}
-        ${MENU_HOME}
-        `
+        ${options}`
         break
 
       case '161':
@@ -56,7 +53,6 @@ export class DownloadController extends Controller {
         break
 
       case '0':
-        session.treeLevel = 'HOME'
         this.initStore(session)
 
         new HomeController({
@@ -126,27 +122,9 @@ export class DownloadController extends Controller {
                     ])
 
                     response = 'OK'
-                  } else {
-                    response = `
-                    ${file}
-
-                    ${MENU_HOME}
-                    `
-                  }
-                } else {
-                  response = `
-                  No existe una factura del periodo ingresado, intente con otro mes y año
-
-                  ${MENU_HOME}
-                  `
-                }
-              } else {
-                response = `
-                El formato de mes y año son invalidos, intente de nuevo
-
-                ${MENU_HOME}
-                `
-              }
+                  } else response = file
+                } else response = 'No existe una factura del periodo ingresado, intente con otro mes y año'
+              } else response = 'El formato de mes y año son invalidos, intente de nuevo'
             }
             break
 
@@ -160,25 +138,18 @@ export class DownloadController extends Controller {
   }
 
   private async getDocListByType(type: TDocType, responseTitle: string, session: TSession): Promise<string> {
-    const docs = await this.andeService.getDocList(type)
+    const docsResponse = await this.andeService.getDocList(type)
 
-    if (typeof docs === 'object') {
+    if (typeof docsResponse === 'object') {
       session.treeStep = 'STEP_1'
-      session.store.download.docList = docs
+      session.store.download.docList = docsResponse
 
       return `
       ${responseTitle}
 
       (12) Los últimos *12 meses*
-      () Ingrese mes y año, ejemplo: *02-2010*
-      `
-    } else {
-      return `
-      ${docs}
-
-      ${MENU_HOME}
-      `
-    }
+      () Ingrese mes y año, ejemplo: *02-2010*`
+    } else return docsResponse
   }
 
   private initStore(session: TSession): void {

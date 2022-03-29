@@ -1,6 +1,5 @@
 import { Controller } from '~CLASS/Controller'
 import { HomeController } from '~CONTROLLERS/Home.controller'
-import { MENU_HOME } from '~ENTITIES/consts'
 import { convertArrayInMessage, messageOptionInvalid } from '~UTILS/message.util'
 
 export class NewsController extends Controller {
@@ -18,9 +17,7 @@ export class NewsController extends Controller {
 
         response = `
         Elige una de las siguientes opciones:
-        ${options}
-        ${MENU_HOME}
-        `
+        ${options}`
         break
 
       case '141':
@@ -29,31 +26,17 @@ export class NewsController extends Controller {
         if (typeof paymentDate === 'object') {
           const { codigo, mensaje } = paymentDate
 
-          if (codigo === 200 && mensaje) {
-            response = `
-            ${mensaje}
-
-            ${MENU_HOME}
-            `
-          } else {
+          if (codigo === 200 && mensaje) response = mensaje
+          else {
             // TODO: Verificar que tipo de dato llega cuando hay una fecha de cobro
             console.log(paymentDate)
 
             response = `
             No te olvides de tus fechas de cobro! 😇
 
-            ${JSON.stringify(paymentDate)}
-
-            ${MENU_HOME}
-            `
+            ${JSON.stringify(paymentDate)}`
           }
-        } else {
-          response = `
-          ${paymentDate}
-
-          ${MENU_HOME}
-          `
-        }
+        } else response = paymentDate
         break
 
       case '142':
@@ -70,21 +53,11 @@ export class NewsController extends Controller {
 
           response = `
           Las mejores promociones en un solo lugar 🌎
-          ${linkList}
-
-          ${MENU_HOME}
-          `
-        } else {
-          response = `
-          ${links}
-
-          ${MENU_HOME}
-          `
-        }
+          ${linkList}`
+        } else response = links
         break
 
       case '0':
-        session.treeLevel = 'HOME'
         new HomeController({
           ...this.data,
           message: 'menu'

@@ -1,6 +1,5 @@
 import { Controller } from '~CLASS/Controller'
 import { HomeController } from '~CONTROLLERS/Home.controller'
-import { MENU_HOME } from '~ENTITIES/consts'
 import { messageOptionInvalid } from '~UTILS/message.util'
 
 export class PersonalDataController extends Controller {
@@ -18,29 +17,24 @@ export class PersonalDataController extends Controller {
 
         response = `
         Elige una de las siguiente opciones:
-        ${options}
-        ${MENU_HOME}
-        `
+        ${options}`
         break
 
       case '151':
         session.treeStep = 'STEP_1'
         response = `
         Para comenzar con el reconocimiento facial tienes que cargar una foto.
-        Debe ser una foto de color claro y no utilizar lentes de sol ni mascarillas 😬
-        `
+        Debe ser una foto de color claro y no utilizar lentes de sol ni mascarillas 😬`
         break
 
       case '152':
         session.treeStep = 'STEP_2'
         response = `
         Necesitamos saber tu domicilio, por favor envia tu dirección usando la función de *enviar ubicación de WhatsApp* 🗺️
-        No olvides ubicar correctamente tu casa 🏡
-        `
+        No olvides ubicar correctamente tu casa 🏡`
         break
 
       case '0':
-        session.treeLevel = 'HOME'
         new HomeController({
           ...this.data,
           message: 'menu'
@@ -59,26 +53,8 @@ export class PersonalDataController extends Controller {
               if (stream) {
                 const photo = await this.andeService.uploadPhoto(stream, file.extension)
 
-                if (typeof photo === 'object' && photo.uploaded) {
-                  response = `
-                  ✅ Tu fotografía ha sido guardada correctamente
-
-                  ${MENU_HOME}
-                  `
-                } else {
-                  response = `
-                  ${photo}
-
-                  ${MENU_HOME}
-                  `
-                }
-              } else {
-                response = `
-                ⚠️ Error al obtener la imagen, intente de nuevo
-
-                ${MENU_HOME}
-                `
-              }
+                response = typeof photo === 'object' ? '✅ Tu fotografía ha sido guardada correctamente' : photo
+              } else response = '⚠️ Error al obtener la imagen, intente de nuevo'
             } else response = 'El archivo enviado es invalido, por favor revisa que sea una imagen correcta'
             break
 
@@ -94,22 +70,11 @@ export class PersonalDataController extends Controller {
                 ubicacionLongitud: longitude.toString()
               })
 
-              if (typeof location === 'object' && location.saved) {
-                response = `
-                ✅ Tu ubicación ha sido guardada correctamente
-
-                ${MENU_HOME}
-                `
-              } else {
-                response = `
-                ${location}
-
-                ${MENU_HOME}
-                `
-              }
-            } else
+              response = typeof location === 'object' ? '✅ Tu ubicación ha sido guardada correctamente' : location
+            } else {
               response =
                 'La ubicación es incorrecta, por favor envianos tu dirección usando la función de *enviar ubicación de WhatsApp* 🗺️'
+            }
             break
 
           default:

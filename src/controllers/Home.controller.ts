@@ -34,8 +34,7 @@ export class HomeController extends Controller {
         response = `
         Bienvenido *${fullName}* en CAJA ANDE trabajamos para vos 🤓
         Revisa las opciones que tenemos desponible:
-        ${options}
-        `
+        ${options}_`
         break
 
       case '11':
@@ -99,7 +98,7 @@ export class HomeController extends Controller {
         session.treeStep = ''
         session.ande = null
         session.store = {} as any
-        response = 'Gracias por usar el Asistente Virtual de Caja Ande 👋'
+        response = 'Gracias por usar el Asistente Virtual de Caja Ande 👋_'
         break
 
       default:
@@ -109,13 +108,11 @@ export class HomeController extends Controller {
           response = `
           Bienvenido *${fullName}* en CAJA ANDE trabajamos para vos 🤓
           Revisa las opciones que tenemos desponible:
-          ${options}
-          `
+          ${options}_`
         } else {
           response = `
           ❌ Opción invalida, las opciones disponibles son:
-          ${options}
-          `
+          ${options}_`
         }
         break
     }

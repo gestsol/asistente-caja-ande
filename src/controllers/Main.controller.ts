@@ -28,8 +28,7 @@ export class MainController extends Controller {
           response = `
           Hola 🤗 soy el Asistente Virtual de Caja Ande.
           Selecciona una opción para poder ayudarte:
-          ${options}
-          `
+          ${options}_`
         } else if (session.treeStep === 'STEP_1') {
           switch (this.message) {
             case '1':
@@ -51,7 +50,7 @@ export class MainController extends Controller {
               break
 
             default:
-              response = messageOptionInvalid(options)
+              response = messageOptionInvalid(options) + '_'
               break
           }
         }

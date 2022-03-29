@@ -4,7 +4,6 @@ import { MainController } from '~CONTROLLERS/Main.controller'
 import { convertMessageInArray, convertPhoneInLocal } from '~UTILS/message.util'
 import { isNumber } from '~UTILS/validation.util'
 import { getConfig } from '~UTILS/config.util'
-import { MENU_HOME } from '~ENTITIES/consts'
 
 export class LoginController extends Controller {
   async startDecisionTree(session: TSession) {
@@ -35,10 +34,7 @@ export class LoginController extends Controller {
           response += `
           Por favor envíanos tu número de CI, número de afiliado y número de celular separados por los espacios que desee
 
-          *Ejemplo*: 1234567 12345 0123456789
-
-          ${MENU_HOME}
-          `
+          *Ejemplo*: 1234567 12345 0123456789`
         }
         break
 
@@ -107,10 +103,7 @@ export class LoginController extends Controller {
 
                 response = `
                 ⚠️ Información incorrecta o insuficiente para acceder al servicio.
-                Contacte al *${getConfig().supportPhone}* para mayor información
-
-                ${MENU_HOME}
-                `
+                Contacte al *${getConfig().supportPhone}* para mayor información`
               }
             } else response = '⚠️ Formato incorrecto, verifique que los datos sean correctos e intente de nuevo'
             break

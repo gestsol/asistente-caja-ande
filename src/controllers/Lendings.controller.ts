@@ -2,7 +2,6 @@ import { Controller } from '~CLASS/Controller'
 import { HomeController } from '~CONTROLLERS/Home.controller'
 import { convertArrayInMessage, convertInGuarani, messageOptionInvalid } from '~UTILS/message.util'
 import { isNumber } from '~UTILS/validation.util'
-import { MENU_HOME } from '~ENTITIES/consts'
 
 export class LendingsController extends Controller {
   async startDecisionTree(session: TSession) {
@@ -27,17 +26,13 @@ export class LendingsController extends Controller {
     //         break
     //       case '3':
     //         response = `
-    //         ( INFORMACIÓN )
-    //         ${MENU_HOME}
-    //         `
+    //         ( INFORMACIÓN )`
     //         break
     //       default:
     //         response = `
     //         ${session.ande!.affiliate.nombre} felicidades 🎉
     //         Tenés un crédito Pre-Aprobado.
-    //         (3) Más información del crédito pre aprobado
-    //         ${MENU_HOME}
-    //         `
+    //         (3) Más información del crédito pre aprobado`
     //         break
     //     }
     //   } else {
@@ -45,9 +40,7 @@ export class LendingsController extends Controller {
     //     this.initStore(session)
     //     response = `
     //     Elige una de las siguientes opciones:
-    //     ${options}
-    //     ${MENU_HOME}
-    //     `
+    //     ${options}`
     //   }
     //   return
     // }
@@ -61,9 +54,7 @@ export class LendingsController extends Controller {
 
         response = `
         Elige una de las siguientes opciones:
-        ${options}
-        ${MENU_HOME}
-        `
+        ${options}`
         break
 
       case '111':
@@ -73,9 +64,7 @@ export class LendingsController extends Controller {
         Préstamo especial ✨
 
         (A) En paralelo
-        (B) Cancelando todos los préstamos vigentes
-        ${MENU_HOME}
-        `
+        (B) Cancelando todos los préstamos vigentes`
         break
 
       case '113':
@@ -89,22 +78,13 @@ export class LendingsController extends Controller {
             return `
             (${i + 1})
             *Plazo*: ${item.plazo}
-            *Monto*: ${convertInGuarani(item.monto)}
-            `
+            *Monto*: ${convertInGuarani(item.monto)}`
           })
 
           response = `
           Opciones de plazo para préstamo estudiantil:
-          ${lendingOptions}
-          ${MENU_HOME}
-          `
-        } else {
-          response = `
-          ${deadlineStundentList}
-
-          ${MENU_HOME}
-          `
-        }
+          ${lendingOptions}`
+        } else response = deadlineStundentList
         break
 
       case '114':
@@ -118,22 +98,13 @@ export class LendingsController extends Controller {
             return `
             (${i + 1})
             *Plazo*: ${item.plazo}
-            *Monto*: ${convertInGuarani(item.monto)}
-            `
+            *Monto*: ${convertInGuarani(item.monto)}`
           })
 
           response = `
           Opciones de plazo para préstamo extraordinario:
-          ${lendingOptions}
-          ${MENU_HOME}
-          `
-        } else {
-          response = `
-          ${deadlineExtraList}
-
-          ${MENU_HOME}
-          `
-        }
+          ${lendingOptions}`
+        } else response = deadlineExtraList
         break
 
       case '0':
@@ -159,22 +130,13 @@ export class LendingsController extends Controller {
                   return `
                   (${i + 1})
                   *Plazo*: ${item.plazo}
-                  *Monto*: ${convertInGuarani(item.monto)}
-                  `
+                  *Monto*: ${convertInGuarani(item.monto)}`
                 })
 
                 response = `
                 Opciones de plazo para préstamo en paralelo:
-                ${lendingOptions}
-                ${MENU_HOME}
-                `
-              } else {
-                response = `
-                ${deadlineList}
-
-                ${MENU_HOME}
-                `
-              }
+                ${lendingOptions}`
+              } else response = deadlineList
             } else if (this.message === 'B') {
               const deadlineCancelList = await this.andeService.getLendings('cancelacion')
 
@@ -186,22 +148,13 @@ export class LendingsController extends Controller {
                   return `
                   (${i + 1})
                   *Plazo*: ${item.plazo}
-                  *Monto*: ${convertInGuarani(item.monto)}
-                  `
+                  *Monto*: ${convertInGuarani(item.monto)}`
                 })
 
                 response = `
                 Opciones de plazo para préstamo con cancelación:
-                ${lendingOptions}
-                ${MENU_HOME}
-                `
-              } else {
-                response = `
-                ${deadlineCancelList}
-
-                ${MENU_HOME}
-                `
-              }
+                ${lendingOptions}`
+              } else response = deadlineCancelList
             } else response = messageOptionInvalid()
             break
 
@@ -217,8 +170,7 @@ export class LendingsController extends Controller {
 
               response = `
               (L) La totalidad
-              (  ) Escriba un monto menor a solicitar
-              `
+              (  ) Escriba un monto menor a solicitar`
             } else response = messageOptionInvalid()
             break
 
@@ -236,8 +188,7 @@ export class LendingsController extends Controller {
 
             if (amountMinor && amountMinor > monto) {
               response = `
-              ⚠️ Monto incorrecto, debe ser menor al monto del plazo seleccionado: ${convertInGuarani(monto)}
-              `
+              ⚠️ Monto incorrecto, debe ser menor al monto del plazo seleccionado: ${convertInGuarani(monto)}`
               break
             }
 
@@ -268,23 +219,9 @@ export class LendingsController extends Controller {
                 response += `
 
                 ¿Cómo quieres cobrar tu préstamo?
-                ${paymentOptions}
-                ${MENU_HOME}
-                `
-              } else {
-                response = `
-                ${paymentMethods}
-
-                ${MENU_HOME}
-                `
-              }
-            } else {
-              response = `
-              ${calculeResponse}
-
-              ${MENU_HOME}
-              `
-            }
+                ${paymentOptions}`
+              } else response = paymentMethods
+            } else response = calculeResponse
             break
 
           case 'STEP_4':
@@ -322,16 +259,8 @@ export class LendingsController extends Controller {
                   session.treeStep = 'STEP_1'
                   response = `
                   ✅ Solicitud de préstamo generada exitosamente
-
-                  ${MENU_HOME}
-                  `
-                } else {
-                  response = `
-                  ${creditResponse}
-
-                  ${MENU_HOME}
-                  `
-                }
+                  Estará sujeto de aprobación`
+                } else response = creditResponse
               } else {
                 const bankAccountList = await this.andeService.getBankAccountList()
 
@@ -344,18 +273,9 @@ export class LendingsController extends Controller {
                   } else {
                     response = `
                     No puede usar este metodo de pago porque no posee una cuenta bancaria 😔
-                    Seleccione otro metodo por favor
-
-                    ${MENU_HOME}
-                    `
+                    Seleccione otro metodo por favor`
                   }
-                } else {
-                  response = `
-                  ${bankAccountList}
-
-                  ${MENU_HOME}
-                  `
-                }
+                } else response = bankAccountList
               }
             } else response = messageOptionInvalid()
             break
@@ -392,23 +312,11 @@ export class LendingsController extends Controller {
                   session.treeStep = 'STEP_1'
                   response = `
                   ✅ Solicitud de préstamo generada exitosamente
-                  Estará sujeto de aprobación
-
-                  ${MENU_HOME}
-                  `
-                } else {
-                  response = `
-                  ${creditResponse}
-
-                  ${MENU_HOME}
-                  `
-                }
+                  Estará sujeto de aprobación`
+                } else response = creditResponse
               } else {
                 response = `
-                No tiene ninguna cuenta bancaria asociada a este número ${this.message}, verifique los datos e intente nuevamente
-
-                ${MENU_HOME}
-                `
+                No tiene ninguna cuenta bancaria asociada a este número ${this.message}, verifique los datos e intente nuevamente`
               }
             } else response = 'Número incorrecto, debe ingresar un número de cuenta valido'
             break

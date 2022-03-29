@@ -1,7 +1,7 @@
 import { AndeService } from '~SERVICES/Ande.service'
 import { WassiService } from '~SERVICES/Wassi.service'
 import { SessionService } from '~SERVICES/Session.service'
-import { messageFormatter } from '~UTILS/message.util'
+import { messageFormatter, messageMenuHome } from '~UTILS/message.util'
 import { getConfig } from '~UTILS/config.util'
 
 export class Controller {
@@ -38,7 +38,8 @@ export class Controller {
 
   protected async sendMessage(response: string): Promise<boolean> {
     if (response && response !== 'OK') {
-      const _response = messageFormatter(response)
+      let _response = messageMenuHome(response)
+      _response = messageFormatter(_response)
 
       switch (getConfig().modeAPP) {
         case 'BOT':

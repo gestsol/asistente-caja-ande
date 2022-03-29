@@ -3,7 +3,6 @@ import { HomeController } from '~CONTROLLERS/Home.controller'
 import { MainController } from '~CONTROLLERS/Main.controller'
 import { convertMessageInFullname, convertPhoneInLocal } from '~UTILS/message.util'
 import { isEmail, isNumber } from '~UTILS/validation.util'
-import { MENU_HOME } from '~ENTITIES/consts'
 
 export class EntryTableController extends Controller {
   async startDecisionTree(session: TSession) {
@@ -142,7 +141,7 @@ export class EntryTableController extends Controller {
                   session.ande === null
                 )
 
-                if (typeof fileResponse === 'object' && fileResponse.uploaded) {
+                if (typeof fileResponse === 'object') {
                   if (session.ande) {
                     session.treeLevel = 'HOME'
                   } else {
@@ -150,21 +149,9 @@ export class EntryTableController extends Controller {
                     session.treeStep = ''
                   }
 
-                  response = '✅ Su documento ha sido guardado correctamente.'
-                } else {
-                  response = `
-                  ${fileResponse}
-
-                  ${MENU_HOME}
-                  `
-                }
-              } else {
-                response = `
-                ⚠️ Error al obtener el documento, intente de nuevo
-
-                ${MENU_HOME}
-                `
-              }
+                  response = '✅ Su documento ha sido guardado correctamente'
+                } else response = fileResponse
+              } else response = '⚠️ Error al obtener el documento, intente de nuevo'
             } else response = 'El documento enviado es incorrecto, por favor revisa que sea correcto'
             break
         }

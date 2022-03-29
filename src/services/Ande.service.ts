@@ -3,6 +3,7 @@ import FormData from 'form-data'
 import { HttpClient } from '~CLASS/HttpClient'
 import { getConfig } from '~UTILS/config.util'
 import { getNameFromHeaders } from '~UTILS/message.util'
+import { MESSAGE_ERROR_DATA } from '~ENTITIES/consts'
 
 export class AndeService extends HttpClient {
   private nroAffiliate: number
@@ -41,7 +42,7 @@ export class AndeService extends HttpClient {
         this.session.ande = null
         this.session.store = { login: {} } as any
 
-        return '🕒 Sesión finalizada, vuelva a ingresar sus datos para iniciar sesión de nuevo'
+        return '🕒 Sesión finalizada, vuelva a ingresar sus datos para iniciar sesión de nuevo_'
 
       case 500:
         return `⚠️ ${err.mensaje}`
@@ -50,8 +51,7 @@ export class AndeService extends HttpClient {
         console.error('ERROR-SERVICE-ANDE:', err)
         return `
         ❌ Error al ejecutar la acción requerida, reporte esta falla a soporte técnico
-        Lamentamos los incovenientes causados 😓
-        `
+        Lamentamos los incovenientes causados 😓`
     }
   }
 
@@ -265,13 +265,12 @@ export class AndeService extends HttpClient {
     }
   }
 
-  public async createCreditCard<R = { created: boolean }>(body: TAndeBody['solicitudtc']): Promise<R | string> {
+  public async createCreditCard<R = object>(body: TAndeBody['solicitudtc']): Promise<R | string> {
     try {
       const { data } = await this.http.post<string>(`/solicitudtc/${this.nroAffiliate}`, body)
 
-      return ({
-        created: typeof data === 'string' && data === ''
-      } as unknown) as R
+      if (typeof data === 'string' && data === '') return ({} as unknown) as R
+      else throw new Error(MESSAGE_ERROR_DATA)
     } catch (error) {
       return this.errorMessageHandler(error, 'No se pudo solicitud la tarjeta de credito')
     }
@@ -423,7 +422,7 @@ export class AndeService extends HttpClient {
 
   // PERSONAL DATA _____________________________________________________________________________________________________
 
-  public async uploadPhoto<R = { uploaded: boolean }>(file: TDataStream, extension: string): Promise<R | string> {
+  public async uploadPhoto<R = object>(file: TDataStream, extension: string): Promise<R | string> {
     try {
       const formData = new FormData()
       formData.append('foto', file)
@@ -433,21 +432,19 @@ export class AndeService extends HttpClient {
         headers: formData.getHeaders()
       })
 
-      return ({
-        uploaded: typeof data === 'string' && data === ''
-      } as unknown) as R
+      if (typeof data === 'string' && data === '') return ({} as unknown) as R
+      else throw new Error(MESSAGE_ERROR_DATA)
     } catch (error) {
       return this.errorMessageHandler(error, 'No se pudo subir la foto')
     }
   }
 
-  public async saveLocation<R = { saved: boolean }>(location: TAndeBody['ubicacion']): Promise<R | string> {
+  public async saveLocation<R = object>(location: TAndeBody['ubicacion']): Promise<R | string> {
     try {
       const { data } = await this.http.put<string>(`/ubicacion/${this.nroAffiliate}`, location)
 
-      return ({
-        saved: typeof data === 'string' && data === ''
-      } as unknown) as R
+      if (typeof data === 'string' && data === '') return ({} as unknown) as R
+      else throw new Error(MESSAGE_ERROR_DATA)
     } catch (error) {
       return this.errorMessageHandler(error, 'No se pudo guardar la ubicación')
     }
@@ -455,10 +452,7 @@ export class AndeService extends HttpClient {
 
   // ENTRY TABLE _______________________________________________________________________________________________________
 
-  public async uploadFile<R = { uploaded: boolean }>(
-    body: TAndeBody['mesaentrada'],
-    notAffiliate: boolean
-  ): Promise<R | string> {
+  public async uploadFile<R = object>(body: TAndeBody['mesaentrada'], notAffiliate: boolean): Promise<R | string> {
     try {
       const formData = new FormData()
 
@@ -471,9 +465,8 @@ export class AndeService extends HttpClient {
         headers: formData.getHeaders()
       })
 
-      return ({
-        uploaded: typeof data === 'string' && data === ''
-      } as unknown) as R
+      if (typeof data === 'string' && data === '') return ({} as unknown) as R
+      else throw new Error(MESSAGE_ERROR_DATA)
     } catch (error) {
       return this.errorMessageHandler(error, 'No se pudo guardar el archivo correctamente')
     }

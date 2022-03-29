@@ -1,20 +1,16 @@
 import { AxiosResponseHeaders } from 'axios'
-import { MENU_HOME } from '~ENTITIES/consts'
 import { isNumber } from '~UTILS/validation.util'
+import { MENU_HOME } from '~ENTITIES/consts'
 
 export const messageOptionInvalid = (options?: string): string => {
-  if (options) {
-    return `
-    ❌ Opción invalida, las opciones disponibles son:
-    ${options}
-    ${MENU_HOME}
-    `
-  } else {
-    return `
-    ❌ Opción invalida, intente de nuevo.
-    ${MENU_HOME}
-    `
-  }
+  return options
+    ? `❌ Opción invalida, las opciones disponibles son:\n${options}`
+    : '❌ Opción invalida, intente de nuevo.'
+}
+
+export const messageMenuHome = (response: string): string => {
+  // Si la respuesta tiene el símbolo "_" al final entonces no se agrega el menú
+  return response.at(-1) !== '_' ? `${response}\n\n${MENU_HOME}` : response.substring(0, response.search(/\_/))
 }
 
 export const messageFormatter = (message: string): string => {
@@ -33,13 +29,7 @@ export const convertMessageInUppercase = (message: string): string => {
   if (isNumber(processedMessage)) return processedMessage
   else {
     let words = processedMessage.split(' ')
-
-    words = words.map(word => {
-      let letters = word.split('')
-      letters = letters.map((l, i) => (i === 0 ? l.toUpperCase() : l))
-
-      return letters.join('')
-    })
+    words = words.map(word => word[0].toUpperCase() + word.substring(1))
 
     return words.join(' ')
   }
