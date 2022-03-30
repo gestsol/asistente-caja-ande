@@ -115,6 +115,8 @@ type TAndeResponse = {
     cuotaMaxima: number
     enProcesoCobro: boolean
     cuotaPeriodoGracia: null | any
+    cumpleRequisitos: boolean
+    cumpleRequisitosLabel: string
   }
   cuentas: Array<{
     id: {

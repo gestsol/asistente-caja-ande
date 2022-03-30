@@ -87,7 +87,7 @@ export class AndeService extends HttpClient {
 
   // LENDING ___________________________________________________________________________________________________________
 
-  public async getLendings<R = TAndeResponse['lineacredito']>(
+  public async getDeadlineList<R = TAndeResponse['lineacredito']>(
     type: TTypeLending,
     deadline: number = 0
   ): Promise<R | string> {

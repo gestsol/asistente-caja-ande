@@ -134,10 +134,10 @@ export class CreditCardController extends Controller {
             if (this.message === 'M' || isNumber(this.message)) {
               const amount =
                 this.message === 'M' ? session.store.creditCard.creditLine.lineaCreditoMaximoCRE : Number(this.message)
+              const amountTotal = convertInGuarani(amount)
 
               session.treeStep = 'STEP_2'
               session.store.creditCard.amount = amount
-              const amountTotal = convertInGuarani(amount)
 
               response = `
               Se ha ingresado una solicitud para tarjeta de crédito con un monto máximo de ${amountTotal} guaraníes.

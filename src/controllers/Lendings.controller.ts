@@ -1,5 +1,6 @@
 import { Controller } from '~CLASS/Controller'
 import { HomeController } from '~CONTROLLERS/Home.controller'
+import { getConfig } from '~UTILS/config.util'
 import { convertArrayInMessage, convertInGuarani, messageOptionInvalid } from '~UTILS/message.util'
 import { isNumber } from '~UTILS/validation.util'
 
@@ -133,7 +134,7 @@ export class LendingsController extends Controller {
             } = session.store.lending
             const amountMinor = isNumber(this.message)
 
-            if (this.message !== 'L' && !amountMinor) {
+            if (!amountMinor && this.message !== 'L') {
               response = messageOptionInvalid()
               break
             }
@@ -145,38 +146,51 @@ export class LendingsController extends Controller {
             }
 
             const amountSelected = this.message === 'L' ? monto : amountMinor!
-            const calculeResponse =
-              type === 'extraordinario'
-                ? ({ montoCuota: 0 } as TAndeResponse['calculo'])
-                : await this.andeService.calculateLending(amountSelected, plazo)
+            const calcule =
+              type !== 'extraordinario' ? await this.andeService.calculateLending(amountSelected, plazo) : null
 
-            if (typeof calculeResponse === 'object') {
-              const paymentMethods = await this.andeService.getPaymentMethods()
-              const fee = calculeResponse.montoCuota
-
-              if (typeof paymentMethods === 'object') {
+            if (calcule && typeof calcule === 'object') {
+              if (calcule.cumpleRequisitos) {
                 session.treeStep = 'STEP_4'
                 session.store.lending.amount = amountSelected
-                session.store.lending.fee = fee
-                session.store.lending.payMethodList = paymentMethods
+                session.store.lending.fee = calcule.montoCuota
 
-                // TODO: Cambiar en la API la descripcion para transferencia
-                const paymentOptions = convertArrayInMessage(
-                  paymentMethods,
-                  (item, i) => `\n(${i + 1}) ${item.descripcion}`
-                )
+                response = `
+                Montos Calculados
 
-                response = fee > 0 ? `La cuota del prestamo seleccionado es de ${convertInGuarani(fee)}` : ''
+                *Monto Solicitado*: ${convertInGuarani(amountSelected)}
+                *Monto a Cancelar*: ${convertInGuarani(calcule.saldoPrestamosCancelar)}
+                *Monto Neto a Retirar*: ${convertInGuarani(calcule.totalNetoRetirar)}
+                *Cuota del Préstamo a Solicitar*: ${convertInGuarani(calcule.montoCuota)}
+                *Monto del Seguro*: ${convertInGuarani(calcule.montoSeguro)}
+                *Tasa de Interés*: ${calcule.tasaInteres}%
+                *Total de Cuotas de Otros Préstamos*: ${convertInGuarani(calcule.cuotaOtrosPrestamos)}
+                *Total de Seguro de Otros Préstamos*: ${convertInGuarani(calcule.seguroOtrosPrestamos)}
+                *Total de Cuotas a Pagar*: ${convertInGuarani(calcule.totalNuevaCuota)}
 
-                response += `
-
-                ¿Cómo quieres cobrar tu préstamo?
-                ${paymentOptions}`
-              } else response = paymentMethods
-            } else response = calculeResponse
+                (C) Confirmo
+                (R) Rechazo
+                `
+              } else response = `⚠️ ${calcule.cumpleRequisitosLabel}`
+            } else if (typeof calcule === 'string') response = calcule
+            else response = await this.getPaymentMethods(session)
             break
 
           case 'STEP_4':
+            if (this.message === 'C') response = await this.getPaymentMethods(session)
+            else if (this.message === 'R') {
+              this.initStore(session)
+
+              if (getConfig().modeAPP === 'BOT') await this.sendMessage('❌ Solicitud cancelada')
+
+              new HomeController({
+                ...this.data,
+                message: 'menu'
+              })
+            } else response = messageOptionInvalid()
+            break
+
+          case 'STEP_5':
             const payMethodSelected = isNumber(this.message)
             const payMethod = payMethodSelected
               ? session.store.lending.payMethodList.find((_, index) => index === payMethodSelected - 1)
@@ -208,7 +222,7 @@ export class LendingsController extends Controller {
                 }
 
                 if (typeof creditResponse === 'object') {
-                  session.treeStep = 'STEP_1'
+                  session.treeStep = ''
                   response = `
                   ✅ Solicitud de préstamo generada exitosamente
                   Estará sujeto de aprobación`
@@ -218,7 +232,7 @@ export class LendingsController extends Controller {
 
                 if (typeof bankAccountList === 'object') {
                   if (bankAccountList.length) {
-                    session.treeStep = 'STEP_5'
+                    session.treeStep = 'STEP_6'
                     session.store.lending.bankAccountList = bankAccountList
 
                     response = 'Por favor indica tu número de cuenta del banco Itaú'
@@ -232,7 +246,7 @@ export class LendingsController extends Controller {
             } else response = messageOptionInvalid()
             break
 
-          case 'STEP_5':
+          case 'STEP_6':
             if (isNumber(this.message)) {
               const { bankAccountList, type, deadline, amount } = session.store.lending
               const bankAccount = bankAccountList.find(account => account.id.nroCuentaBanco === this.message)
@@ -261,7 +275,7 @@ export class LendingsController extends Controller {
                 }
 
                 if (typeof creditResponse === 'object') {
-                  session.treeStep = 'STEP_1'
+                  session.treeStep = ''
                   response = `
                   ✅ Solicitud de préstamo generada exitosamente
                   Estará sujeto de aprobación`
@@ -284,7 +298,7 @@ export class LendingsController extends Controller {
   }
 
   private async getDeadlineList(type: TTypeLending, responseTitle: string, session: TSession): Promise<string> {
-    const deadlineList = await this.andeService.getLendings(type)
+    const deadlineList = await this.andeService.getDeadlineList(type)
 
     if (typeof deadlineList === 'object') {
       session.treeStep = 'STEP_2'
@@ -312,6 +326,22 @@ export class LendingsController extends Controller {
 
       return `${responseTitle}\n${lendingOptions}`
     } else return deadlineList
+  }
+
+  private async getPaymentMethods(session: TSession): Promise<string> {
+    const paymentMethods = await this.andeService.getPaymentMethods()
+
+    if (typeof paymentMethods === 'object') {
+      session.treeStep = 'STEP_5'
+      session.store.lending.payMethodList = paymentMethods
+
+      // TODO: Cambiar en la API la descripcion para transferencia
+      const paymentOptions = convertArrayInMessage(paymentMethods, (item, i) => `\n(${i + 1}) ${item.descripcion}`)
+
+      return `
+      ¿Cómo quieres cobrar tu préstamo?
+      ${paymentOptions}`
+    } else return paymentMethods
   }
 
   private initStore(session: TSession): void {
