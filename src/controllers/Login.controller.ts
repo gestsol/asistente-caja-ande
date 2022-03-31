@@ -3,7 +3,6 @@ import { HomeController } from '~CONTROLLERS/Home.controller'
 import { MainController } from '~CONTROLLERS/Main.controller'
 import { convertMessageInArray, convertPhoneInLocal } from '~UTILS/message.util'
 import { isNumber, isPhoneParaguay } from '~UTILS/validation.util'
-import { getConfig } from '~UTILS/config.util'
 
 export class LoginController extends Controller {
   async startDecisionTree(session: TSession) {
@@ -75,17 +74,17 @@ export class LoginController extends Controller {
             }
 
             if (nroCedula && nroAfiliado && nroCelular) {
-              const data = await this.andeService.login({
+              const loginResponse = await this.andeService.login({
                 nroCedula,
                 nroAfiliado,
                 nroCelular
               })
 
-              if (data) {
+              if (typeof loginResponse === 'object') {
                 // Guardar los datos del afiliado
                 session.ande = {
-                  affiliate: data.afiliado,
-                  token: data.token
+                  affiliate: loginResponse.afiliado,
+                  token: loginResponse.token
                 }
 
                 new HomeController({
@@ -95,9 +94,7 @@ export class LoginController extends Controller {
               } else {
                 if (isParaguay) session.treeStep = 'STEP_1'
 
-                response = `
-                ⚠️ Información incorrecta o insuficiente para acceder al servicio.
-                Contacte al *${getConfig().supportPhone}* para mayor información`
+                response = loginResponse
               }
             } else response = '⚠️ Formato incorrecto, verifique que los datos sean correctos e intente de nuevo'
             break

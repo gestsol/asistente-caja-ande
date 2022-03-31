@@ -1,6 +1,7 @@
 import { botDebug } from '~UTILS/debug.util'
 import { getConfig } from '~UTILS/config.util'
 import { AndeService } from '~SERVICES/Ande.service'
+import { WassiService } from '~SERVICES/Wassi.service'
 
 export class SessionService {
   public static sessions: TSession[] = []
@@ -21,25 +22,33 @@ export class SessionService {
 
       if (isAdmin) {
         // Nueva sesión para usuario ADMIN
-        const [nroCedula, nroAfiliado, nroCelular] = getConfig().loginData.split(' ')
+        const loginResponse = await new AndeService().loginAdmin()
 
-        const loginData = await new AndeService().login({
-          nroCedula,
-          nroAfiliado,
-          nroCelular
-        })
+        if (typeof loginResponse === 'object') {
+          // Se crea una sesión especial para usuario ADMIN
+          session = {
+            phone,
+            name,
+            treeLevel: 'HOME',
+            treeStep: '',
+            ande: {
+              affiliate: loginResponse.afiliado,
+              token: loginResponse.token
+            },
+            store: {} as any
+          }
+        } else {
+          if (getConfig().modeAPP === 'BOT') {
+            await new WassiService().sendMessage({
+              phone,
+              message: loginResponse
+            })
+          }
 
-        // Se crea una sesión especial para usuario ADMIN
-        session = {
-          phone,
-          name,
-          treeLevel: 'HOME',
-          treeStep: '',
-          ande: {
-            affiliate: loginData!.afiliado,
-            token: loginData!.token
-          },
-          store: {} as any
+          throw {
+            name: 'Session',
+            message: 'Caja Ande service does not respond'
+          }
         }
       } else {
         // Se crear una sesión general

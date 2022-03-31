@@ -36,7 +36,7 @@ export class Controller {
     return true
   }
 
-  protected async sendMessage(response: string): Promise<boolean> {
+  protected async sendMessage(response: string, priority?: TWassiMessage['priority']): Promise<boolean> {
     if (response && response !== 'OK') {
       let _response = messageFormatter(response)
       _response = messageMenuHome(_response)
@@ -45,7 +45,8 @@ export class Controller {
         case 'BOT':
           await this.wassiService.sendMessage({
             phone: this.phone,
-            message: _response
+            message: _response,
+            priority
           })
           break
 

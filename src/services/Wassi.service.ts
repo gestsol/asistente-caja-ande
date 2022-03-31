@@ -18,9 +18,9 @@ export class WassiService extends HttpClient {
   public async sendMessage<R = TWassiResponse['messages']['message']>({
     phone,
     message,
-    device = this.device
-  }: TWassiBody['messages']): Promise<R | null> {
-    const body = { phone, message, device }
+    priority = 'normal'
+  }: TWassiMessage): Promise<R | null> {
+    const body: TWassiBody['messages'] = { phone, message, priority, device: this.device }
 
     try {
       const { data } = await this.http.post<R>('/messages', body)
@@ -61,10 +61,10 @@ export class WassiService extends HttpClient {
   public async sendFile<R = TWassiResponse['messages']['media']>({
     phone,
     message,
-    media,
-    device = this.device
-  }: TWassiBody['messages']) {
-    const body = { phone, message, media, device }
+    priority = 'normal',
+    media
+  }: TWassiMessage) {
+    const body: TWassiBody['messages'] = { phone, message, priority, media, device: this.device }
 
     try {
       const { data } = await this.http.post<R>('/messages', body)

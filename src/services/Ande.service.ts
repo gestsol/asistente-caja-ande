@@ -51,7 +51,7 @@ export class AndeService extends HttpClient {
         console.error('ERROR-SERVICE-ANDE:', err)
         return `
         ❌ Error al ejecutar la acción requerida, reporte esta falla a soporte técnico
-        Lamentamos los incovenientes causados 😓`
+        Lamentamos los inconvenientes causados 😓`
     }
   }
 
@@ -68,8 +68,8 @@ export class AndeService extends HttpClient {
   //   }
   // }
 
-  public async login<R = TAndeResponse['autenticar']>(body: TAndeBody['autenticar']): Promise<R | null> {
-    // convertir datos en formato x-www-form-urlencoded
+  public async login<R = TAndeResponse['autenticar']>(body: TAndeBody['autenticar']): Promise<R | string> {
+    // Convertir datos en formato x-www-form-urlencoded
     const urlEncoded = qsStringify(body)
 
     try {
@@ -81,8 +81,29 @@ export class AndeService extends HttpClient {
 
       return data
     } catch (error) {
-      return null
+      const err = error as TAndeError
+
+      switch (err.codigo) {
+        case 401:
+          return `
+          ⚠️ Información incorrecta o insuficiente para acceder al servicio.
+          Contacte al *${getConfig().supportPhone}* para mayor información`
+
+        case 505:
+          return `
+          ❌ El servicio de Caja Ande no está disponible en estos momentos, intentelo mas tarde.
+          Lamentamos los inconvenientes causados 😓
+          `
+
+        default:
+          return this.errorMessageHandler(error)
+      }
     }
+  }
+
+  public async loginAdmin<R = TAndeResponse['autenticar']>(): Promise<R | string> {
+    const [nroCedula, nroAfiliado, nroCelular] = getConfig().loginData.split(' ')
+    return await this.login({ nroCedula, nroAfiliado, nroCelular })
   }
 
   // LENDING ___________________________________________________________________________________________________________

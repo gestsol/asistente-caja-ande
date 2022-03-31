@@ -181,7 +181,9 @@ export class LendingsController extends Controller {
             else if (this.message === 'R') {
               this.initStore(session)
 
-              if (getConfig().modeAPP === 'BOT') await this.sendMessage('❌ Solicitud cancelada')
+              if (getConfig().modeAPP === 'BOT') {
+                await this.sendMessage('❌ Solicitud cancelada', 'high')
+              }
 
               new HomeController({
                 ...this.data,

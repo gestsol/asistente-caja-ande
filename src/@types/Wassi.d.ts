@@ -1,13 +1,6 @@
 type TWassiBody = {
-  messages: {
-    phone: string
-    message?: string
-    media?: {
-      file: string
-      format?: string | 'native'
-      message?: string
-    }
-    device?: string
+  messages: TWassiMessage & {
+    device: string
   }
   files: {
     filename: string
@@ -198,5 +191,16 @@ type TWassiRequest = {
       isFailed: boolean
       notifyName: string
     }
+  }
+}
+
+type TWassiMessage = {
+  phone: string
+  message?: string
+  priority?: 'low' | 'normal' | 'high' | 'urgent'
+  media?: {
+    file: string
+    format?: string | 'native'
+    message?: string
   }
 }

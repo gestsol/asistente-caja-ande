@@ -41,14 +41,22 @@ export class HttpClient {
         if (status !== 200 && status !== 201) throw new Error(`Request failed with status code ${status}`)
         else return response
       },
-      (error: AxiosError) => {
+      (error: AxiosError<TAndeError, any>) => {
         console.error('ERROR-RESPONSE:', error.message)
-        throw <TAndeError>error.response?.data
-          ? error.response?.data
-          : {
-              codigo: error.response?.status === 500 ? 505 : error.response?.status,
-              mensaje: error.response?.statusText
-            }
+
+        if (error.response) {
+          // De no existir "data", se crear un error usando el "status" y el "statusText" de la respuesta
+          throw <TAndeError>(error.response.data || {
+            codigo: error.response.status === 500 ? 505 : error.response.status,
+            mensaje: error.response.statusText
+          })
+        } else {
+          // Se coloca el código "505" para indicar que el error proviene de este servidor
+          throw <TAndeError>{
+            codigo: 505,
+            mensaje: error.message
+          }
+        }
       }
     )
   }
