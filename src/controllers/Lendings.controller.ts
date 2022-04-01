@@ -149,7 +149,7 @@ export class LendingsController extends Controller {
               type !== 'extraordinario' ? await this.andeService.calculateLending(amountSelected, plazo) : null
 
             if (calcule && typeof calcule === 'object') {
-              // FIXME: Remover "calcule.cumpleRequisitos === undefined" cuando la API retorne la propiedad "cumpleRequisitos"
+              // TODO: Remover "calcule.cumpleRequisitos === undefined" cuando la API retorne la propiedad "cumpleRequisitos"
               if (calcule.cumpleRequisitos || calcule.cumpleRequisitos === undefined) {
                 session.treeStep = 'STEP_4'
                 session.store.lending.amount = amountSelected

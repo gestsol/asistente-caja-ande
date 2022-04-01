@@ -26,6 +26,8 @@ export const getConfig = (): TConfig => {
     modeAPP: (ENV.MODE_APP as any) || 'BOT',
     adminPhoneList: (ENV.ADMIN_PHONE_LIST as string)?.split(',') || [],
     supportPhone: (ENV.SUPPORT_PHONE as string) || '',
-    loginData: (ENV.LOGIN_DATA as string) || ''
+    loginData: (ENV.LOGIN_DATA as string) || '',
+    // Por defecto el tiempo es de 25 min porque la api de "Caja Ande" caduca el token en 30 min
+    minutesSession: Number(ENV.MINUTES_SESSION) || 25
   }
 }

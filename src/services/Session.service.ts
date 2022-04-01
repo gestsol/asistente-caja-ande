@@ -14,58 +14,70 @@ export class SessionService {
     const session = SessionService.getSession(phone)
 
     if (session) {
-      // Se retorna la sesión existente
-      return session
-    } else {
-      const isAdmin = getConfig().adminPhoneList.includes(phone)
-      let session: TSession
+      const timeNow = new Date().getTime()
+      const timeLastReq = session.dateLastReq.getTime()
+      const timeLimitSession = getConfig().minutesSession * 60 * 1000
 
-      if (isAdmin) {
-        // Nueva sesión para usuario ADMIN
-        const loginResponse = await new AndeService().loginAdmin()
+      // Si el tiempo actual ha superado el limite de sesión establecido entonces se elimina la sesión actual
+      if (timeNow - timeLastReq >= timeLimitSession) {
+        SessionService.sessions = SessionService.sessions.filter(session => session.phone !== phone)
+      } else return session
+    }
 
-        if (typeof loginResponse === 'object') {
-          // Se crea una sesión especial para usuario ADMIN
-          session = {
-            phone,
-            name,
-            treeLevel: 'HOME',
-            treeStep: '',
-            ande: {
-              affiliate: loginResponse.afiliado,
-              token: loginResponse.token
-            },
-            store: {} as any
-          }
-        } else {
-          if (getConfig().modeAPP === 'BOT') {
-            await new WassiService().sendMessage({
-              phone,
-              message: loginResponse
-            })
-          }
+    return await this.create(phone, name)
+  }
 
-          throw {
-            name: 'Session',
-            message: 'Caja Ande service does not respond'
-          }
-        }
-      } else {
-        // Se crear una sesión general
+  private async create(phone: string, name: string): Promise<TSession> {
+    const isAdmin = getConfig().adminPhoneList.includes(phone)
+    let session: TSession
+
+    if (isAdmin) {
+      // Nueva sesión para usuario ADMIN
+      const loginResponse = await new AndeService().loginAdmin()
+
+      if (typeof loginResponse === 'object') {
+        // Se crea una sesión especial para usuario ADMIN
         session = {
           phone,
           name,
-          treeLevel: 'MAIN',
+          treeLevel: 'HOME',
           treeStep: '',
-          ande: null,
-          store: {} as any
+          ande: {
+            affiliate: loginResponse.afiliado,
+            token: loginResponse.token
+          },
+          store: {} as any,
+          dateLastReq: {} as Date
+        }
+      } else {
+        if (getConfig().modeAPP === 'BOT') {
+          await new WassiService().sendMessage({
+            phone,
+            message: loginResponse
+          })
+        }
+
+        throw {
+          name: 'Session',
+          message: 'Caja Ande service does not respond'
         }
       }
-
-      // Agregar nueva sesión
-      SessionService.sessions.push(session)
-      return session
+    } else {
+      // Se crear una sesión general
+      session = {
+        phone,
+        name,
+        treeLevel: 'MAIN',
+        treeStep: '',
+        ande: null,
+        store: {} as any,
+        dateLastReq: {} as Date
+      }
     }
+
+    // Agregar nueva sesión
+    SessionService.sessions.push(session)
+    return session
   }
 
   public static update(sessionUpdated: TSession): void {
@@ -84,7 +96,8 @@ export class SessionService {
           phone: session.phone,
           name: session.name,
           treeLevel: session.treeLevel,
-          treeStep: session.treeStep
+          treeStep: session.treeStep,
+          dateLastReq: session.dateLastReq
         })
       })
 

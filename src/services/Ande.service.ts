@@ -27,7 +27,7 @@ export class AndeService extends HttpClient {
     this.typeLending = session?.store?.lending?.type || 'paralelo'
   }
 
-  private errorMessageHandler(error: unknown | TAndeError | Error, message?: string) {
+  private errorMessageHandler(error: unknown | TAndeError | Error, message?: string): string {
     const err = error as TAndeError & Error
 
     switch (err.codigo) {

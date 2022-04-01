@@ -13,6 +13,7 @@ type TConfig = {
   adminPhoneList: Array<string>
   supportPhone: string
   loginData: string
+  minutesSession: number
 }
 
 type TConfigHttpClient = {
@@ -46,6 +47,7 @@ type TSession = {
   treeStep: TStep
   ande: TAnde | null
   store: TStore
+  dateLastReq: Date
 }
 
 type TAnde = {

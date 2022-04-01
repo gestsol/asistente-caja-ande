@@ -26,8 +26,11 @@ export class Controller {
     const response = await this.startDecisionTree(this.data.session)
 
     if (response) {
-      // Update session
-      SessionService.update(this.data.session)
+      // Se actualiza la sesión refrescando la fecha
+      SessionService.update({
+        ...this.data.session,
+        dateLastReq: new Date()
+      })
     }
   }
 
