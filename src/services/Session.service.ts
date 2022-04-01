@@ -15,11 +15,11 @@ export class SessionService {
 
     if (session) {
       const timeNow = new Date().getTime()
-      const timeLastReq = session.dateLastReq.getTime()
+      const timeLastRequest = session.date.getTime()
       const timeLimitSession = getConfig().minutesSession * 60 * 1000
 
       // Si el tiempo actual ha superado el limite de sesión establecido entonces se elimina la sesión actual
-      if (timeNow - timeLastReq >= timeLimitSession) {
+      if (timeNow - timeLastRequest >= timeLimitSession) {
         SessionService.sessions = SessionService.sessions.filter(session => session.phone !== phone)
       } else return session
     }
@@ -47,7 +47,7 @@ export class SessionService {
             token: loginResponse.token
           },
           store: {} as any,
-          dateLastReq: {} as Date
+          date: {} as Date
         }
       } else {
         if (getConfig().modeAPP === 'BOT') {
@@ -71,7 +71,7 @@ export class SessionService {
         treeStep: '',
         ande: null,
         store: {} as any,
-        dateLastReq: {} as Date
+        date: {} as Date
       }
     }
 
@@ -80,30 +80,21 @@ export class SessionService {
     return session
   }
 
-  public static update(sessionUpdated: TSession): void {
-    const phone = sessionUpdated.phone
-    const session = SessionService.getSession(phone)
+  public static debugger(): void {
+    let sessionsDebug: Partial<TSession>[] = []
 
-    if (session) {
-      let sessionsDebug: Partial<TSession>[] = []
-
-      SessionService.sessions.forEach(session => {
-        if (session.phone === phone) {
-          session = sessionUpdated
-        }
-
-        sessionsDebug.push({
-          phone: session.phone,
-          name: session.name,
-          treeLevel: session.treeLevel,
-          treeStep: session.treeStep,
-          dateLastReq: session.dateLastReq
-        })
+    SessionService.sessions.forEach(session => {
+      sessionsDebug.push({
+        phone: session.phone,
+        name: session.name,
+        treeLevel: session.treeLevel,
+        treeStep: session.treeStep,
+        date: session.date
       })
+    })
 
-      botDebug('SESSIONS', 'updated', sessionsDebug)
-      console.log()
-    }
+    botDebug('SESSIONS', 'updated', sessionsDebug)
+    console.log()
   }
 
   private startDatabase(): void {

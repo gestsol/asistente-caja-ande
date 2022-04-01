@@ -47,7 +47,7 @@ type TSession = {
   treeStep: TStep
   ande: TAnde | null
   store: TStore
-  dateLastReq: Date
+  date: Date
 }
 
 type TAnde = {

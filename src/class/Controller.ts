@@ -27,10 +27,9 @@ export class Controller {
 
     if (response) {
       // Se actualiza la sesión refrescando la fecha
-      SessionService.update({
-        ...this.data.session,
-        dateLastReq: new Date()
-      })
+      this.data.session.date = new Date()
+      // Se realiza debugger a las sesiones almacenadas
+      if (getConfig().debug) SessionService.debugger()
     }
   }
 

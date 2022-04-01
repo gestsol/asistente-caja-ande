@@ -32,6 +32,7 @@ export class WassiService extends HttpClient {
 
       return data
     } catch (_) {
+      // TODO: crear un mensaje para retornar en caso de error
       console.log(_)
       return null
     }
@@ -78,7 +79,6 @@ export class WassiService extends HttpClient {
 
       return data
     } catch (_) {
-      // TODO: crear un mensaje para retornar en caso de error
       console.log(_)
       return null
     }
@@ -91,7 +91,8 @@ export class WassiService extends HttpClient {
       })
 
       return data
-    } catch (error) {
+    } catch (_) {
+      console.log(_)
       return null
     }
   }
