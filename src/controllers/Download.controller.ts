@@ -2,7 +2,6 @@ import { Controller } from '~CLASS/Controller'
 import { HomeController } from '~CONTROLLERS/Home.controller'
 import { getPeriodFromMessage } from '~UTILS/date.util'
 import { messageOptionInvalid } from '~UTILS/message.util'
-import { getConfig } from '~UTILS/config.util'
 
 export class DownloadController extends Controller {
   async startDecisionTree(session: TSession) {
@@ -66,9 +65,7 @@ export class DownloadController extends Controller {
           case 'STEP_1':
             // Obtener documentos de los ultimos 12 meses
             if (this.message === '12') {
-              if (getConfig().modeAPP === 'BOT') {
-                await this.sendMessage('⏳ Procesando tu pedido')
-              }
+              await this.sendMessage('⏳ Procesando tu pedido', true)
 
               const { type, docList } = session.store.download
 

@@ -256,6 +256,26 @@ export class AndeService extends HttpClient {
     }
   }
 
+  public async getDocReqLending(nroReqLending: number): Promise<TFile> {
+    const filenameDefault = `solicitud_prestamo_${nroReqLending}`
+
+    try {
+      const { headers, data } = await this.http.get<TAndeResponse['pdf']>(
+        `/solicitudcredito/pdf/${this.nroAffiliate}/${nroReqLending}`,
+        {
+          responseType: 'stream'
+        }
+      )
+
+      return {
+        filename: getNameFromHeaders(headers) || filenameDefault,
+        stream: data
+      }
+    } catch (error) {
+      return this.errorMessageHandler(error, `No se pudo obtener el documento: ${filenameDefault}`)
+    }
+  }
+
   // CREDIT-CARD _______________________________________________________________________________________________________
 
   public async getCreditCardList<R = TAndeResponse['datosstc']>(): Promise<R | [] | string> {

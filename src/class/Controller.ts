@@ -36,17 +36,20 @@ export class Controller {
     return true
   }
 
-  protected async sendMessage(response: string, priority?: TWassiMessage['priority']): Promise<boolean> {
+  protected async sendMessage(response: string, intermediateMessage?: boolean): Promise<boolean> {
+    const { modeAPP } = getConfig()
+
+    if (modeAPP === 'API' && intermediateMessage) return true
+
     if (response && response !== 'OK') {
       let _response = messageFormatter(response)
       _response = messageMenuHome(_response)
 
-      switch (getConfig().modeAPP) {
+      switch (modeAPP) {
         case 'BOT':
           await this.wassiService.sendMessage({
             phone: this.phone,
-            message: _response,
-            priority
+            message: _response
           })
           break
 

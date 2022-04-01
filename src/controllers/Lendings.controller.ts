@@ -1,6 +1,5 @@
 import { Controller } from '~CLASS/Controller'
 import { HomeController } from '~CONTROLLERS/Home.controller'
-import { getConfig } from '~UTILS/config.util'
 import { convertArrayInMessage, convertInGuarani, messageOptionInvalid } from '~UTILS/message.util'
 import { isNumber } from '~UTILS/validation.util'
 
@@ -150,7 +149,8 @@ export class LendingsController extends Controller {
               type !== 'extraordinario' ? await this.andeService.calculateLending(amountSelected, plazo) : null
 
             if (calcule && typeof calcule === 'object') {
-              if (calcule.cumpleRequisitos) {
+              // FIXME: Remover "calcule.cumpleRequisitos === undefined" cuando la API retorne la propiedad "cumpleRequisitos"
+              if (calcule.cumpleRequisitos || calcule.cumpleRequisitos === undefined) {
                 session.treeStep = 'STEP_4'
                 session.store.lending.amount = amountSelected
                 session.store.lending.fee = calcule.montoCuota
@@ -180,10 +180,6 @@ export class LendingsController extends Controller {
             if (this.message === 'C') response = await this.getPaymentMethods(session)
             else if (this.message === 'R') {
               this.initStore(session)
-
-              if (getConfig().modeAPP === 'BOT') {
-                await this.sendMessage('❌ Solicitud cancelada', 'high')
-              }
 
               new HomeController({
                 ...this.data,
@@ -223,12 +219,10 @@ export class LendingsController extends Controller {
                   })
                 }
 
-                if (typeof creditResponse === 'object') {
-                  session.treeStep = ''
-                  response = `
-                  ✅ Solicitud de préstamo generada exitosamente
-                  Estará sujeto de aprobación`
-                } else response = creditResponse
+                response =
+                  typeof creditResponse === 'object'
+                    ? await this.successLending(type, creditResponse.nroExpediente, session)
+                    : creditResponse
               } else {
                 const bankAccountList = await this.andeService.getBankAccountList()
 
@@ -254,7 +248,7 @@ export class LendingsController extends Controller {
               const bankAccount = bankAccountList.find(account => account.id.nroCuentaBanco === this.message)
 
               if (bankAccount) {
-                let creditResponse = ''
+                let creditResponse: TAndeResponse['solicitudcredito'] | string = ''
 
                 if (type === 'extraordinario') {
                   creditResponse = await this.andeService.createCreditExtra({
@@ -276,12 +270,10 @@ export class LendingsController extends Controller {
                   })
                 }
 
-                if (typeof creditResponse === 'object') {
-                  session.treeStep = ''
-                  response = `
-                  ✅ Solicitud de préstamo generada exitosamente
-                  Estará sujeto de aprobación`
-                } else response = creditResponse
+                response =
+                  typeof creditResponse === 'object'
+                    ? await this.successLending(type, creditResponse.nroExpediente, session)
+                    : creditResponse
               } else {
                 response = `
                 No tiene ninguna cuenta bancaria asociada a este número ${this.message}, verifique los datos e intente nuevamente`
@@ -344,6 +336,28 @@ export class LendingsController extends Controller {
       ¿Cómo quieres cobrar tu préstamo?
       ${paymentOptions}`
     } else return paymentMethods
+  }
+
+  private async successLending(type: TTypeLending, nroReqLending: number, session: TSession): Promise<string> {
+    session.treeStep = ''
+    const successMessage = `✅ Solicitud de préstamo generada exitosamente\nEstará sujeto de aprobación`
+
+    if (type !== 'extraordinario') {
+      await this.sendMessage(successMessage, true)
+
+      const docResponse = await this.andeService.getDocReqLending(nroReqLending)
+
+      if (typeof docResponse === 'object') {
+        await this.sendFiles([
+          {
+            filename: docResponse.filename,
+            stream: docResponse.stream
+          }
+        ])
+
+        return 'OK'
+      } else return docResponse
+    } else return successMessage
   }
 
   private initStore(session: TSession): void {
