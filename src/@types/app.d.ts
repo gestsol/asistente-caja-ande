@@ -62,7 +62,6 @@ type TStore = {
   lending: {
     type: TTypeLending
     deadlineList: TDeadline[]
-    fee: number
     deadline: TDeadline
     payMethodList: TAndeResponse['formacobro']
     bankAccountList: TAndeResponse['cuentas']

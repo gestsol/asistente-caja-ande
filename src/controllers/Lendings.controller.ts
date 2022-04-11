@@ -148,12 +148,11 @@ export class LendingsController extends Controller {
             const calcule =
               type !== 'extraordinario' ? await this.andeService.calculateLending(amountSelected, plazo) : null
 
+            session.store.lending.amount = amountSelected
+
             if (calcule && typeof calcule === 'object') {
-              // TODO: Remover "calcule.cumpleRequisitos === undefined" cuando la API retorne la propiedad "cumpleRequisitos"
-              if (calcule.cumpleRequisitos || calcule.cumpleRequisitos === undefined) {
+              if (calcule.cumpleRequisitos) {
                 session.treeStep = 'STEP_4'
-                session.store.lending.amount = amountSelected
-                session.store.lending.fee = calcule.montoCuota
 
                 response = `
                 Montos Calculados
@@ -172,8 +171,9 @@ export class LendingsController extends Controller {
                 (R) Rechazo
                 `
               } else response = `⚠️ ${calcule.cumpleRequisitosLabel}`
-            } else if (typeof calcule === 'string') response = calcule
-            else response = await this.getPaymentMethods(session)
+            } else if (typeof calcule === 'string') {
+              response = calcule
+            } else response = await this.getPaymentMethods(session)
             break
 
           case 'STEP_4':
