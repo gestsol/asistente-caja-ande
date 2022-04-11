@@ -18,7 +18,7 @@ export class InfoController extends Controller {
             const enabledInfoList = infoList.filter(info => info.estado)
 
             const infoOptions = convertArrayInMessage(enabledInfoList, item => {
-              return `*${item.nombre}:* ${item.descripcion}`
+              return `*${item.nombre}:* ${item.descripcion}\n`
             })
 
             response = `
