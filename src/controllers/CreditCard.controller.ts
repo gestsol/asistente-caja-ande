@@ -10,7 +10,7 @@ export class CreditCardController extends Controller {
     const options = `
     (121) Nueva Tarjeta de crédito 💳
     (122) Deuda total y disponibilidad de tarjeta de crédito
-    (123) Monto y vencimiento de tu tarjeta
+    (123) Pago Mínimo y vencimiento de tu tarjeta
     (124) Situación actual de tu tarjeta de crédito`
 
     const defaultError = 'Usted no posee una tarjeta de credito, para crear una seleccione la opción *121*'
@@ -75,7 +75,7 @@ export class CreditCardController extends Controller {
             return `
             *Tarjeta:* ${item.nroTarjeta}
             *Saldo disponible:* ${convertInGuarani(item.disponible)}
-            *Deuda total:* ${convertInGuarani(item.pagoMinimoPendiente)}`
+            *Deuda total:* ${convertInGuarani(item.saldo)}`
           })
 
           response = `
