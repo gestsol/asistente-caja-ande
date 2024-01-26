@@ -74,15 +74,20 @@ export class Controller {
       case 'BOT':
         for await (const file of files) {
           if (typeof file === 'object') {
-            const [fileData] = await this.wassiService.uploadFile({ filename: file.filename }, file.stream)
+            try {
+              const [fileData] = await this.wassiService.uploadFile({ phone: this.phone, filename: file.filename }, file.stream)
 
+            } catch (e) {
+
+            }
+/*
             if (fileData) {
               await this.wassiService.sendFile({
                 phone: this.phone,
                 media: { file: fileData.id }
               })
-            } else await this.sendMessage(`⚠️ Error al obtener el archivo: ${file.filename}`)
-          } else await this.sendMessage(file)
+            } else await this.sendMessage(`⚠️ Error al obtener el archivo: ${file.filename}`)*/
+          }
         }
         break
 

@@ -4,6 +4,7 @@ type TWassiBody = {
   }
   files: {
     filename: string
+    phone?: string
     expiration?:
       | '10m'
       | '30m'

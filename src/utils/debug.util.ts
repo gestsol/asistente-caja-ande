@@ -1,7 +1,7 @@
 import { getConfig } from '~UTILS/config.util'
 
 export function botDebug(title: string, message: string, payload?: object | Array<object>): void {
-  if (getConfig().debug) {
+  if (getConfig().debug || 1==1) {
     const time = new Date().toISOString().split('T')[1] as string
     const hour = time.split('.')[0]
 

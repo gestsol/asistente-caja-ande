@@ -74,26 +74,27 @@ export class DownloadController extends Controller {
 
               // Se ejcutan todas las peticiones en paralelo haciendo uso de "Promise.allSettled"
               const fileListSettledResult = await Promise.allSettled(
-                docLast12.map(async ({ periodo, nroFactura }) => {
-                  return this.andeService.getDoc(type, {
-                    periodo,
-                    nroFactura
+                  docLast12.map(async ({ periodo, nroFactura }) => {
+                    return this.andeService.getDoc(type, {
+                      periodo,
+                      nroFactura
+                    });
                   })
-                })
-              )
+              );
 
               // Se preparan los archivos obtenidos transformando los datos de tipo "SettledResult" a "TFile"
               const fileList: TFile[] = fileListSettledResult.map(file => {
-                // Todas las promesas seran resueltas incluso si hay error
-                // debido a que el servicio "Ande.service" captura cualquier error
+                // Resto del código...
+
                 if (file.status === 'fulfilled') {
                   return typeof file.value === 'object'
-                    ? { filename: file.value.filename, stream: file.value.pdf }
-                    : file.value
-                } else return {} as TFile
-              })
+                      ? { filename: file.value.filename, stream: file.value.pdf }
+                      : file.value;
+                } else return {} as TFile;
+              });
 
-              await this.sendFiles(fileList)
+
+              await this.sendFiles(fileList);
               response = 'OK'
 
               // Obtener documento del periodo ingresado

@@ -32,6 +32,9 @@ export class AndeService extends HttpClient {
 
     switch (err.codigo) {
       case 404:
+	if (!message) {
+	    message = "No Encontrado"
+	}
         return `😔 ${message}`
 
       case 401:

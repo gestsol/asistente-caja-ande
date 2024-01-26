@@ -55,6 +55,7 @@ export const convertMessageInFullname = (message: string): string => {
 }
 
 export const convertPhoneInLocal = (phone: string): string => {
+  phone = phone.replace('+', '')
   return phone.replace('+595', '0')
 }
 
