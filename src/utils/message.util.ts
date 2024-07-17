@@ -55,8 +55,17 @@ export const convertMessageInFullname = (message: string): string => {
 }
 
 export const convertPhoneInLocal = (phone: string): string => {
-  phone = phone.replace('+', '')
-  return phone.replace('+595', '0')
+  // Verifica si el número de teléfono empieza con "595"
+  phone = phone.replace(/\D/g, '')
+  if (phone.startsWith('595')) {
+    // Reemplaza "595" al inicio con "0"
+    phone = phone.replace(/^595/, '0')
+  }
+  if (phone.startsWith('56')) {
+    // Reemplaza "56" al inicio con "0"
+    phone = phone.replace(/^56/, '0')
+  }
+  return phone
 }
 
 export const convertInGuarani = (message: string | number): string => {

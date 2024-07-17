@@ -74,6 +74,7 @@ export class LoginController extends Controller {
             }
 
             if (nroCedula && nroAfiliado && nroCelular) {
+              console.log('LOGIN', nroCedula, nroAfiliado, nroCelular)
               const loginResponse = await this.andeService.login({
                 nroCedula,
                 nroAfiliado,
