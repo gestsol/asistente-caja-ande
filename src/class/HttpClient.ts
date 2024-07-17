@@ -1,16 +1,15 @@
 import axios, { AxiosRequestConfig, AxiosResponse, AxiosError, AxiosInstance } from 'axios'
 import { botDebug } from '~UTILS/debug.util'
-import * as https from "https";
+import * as https from 'https'
 
 export class HttpClient {
   protected http: AxiosInstance
   private defaultPath: string
 
   constructor({ baseURL, defaultPath, timeoutSecond, headers }: TConfigHttpClient) {
-
     const agent = new https.Agent({
       rejectUnauthorized: false
-    });
+    })
     this.http = axios.create({
       maxRedirects: 10,
       httpsAgent: agent,

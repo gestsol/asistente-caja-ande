@@ -75,12 +75,12 @@ export class Controller {
         for await (const file of files) {
           if (typeof file === 'object') {
             try {
-              const [fileData] = await this.wassiService.uploadFile({ phone: this.phone, filename: file.filename }, file.stream)
-
-            } catch (e) {
-
-            }
-/*
+              const [fileData] = await this.wassiService.uploadFile(
+                { phone: this.phone, filename: file.filename },
+                file.stream
+              )
+            } catch (e) {}
+            /*
             if (fileData) {
               await this.wassiService.sendFile({
                 phone: this.phone,
