@@ -23,13 +23,11 @@ export class WassiService extends HttpClient {
   }: TWassiMessage): Promise<R | null> {
     const body_r: TWassiBody['messages'] = { phone, message, priority, device: this.device }
     try {
-      console.log(JSON.stringify(body_r))
       const { data } = await this.http.post<R>('/messages', body_r)
-      console.log(JSON.stringify(data))
       let { body, status } = data['messages']['message']['data']
       message = body ? body.split('\n')[0] + '...' : body
 
-      botDebug('WASSI-OUT', `(Message in ${status}) ${message}`, data['messages']['message']['data'])
+      botDebug('WASSI-OUT', `(Message in ${status}) ${message}`)
       return data['messages']['message']['data']
     } catch (_) {
       // TODO: crear un mensaje para retornar en caso de error
