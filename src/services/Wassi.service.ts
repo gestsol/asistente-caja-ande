@@ -29,7 +29,7 @@ export class WassiService extends HttpClient {
       let { body, status } = data['messages']['message']['data']
       message = body ? body.split('\n')[0] + '...' : body
 
-      botDebug('WASSI-OUT', `(Message in ${status}) ${message}`)
+      botDebug('WASSI-OUT', `(Message in ${status}) ${message}`, data['messages']['message']['data'])
       return data['messages']['message']['data']
     } catch (_) {
       // TODO: crear un mensaje para retornar en caso de error
