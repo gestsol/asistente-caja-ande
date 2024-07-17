@@ -23,9 +23,9 @@ export class WassiService extends HttpClient {
   }: TWassiMessage): Promise<R | null> {
     const body_r: TWassiBody['messages'] = { phone, message, priority, device: this.device }
     try {
-      console.log(JSON.stringify(body_r))
+      // console.log(JSON.stringify(body_r))
       const { data } = await this.http.post<R>('/messages', body_r)
-      console.log(JSON.stringify(data))
+      // console.log(JSON.stringify(data))
       let { body, status } = data['messages']['message']['data']
       message = body ? body.split('\n')[0] + '...' : body
 
